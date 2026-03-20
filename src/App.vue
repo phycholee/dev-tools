@@ -1,15 +1,11 @@
 <template>
   <div id="app">
-    <h1 style="color: var(--text-accent)">DevTools</h1>
-    <p>暗色主题已启用</p>
-    <button style="background: var(--btn-primary); color: white; border: none; padding: 8px 16px; border-radius: 4px;">
-      测试按钮
-    </button>
+    <router-view />
   </div>
 </template>
 
 <script setup lang="ts">
-// 基础 App 组件
+// App 根组件
 </script>
 
 <style scoped>
