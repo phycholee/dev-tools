@@ -11,7 +11,8 @@ export const tools: ToolDefinition[] = [
     icon: '{ }',
     description: 'JSON美化、压缩、转义',
     category: '数据处理',
-    component: () => import('./json-formatter/JsonFormatter.vue')
+    component: () => import('./json-formatter/JsonFormatter.vue'),
+    color: '#6366f1' // 靛蓝紫
   },
   {
     id: 'timestamp-converter',
@@ -20,7 +21,8 @@ export const tools: ToolDefinition[] = [
     icon: '⏱',
     description: '时间戳与日期互转',
     category: '时间日期',
-    component: () => import('./timestamp-converter/TimestampConverter.vue')
+    component: () => import('./timestamp-converter/TimestampConverter.vue'),
+    color: '#06b6d4' // 青色
   }
 ]
 

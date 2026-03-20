@@ -18,6 +18,8 @@ export interface ToolDefinition {
   category: string
   /** 懒加载的组件 */
   component: () => Promise<Component>
+  /** 主题色（用于卡片装饰） */
+  color?: string
 }
 
 /**
