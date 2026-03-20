@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { getToolsByCategory } from '@/tools/registry'
+import { getToolsByCategory } from '../../tools/registry'
 
 const route = useRoute()
 const toolCategories = getToolsByCategory()
