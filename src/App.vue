@@ -1,10 +1,11 @@
 <template>
-  <div id="app">
+  <AppLayout>
     <router-view />
-  </div>
+  </AppLayout>
 </template>
 
 <script setup lang="ts">
+import AppLayout from './components/layout/AppLayout.vue'
 // App 根组件
 </script>
 
