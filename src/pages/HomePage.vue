@@ -25,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-import { getToolsByCategory } from '@/tools/registry'
-import ToolCard from '@/components/common/ToolCard.vue'
+import { getToolsByCategory } from '../tools/registry'
+import ToolCard from '../components/common/ToolCard.vue'
 
 const toolCategories = getToolsByCategory()
 </script>

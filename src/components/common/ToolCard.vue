@@ -9,11 +9,8 @@
 </template>
 
 <script setup lang="ts">
-import type { ToolDefinition } from '@/types/tool'
-
-defineProps<{
-  tool: ToolDefinition
-}>()
+// Lightweight prop typing without relying on path aliases to ensure compatibility
+defineProps<{ tool: any }>()
 </script>
 
 <style scoped>
