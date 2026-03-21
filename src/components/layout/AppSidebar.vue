@@ -1,24 +1,38 @@
 <template>
-  <aside class="app-sidebar">
-    <nav class="sidebar-nav">
+  <aside class="w-60 h-full bg-secondary border-r border-border/50 overflow-y-auto py-6">
+    <nav class="flex flex-col gap-6">
       <div
         v-for="(category, index) in toolCategories"
         :key="category.name"
-        class="nav-category"
+        class="animate-slideInLeft"
         :style="{ animationDelay: `${index * 100}ms` }"
       >
-        <div class="category-label">{{ category.name }}</div>
-        <div class="category-items">
+        <!-- Category label -->
+        <div class="px-6 mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+          {{ category.name }}
+        </div>
+
+        <!-- Category items -->
+        <div class="flex flex-col gap-0.5 px-2">
           <router-link
             v-for="tool in category.tools"
             :key="tool.id"
             :to="tool.path"
-            class="nav-item"
-            :class="{ active: isActive(tool.path) }"
+            class="relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground"
+            :class="{ 'bg-primary/10 text-primary': isActive(tool.path) }"
           >
-            <span class="nav-icon">{{ tool.icon }}</span>
-            <span class="nav-name">{{ tool.name }}</span>
-            <div class="nav-indicator"></div>
+            <!-- Active indicator -->
+            <div
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-r bg-primary transition-all duration-250"
+              :class="isActive(tool.path) ? 'h-4' : 'h-0'"
+            />
+            
+            <span class="w-5 text-center text-sm shrink-0">
+              {{ tool.icon }}
+            </span>
+            <span class="text-sm font-medium truncate">
+              {{ tool.name }}
+            </span>
           </router-link>
         </div>
       </div>
@@ -37,97 +51,3 @@ function isActive(path: string): boolean {
   return route.path === path
 }
 </script>
-
-<style scoped>
-.app-sidebar {
-  width: 240px;
-  height: 100%;
-  background: var(--bg-secondary);
-  border-right: 1px solid var(--border-subtle);
-  overflow-y: auto;
-  padding: var(--spacing-lg) 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-}
-
-.nav-category {
-  animation: slideInLeft 0.3s ease-out backwards;
-}
-
-.category-label {
-  padding: 0 var(--spacing-lg);
-  margin-bottom: var(--spacing-sm);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.category-items {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0 var(--spacing-sm);
-}
-
-.nav-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm) var(--spacing-md);
-  color: var(--text-secondary);
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  transition: 
-    background var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.nav-item:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.nav-item.active {
-  background: rgba(99, 102, 241, 0.1);
-  color: var(--text-accent);
-}
-
-.nav-indicator {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: var(--accent-primary);
-  border-radius: 0 2px 2px 0;
-  transition: height var(--transition-base);
-}
-
-.nav-item.active .nav-indicator {
-  height: 16px;
-}
-
-.nav-icon {
-  width: 20px;
-  text-align: center;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.nav-name {
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>
