@@ -166,6 +166,13 @@ function handleClear() {
   error.value = ''
 }
 
+// Re-format output when indent changes
+watch(indent, () => {
+  if (input.value.trim()) {
+    handleFormat()
+  }
+})
+
 // Auto-format on input change (debounced)
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 watch(input, (val) => {
