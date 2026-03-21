@@ -1,10 +1,11 @@
 <template>
-  <div class="home-page">
-    <div class="tools-grid">
+  <div class="py-16 px-24 max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <ToolCard
         v-for="(tool, index) in allTools"
         :key="tool.id"
         :tool="tool"
+        class="animate-fadeIn"
         :style="{ animationDelay: `${index * 80}ms` }"
       />
     </div>
@@ -17,39 +18,3 @@ import ToolCard from '../components/common/ToolCard.vue'
 
 const allTools = tools
 </script>
-
-<style scoped>
-.home-page {
-  padding: var(--spacing-2xl) var(--spacing-3xl);
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--spacing-md);
-}
-
-/* 响应式 */
-@media (max-width: 768px) {
-  .home-page {
-    padding: var(--spacing-xl) var(--spacing-lg);
-  }
-  
-  .tools-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--spacing-md);
-  }
-}
-
-@media (max-width: 480px) {
-  .home-page {
-    padding: var(--spacing-lg) var(--spacing-md);
-  }
-  
-  .tools-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
