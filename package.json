@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vueuse/core": "^14.2.1",
     "class-variance-authority": "*",
     "clsx": "*",
     "lucide-vue-next": "*",
@@ -16,7 +17,8 @@
     "reka-ui": "^2.9.2",
     "tailwind-merge": "*",
     "vue": "^3.4.0",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
