@@ -11,8 +11,8 @@
 - **项目名称：** DevTools 开发者工具箱
 - **项目定位：** 面向开发者的在线工具集合网站
 - **目标用户：** 程序员、运维工程师、数据分析师
-- **技术栈：** Vite 5.x + Vue 3.x + TypeScript 5.x + Vue Router 4.x
-- **UI风格：** 暗色主题（VSCode风格）
+- **技术栈：** Vite 5.x + Vue 3.x + TypeScript 5.x + Vue Router 4.x + Tailwind CSS + shadcn-vue
+- **UI风格：** Vercel/Geist 风格（shadcn-vue + Tailwind CSS）
 - **部署方式：** 纯前端，可部署到 Vercel/GitHub Pages
 
 ### 1.2 核心价值
@@ -131,6 +131,14 @@ devtools/
 │   │   └── tool.ts               # 工具类型定义
 │   ├── App.vue
 │   └── main.ts
+│   ├── lib/
+│   │   └── utils.ts          # 公共工具
+│   ├── assets/
+│   │   └── styles/
+│   │       └── globals.css   # 全局 CSS
+│   └── components/
+│       └── ui/                # 新增 UI 组件目录
+│           └── (占位)
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -149,7 +157,7 @@ devtools/
 | 框架 | Vue 3 | 用户偏好，Composition API |
 | 构建工具 | Vite | 快速开发体验 |
 | 语言 | TypeScript | 类型安全 |
-| UI框架 | 无（CSS Variables） | 轻量，暗色主题 |
+| UI框架 | shadcn-vue + Tailwind CSS | 轻量，暗色主题 |
 | 状态管理 | 按需引入Pinia | 当前无需全局状态 |
 
 ### 5.2 架构决策
