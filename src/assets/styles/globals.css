@@ -1,57 +1,72 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-:root {
-  /* Font tokens for backward compatibility */
+/* Tailwind v4 theme configuration */
+@theme {
+  /* Font families */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Design tokens (HSL) */
-  --background: 0 0% 5%;            /* #0d0d0f */
-  --foreground: 0 0% 91%;             /* #e8e8ed */
-  --card: 0 0% 8.6%;                  /* #16161c */
-  --card-foreground: 0 0% 91%;
-  --popover: 0 0% 8.6%;               /* #16161c-ish */
-  --popover-foreground: 0 0% 91%;
-  --primary: 239 84% 67%;              /* #6366f1 */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 10%;               /* #1a1a20 */
-  --secondary-foreground: 0 0% 91%;
-  --muted: 0 0% 13.3%;                  /* #222228 */
-  --muted-foreground: 0 0% 53%;
-  --accent: 0 0% 13.3%;                
-  --accent-foreground: 0 0% 91%;
-  --destructive: 0 84% 60%;             /* #ef4444 */
-  --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 16.5%;                 /* #2a2a32 */
-  --input: 0 0% 16.5%;
-  --ring: 239 84% 67%;                  /* matches primary */
-  --radius: 0.625rem;
+  /* Colors - shadcn-vue neutral dark theme (high contrast for Vercel style) */
+  --color-background: hsl(0 0% 5%);
+  --color-foreground: hsl(0 0% 91%);
+  --color-card: hsl(0 0% 12%);
+  --color-card-foreground: hsl(0 0% 91%);
+  --color-popover: hsl(0 0% 12%);
+  --color-popover-foreground: hsl(0 0% 91%);
+  --color-primary: hsl(239 84% 67%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(0 0% 14%);
+  --color-secondary-foreground: hsl(0 0% 91%);
+  --color-muted: hsl(0 0% 18%);
+  --color-muted-foreground: hsl(0 0% 60%);
+  --color-accent: hsl(0 0% 18%);
+  --color-accent-foreground: hsl(0 0% 91%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 98%);
+  --color-border: hsl(0 0% 22%);
+  --color-input: hsl(0 0% 22%);
+  --color-ring: hsl(239 84% 67%);
+
+  /* Border radius */
+  --radius-lg: 0.625rem;
+  --radius-md: calc(var(--radius-lg) - 2px);
+  --radius-sm: calc(var(--radius-lg) - 4px);
+
+  /* Animations */
+  --animate-fadeIn: fadeIn 0.4s ease-out backwards;
+  --animate-slideInLeft: slideInLeft 0.3s ease-out backwards;
 }
 
-/* Dark mode adjustments (when .dark is present) - values kept identical for now since the palette is dark by default */
-.dark {
-  /* could override tokens here if needed */
+/* Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Tailwind color aliases to use CSS variables via HSL */
-:root {
-  --bg: hsl(var(--background));
-  --fg: hsl(var(--foreground));
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* Base typography */
+/* Base styles */
 html, body, #app {
   height: 100%;
   font-family: var(--font-sans);
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
-
-/* Utility to ensure components readable on dark bg */
-.text-foreground { color: hsl(var(--foreground)); }
-.bg-card { background-color: hsl(var(--card)); color: hsl(var(--card-foreground)); }

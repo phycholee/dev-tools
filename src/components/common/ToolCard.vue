@@ -1,7 +1,7 @@
 <template>
   <router-link :to="tool.path" class="block group">
     <Card
-      class="relative overflow-hidden transition-all duration-250 hover:shadow-lg hover:-translate-y-1 border-border/50 hover:border-primary/30"
+      class="relative overflow-hidden transition-all duration-250 hover:shadow-lg hover:-translate-y-1 border-border/50 hover:border-primary/30 min-h-[160px]"
       :style="{ '--tool-color': tool.color || '#6366f1' }"
     >
       <!-- Left accent bar -->
@@ -16,17 +16,17 @@
         :style="{ background: `linear-gradient(90deg, transparent 0%, ${tool.color || '#6366f1'} 20%, ${tool.color || '#6366f1'} 80%, transparent 100%)` }"
       />
 
-      <CardContent class="flex items-center gap-5 p-6 pl-8">
+      <CardContent class="flex items-center gap-5 p-8 pl-10">
         <!-- Icon -->
         <div
-          class="flex items-center justify-center w-16 h-16 rounded-xl shrink-0 transition-all duration-250 border group-hover:scale-105"
+          class="flex items-center justify-center w-20 h-20 rounded-xl shrink-0 transition-all duration-250 border group-hover:scale-105"
           :style="{ 
             background: `color-mix(in srgb, ${tool.color || '#6366f1'} 15%, var(--bg-tertiary))`,
             borderColor: `color-mix(in srgb, ${tool.color || '#6366f1'} 20%, transparent)`
           }"
         >
           <span
-            class="text-2xl transition-all duration-250"
+            class="text-3xl transition-all duration-250"
             :style="{ color: tool.color || '#6366f1' }"
           >
             {{ tool.icon }}
