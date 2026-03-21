@@ -26,7 +26,10 @@
       <!-- Output mode: syntax highlighted -->
       <pre
         v-else
-        class="w-full h-full p-4 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed overflow-auto"
+        ref="outputRef"
+        tabindex="0"
+        class="w-full h-full p-4 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed overflow-auto select-text outline-none"
+        @keydown.ctrl.a.prevent="selectAllOutput"
       ><code v-html="highlightedContent"></code></pre>
     </div>
   </div>
@@ -56,6 +59,18 @@ defineEmits<{
 }>()
 
 const textareaRef = ref<HTMLTextAreaElement>()
+const outputRef = ref<HTMLPreElement>()
+
+function selectAllOutput() {
+  if (!outputRef.value) return
+  const range = document.createRange()
+  range.selectNodeContents(outputRef.value)
+  const selection = window.getSelection()
+  if (selection) {
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
+}
 
 const statusVariant = computed(() => {
   if (props.statusType === 'success') return 'default'
