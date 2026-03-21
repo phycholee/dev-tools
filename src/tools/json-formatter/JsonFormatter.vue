@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-[calc(100vh-120px)] p-6 gap-4 max-w-6xl mx-auto">
+  <div class="flex flex-col h-[calc(100vh-120px)] p-4 gap-4 w-full max-w-[1400px] mx-auto">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-3">
