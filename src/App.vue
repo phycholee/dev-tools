@@ -2,10 +2,12 @@
   <AppLayout>
     <router-view />
   </AppLayout>
+  <Toaster />
 </template>
 
 <script setup lang="ts">
 import AppLayout from './components/layout/AppLayout.vue'
+import Toaster from './components/ui/sonner/Sonner.vue'
 // App 根组件
 </script>
 

@@ -92,6 +92,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
 import { Button } from '@/components/ui/button'
 import CodeEditor from './CodeEditor.vue'
 import { formatJson, compressJson, escapeJson, unescapeJson } from './json'
@@ -149,6 +150,7 @@ async function handleCopy() {
   if (!output.value) return
   try {
     await navigator.clipboard.writeText(output.value)
+    toast.success('已复制到剪贴板')
   } catch {
     // Fallback
     const textarea = document.createElement('textarea')
@@ -157,6 +159,7 @@ async function handleCopy() {
     textarea.select()
     document.execCommand('copy')
     document.body.removeChild(textarea)
+    toast.success('已复制到剪贴板')
   }
 }
 
