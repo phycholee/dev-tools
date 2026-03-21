@@ -3,7 +3,7 @@
     <Transition name="toast">
       <div
         v-if="visible"
-        class="fixed top-6 right-6 z-[9999] flex items-center gap-2 px-4 py-3 rounded-lg border border-border bg-card text-foreground text-sm shadow-lg"
+        class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 px-5 py-3 rounded-lg border border-border bg-card text-foreground text-sm shadow-lg"
       >
         <span class="text-green-400">✓</span>
         <span>{{ message }}</span>
@@ -40,11 +40,11 @@ defineExpose({ show })
 
 .toast-enter-from {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translate(-50%, -10px);
 }
 
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translate(-50%, -10px);
 }
 </style>
