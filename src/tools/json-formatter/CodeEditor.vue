@@ -11,7 +11,7 @@
     </div>
 
     <!-- Content area -->
-    <div class="flex-1 relative overflow-auto">
+    <div class="flex-1 relative overflow-hidden">
       <!-- Input mode: textarea -->
       <textarea
         v-if="mode === 'input'"
