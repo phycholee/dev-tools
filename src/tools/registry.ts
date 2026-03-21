@@ -9,7 +9,7 @@ export const tools: ToolDefinition[] = [
     name: 'JSON格式化',
     path: '/json-formatter',
     icon: '{ }',
-    description: 'JSON美化、压缩、转义',
+    description: 'JSON美化、转义',
     category: '数据处理',
     component: () => import('./json-formatter/JsonFormatter.vue'),
     color: '#6366f1' // 靛蓝紫

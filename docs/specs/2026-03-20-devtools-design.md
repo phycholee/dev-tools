@@ -101,7 +101,7 @@ export const tools: ToolDefinition[] = [
     name: 'JSON格式化',
     path: '/json-formatter',
     icon: '{ }',
-    description: 'JSON美化、压缩、转义',
+    description: 'JSON美化、转义',
     category: '数据处理',
     component: () => import('./json-formatter/JsonFormatter.vue')
   },
@@ -145,7 +145,7 @@ export const tools: ToolDefinition[] = [
 │  │  { }                 │  │  ⏱                   │            │
 │  │                      │  │                      │            │
 │  │  JSON格式化           │  │  时间戳转换           │            │
-│  │  JSON美化、压缩、转义  │  │  时间戳与日期互转     │            │
+│  │  JSON美化、转义       │  │  时间戳与日期互转     │            │
 │  │                      │  │                      │            │
 │  └──────────────────────┘  └──────────────────────┘            │
 │                                                                 │
@@ -161,7 +161,7 @@ export const tools: ToolDefinition[] = [
 │  { }                 │  ← 图标区（大号图标，居中）
 │                      │
 │  JSON格式化           │  ← 工具名称（加粗）
-│  JSON美化、压缩、转义  │  ← 工具描述（次要文字色）
+│  JSON美化、压缩、     │  ← 工具描述（次要文字色）
 │                      │
 └──────────────────────┘
 
