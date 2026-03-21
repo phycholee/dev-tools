@@ -1,7 +1,7 @@
 <template>
-  <div class="app-layout">
+  <div class="flex flex-col min-h-screen">
     <AppHeader />
-    <main class="app-main">
+    <main class="flex-1 bg-background">
       <slot />
     </main>
   </div>
@@ -10,16 +10,3 @@
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue'
 </script>
-
-<style scoped>
-.app-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.app-main {
-  flex: 1;
-  background: var(--bg-primary);
-}
-</style>
