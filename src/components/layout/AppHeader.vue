@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between max-w-6xl mx-auto px-8 py-6">
       <div class="flex items-center gap-3 cursor-pointer select-none" @click="goHome">
         <!-- Logo icon -->
-        <div class="flex items-center justify-center text-primary">
+        <div class="flex items-center justify-center" style="color: hsl(239 84% 67%)">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.9"/>
             <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
