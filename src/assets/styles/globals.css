@@ -16,8 +16,8 @@
   --color-card-foreground: hsl(0 0% 91%);
   --color-popover: hsl(0 0% 12%);
   --color-popover-foreground: hsl(0 0% 91%);
-  --color-primary: hsl(239 84% 67%);
-  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary: hsl(0 0% 98%);
+  --color-primary-foreground: hsl(0 0% 9%);
   --color-secondary: hsl(0 0% 14%);
   --color-secondary-foreground: hsl(0 0% 91%);
   --color-muted: hsl(0 0% 18%);
@@ -28,7 +28,7 @@
   --color-destructive-foreground: hsl(0 0% 98%);
   --color-border: hsl(0 0% 22%);
   --color-input: hsl(0 0% 22%);
-  --color-ring: hsl(239 84% 67%);
+  --color-ring: hsl(0 0% 83%);
 
   /* Border radius */
   --radius-lg: 0.625rem;
