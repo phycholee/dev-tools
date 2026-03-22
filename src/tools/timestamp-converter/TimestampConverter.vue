@@ -75,10 +75,7 @@
           </div>
 
           <!-- Fixed height output area -->
-          <div
-            class="p-3 rounded-md h-16 flex items-center"
-            :class="timestampToDateResult?.success ? 'bg-muted' : timestampToDateResult?.error ? 'bg-destructive/10' : 'bg-muted/50'"
-          >
+          <div class="p-3 rounded-md h-16 flex items-center bg-muted">
             <div v-if="timestampToDateResult?.success" class="font-mono text-sm select-all">
               {{ timestampToDateResult.output }}
             </div>
@@ -134,9 +131,7 @@
                 </Button>
               </div>
             </div>
-            <div v-else class="h-full flex items-center text-muted-foreground text-sm">
-              转换结果将显示在这里...
-            </div>
+            <span v-else class="text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
         </div>
       </Card>
