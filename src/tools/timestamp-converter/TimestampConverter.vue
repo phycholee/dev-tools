@@ -17,21 +17,12 @@
           <span class="text-sm text-muted-foreground">当前时间</span>
         </div>
         <div class="font-mono text-lg select-all">{{ currentTimeFormatted }}</div>
-        <div class="flex flex-col sm:flex-row gap-4 font-mono text-sm text-muted-foreground">
-          <div class="flex items-center gap-2">
-            <span>秒:</span>
-            <code class="bg-muted px-2 py-1 rounded select-all">{{ currentTimestamp.seconds }}</code>
-            <Button variant="ghost" size="sm" @click="copyToClipboard(String(currentTimestamp.seconds))">
-              复制
-            </Button>
-          </div>
-          <div class="flex items-center gap-2">
-            <span>毫秒:</span>
-            <code class="bg-muted px-2 py-1 rounded select-all">{{ currentTimestamp.milliseconds }}</code>
-            <Button variant="ghost" size="sm" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
-              复制
-            </Button>
-          </div>
+        <div class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
+          <span>毫秒:</span>
+          <code class="bg-muted px-2 py-1 rounded select-all">{{ currentTimestamp.milliseconds }}</code>
+          <Button variant="ghost" size="sm" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
+            复制
+          </Button>
         </div>
       </div>
     </Card>
@@ -118,21 +109,12 @@
 
           <!-- Fixed height output area -->
           <div class="p-3 rounded-md h-16 flex items-center bg-muted">
-            <div v-if="dateToTimestampResult" class="w-full flex flex-col gap-1 font-mono text-sm">
-              <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">秒:</span>
-                <span class="select-all">{{ dateToTimestampResult.seconds }}</span>
-                <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.seconds))">
-                  复制
-                </Button>
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">毫秒:</span>
-                <span class="select-all">{{ dateToTimestampResult.milliseconds }}</span>
-                <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
-                  复制
-                </Button>
-              </div>
+            <div v-if="dateToTimestampResult" class="w-full flex items-center justify-between font-mono text-sm">
+              <span class="text-muted-foreground">毫秒:</span>
+              <span class="select-all">{{ dateToTimestampResult.milliseconds }}</span>
+              <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
+                复制
+              </Button>
             </div>
             <span v-else class="w-full text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
