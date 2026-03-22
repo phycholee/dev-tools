@@ -73,8 +73,11 @@
 
           <!-- Fixed height output area -->
           <div class="p-3 rounded-md h-16 flex items-center bg-muted">
-            <div v-if="timestampToDateResult?.success" class="w-full font-mono text-sm select-all">
-              {{ timestampToDateResult.output }}
+            <div v-if="timestampToDateResult?.success" class="w-full flex items-center justify-between font-mono text-sm">
+              <span class="select-all">{{ timestampToDateResult.output }}</span>
+              <Button variant="ghost" size="sm" class="hover:bg-background" @click="copyToClipboard(timestampToDateResult.output)">
+                复制
+              </Button>
             </div>
             <div v-else-if="timestampToDateResult?.error" class="w-full text-destructive text-sm flex items-center gap-2">
               <span>⚠</span>
