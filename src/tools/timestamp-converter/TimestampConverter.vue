@@ -83,7 +83,7 @@
               <span>⚠</span>
               <span>{{ timestampToDateResult.error }}</span>
             </div>
-            <span v-else class="w-full text-center text-muted-foreground text-sm">转换结果将显示在这里...</span>
+            <span v-else class="w-full text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
         </div>
       </Card>
@@ -131,7 +131,7 @@
                 </Button>
               </div>
             </div>
-            <span v-else class="w-full text-center text-muted-foreground text-sm">转换结果将显示在这里...</span>
+            <span v-else class="w-full text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
         </div>
       </Card>
@@ -189,7 +189,7 @@
             v-model="batchOutput"
             readonly
             placeholder="转换结果将显示在这里..."
-            class="h-32 px-3 py-2 bg-muted border border-input rounded-md text-sm font-mono resize-none"
+            class="h-16 px-3 py-2 bg-muted border border-input rounded-md text-sm font-mono resize-none placeholder:text-muted-foreground"
           />
         </div>
       </div>
