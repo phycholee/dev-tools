@@ -1,6 +1,6 @@
 # DevTools 项目 - AI 长期记忆
 
-> 最后更新：2026-03-21（修复main.ts router注册问题）  
+> 最后更新：2026-03-22  
 > 用途：记录任务目标、历史步骤、中间结果、关键决策，支持迭代和中断恢复
 
 ---
@@ -92,15 +92,45 @@ a53812a fix: 升级vue-tsc到2.x解决Node 24兼容性问题
 - [x] 日期→时间戳转换
 - [x] 时区选择（11个常用时区）
 - [x] 批量转换
+- [x] 格式化时间显示（yyyy-MM-dd HH:mm:ss）
+- [x] 日期输入格式验证（红色边框提示）
+- [x] 安装shadcn Select组件替换原生select
+- [x] 统一UI样式（输出框、按钮、标题）
 
 **Git提交：**
 ```
-5e19201 fix(timestamp): fix unused timezone parameter in createDateFromComponents
-a29b8ab feat(timestamp): implement full timestamp converter page with all features
-0bacb20 feat(timestamp): add timestamp utility functions (convert, format, batch)
+0bacb20 feat(timestamp): add timestamp utility functions
+a29b8ab feat(timestamp): implement full timestamp converter page
+5e19201 fix(timestamp): fix unused timezone parameter
 ```
 
-### 3.4 阶段四：优化和部署 ⏳ 待开始
+### 3.4 阶段四：UI优化和bug修复 ✅ 已完成 (2026-03-22)
+
+**完成内容：**
+- [x] shadcn主题修复（primary颜色改为白色，logo保留蓝紫色）
+- [x] 按钮点击动画（active:translate-y-px向下移动效果）
+- [x] 安装shadcn Select组件，替换原生select元素
+- [x] 修复边框白色亮边问题（@layer base设置默认border-color）
+- [x] 统一时间戳转换工具UI样式
+
+**关键问题和解决方案：**
+| 问题 | 解决方案 |
+|------|----------|
+| primary颜色导致logo变白 | logo使用inline style指定蓝紫色 |
+| 原生select样式不一致 | 安装shadcn Select组件 |
+| 边框有白色亮边 | 添加@layer base规则设置border-color |
+| 按钮无点击反馈 | 添加active:translate-y-px动画 |
+
+**Git提交：**
+```
+8e59f91 fix(style): set default border color via base layer rule
+e28d3ec feat(ui): install shadcn Select, replace native select elements
+df6207a fix(ui): change button active effect to translate-y-px
+5af5f72 fix(style): change primary to white, match standard shadcn dark theme
+952d59b fix(ui): restore logo color to blue/purple with inline style
+```
+
+### 3.5 阶段五：优化和部署 ⏳ 待开始
 
 **计划内容：**
 - [ ] 移动端适配
@@ -183,6 +213,9 @@ devtools/
 | vue-tsc 1.x 不兼容 Node 24 | 升级到 vue-tsc ^2.0.0 | 2026-03-20 |
 | TypeScript路径别名@在类型导入中不生效 | 改用相对路径 | 2026-03-20 |
 | main.ts缺少router导入导致router-link组件无法解析 | 添加`import router from './router'`和`app.use(router)` | 2026-03-20 |
+| shadcn primary颜色（白色）导致logo变白 | logo使用inline style `color: hsl(239 84% 67%)` | 2026-03-22 |
+| 原生select样式与shadcn不一致 | 安装shadcn Select组件替换 | 2026-03-22 |
+| Card组件边框使用文字颜色而非border变量 | 添加`@layer base { * { border-color: var(--color-border) } }` | 2026-03-22 |
 
 ---
 
@@ -257,15 +290,15 @@ npm run preview  # 预览构建结果
 ## 九、待办事项
 
 ### 高优先级
-- [ ] 实现JSON格式化工具（阶段二）
-- [ ] 实现时间戳转换工具（阶段三）
+- [ ] 部署到 Vercel / GitHub Pages
 
 ### 中优先级
 - [ ] 移动端响应式优化
 - [ ] 添加工具搜索功能
+- [ ] 性能优化（懒加载、代码分割）
 
 ### 低优先级
-- [ ] 添加更多工具（Base64、URL编解码等）
+- [ ] 添加更多工具（Base64、URL编解码、正则测试等）
 - [ ] PWA离线支持
 
 ---
