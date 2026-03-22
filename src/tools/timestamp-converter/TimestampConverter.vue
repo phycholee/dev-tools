@@ -164,7 +164,9 @@
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex flex-col gap-2">
-          <label class="text-sm text-muted-foreground">输入 (每行一个时间戳)</label>
+          <div class="flex items-center justify-between h-8">
+            <label class="text-sm text-muted-foreground">输入 (每行一个时间戳)</label>
+          </div>
           <textarea
             v-model="batchInput"
             placeholder="1710912345&#10;1710912346&#10;1710912347"
@@ -172,7 +174,7 @@
           />
         </div>
         <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between h-8">
             <label class="text-sm text-muted-foreground">输出</label>
             <Button
               variant="ghost"
