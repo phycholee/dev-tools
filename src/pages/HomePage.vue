@@ -1,5 +1,5 @@
 <template>
-  <div class="py-16 px-24 max-w-6xl mx-auto">
+  <div class="pt-8 pb-16 px-8 max-w-6xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <ToolCard
         v-for="(tool, index) in allTools"
