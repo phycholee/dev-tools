@@ -189,7 +189,7 @@
             v-model="batchOutput"
             readonly
             placeholder="转换结果将显示在这里..."
-            class="h-16 px-3 py-2 bg-muted border border-input rounded-md text-sm font-mono resize-none placeholder:text-muted-foreground"
+            class="h-32 px-3 py-2 bg-muted border border-input rounded-md text-sm font-mono resize-none placeholder:text-muted-foreground"
           />
         </div>
       </div>
