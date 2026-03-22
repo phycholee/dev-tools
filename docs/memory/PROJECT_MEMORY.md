@@ -84,14 +84,21 @@ a53812a fix: 升级vue-tsc到2.x解决Node 24兼容性问题
 - [x] 缩进切换（2/4空格）
 - [x] 自动格式化（500ms debounce）
 
-### 3.3 阶段三：时间戳转换工具 ⏳ 待开始
+### 3.3 阶段三：时间戳转换工具 ✅ 已完成 (2026-03-21)
 
-**计划内容：**
-- [ ] 当前时间戳实时显示
-- [ ] 时间戳→日期转换
-- [ ] 日期→时间戳转换
-- [ ] 时区选择
-- [ ] 批量转换
+**完成内容：**
+- [x] 当前时间戳实时显示（秒/毫秒，每秒更新）
+- [x] 时间戳→日期转换（支持秒/毫秒自动检测）
+- [x] 日期→时间戳转换
+- [x] 时区选择（11个常用时区）
+- [x] 批量转换
+
+**Git提交：**
+```
+5e19201 fix(timestamp): fix unused timezone parameter in createDateFromComponents
+a29b8ab feat(timestamp): implement full timestamp converter page with all features
+0bacb20 feat(timestamp): add timestamp utility functions (convert, format, batch)
+```
 
 ### 3.4 阶段四：优化和部署 ⏳ 待开始
 
