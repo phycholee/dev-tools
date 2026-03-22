@@ -76,7 +76,7 @@
 
           <!-- Fixed height output area -->
           <div
-            class="p-3 rounded-md h-14 flex items-center"
+            class="p-3 rounded-md h-16 flex items-center"
             :class="timestampToDateResult?.success ? 'bg-muted' : timestampToDateResult?.error ? 'bg-destructive/10' : 'bg-muted/50'"
           >
             <div v-if="timestampToDateResult?.success" class="font-mono text-sm select-all">
@@ -86,7 +86,7 @@
               <span>⚠</span>
               <span>{{ timestampToDateResult.error }}</span>
             </div>
-            <span v-else class="text-muted-foreground text-sm">结果将显示在这里...</span>
+            <span v-else class="text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
         </div>
       </Card>
@@ -117,8 +117,8 @@
           </div>
 
           <!-- Fixed height output area -->
-          <div class="p-3 bg-muted rounded-md h-20">
-            <div v-if="dateToTimestampResult" class="flex flex-col gap-2 font-mono text-sm h-full">
+          <div class="p-3 bg-muted rounded-md h-16">
+            <div v-if="dateToTimestampResult" class="flex flex-col gap-1 font-mono text-sm h-full justify-center">
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">秒:</span>
                 <code class="select-all">{{ dateToTimestampResult.seconds }}</code>
@@ -135,7 +135,7 @@
               </div>
             </div>
             <div v-else class="h-full flex items-center text-muted-foreground text-sm">
-              选择日期时间后显示时间戳...
+              转换结果将显示在这里...
             </div>
           </div>
         </div>
