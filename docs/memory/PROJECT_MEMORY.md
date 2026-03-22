@@ -1,6 +1,6 @@
 # DevTools 项目 - AI 长期记忆
 
-> 最后更新：2026-03-22  
+> 最后更新：2026-03-22 下午
 > 用途：记录任务目标、历史步骤、中间结果、关键决策，支持迭代和中断恢复
 
 ---
@@ -112,6 +112,8 @@ a29b8ab feat(timestamp): implement full timestamp converter page
 - [x] 安装shadcn Select组件，替换原生select元素
 - [x] 修复边框白色亮边问题（@layer base设置默认border-color）
 - [x] 统一时间戳转换工具UI样式
+- [x] AppHeader重构为shadcn风格hero（首页1/3页面标题区，工具页仅navbar）
+- [x] 修复页面导航时navbar位移问题（滚动条+DOM结构）
 
 **关键问题和解决方案：**
 | 问题 | 解决方案 |
@@ -120,6 +122,7 @@ a29b8ab feat(timestamp): implement full timestamp converter page
 | 原生select样式不一致 | 安装shadcn Select组件 |
 | 边框有白色亮边 | 添加@layer base规则设置border-color |
 | 按钮无点击反馈 | 添加active:translate-y-px动画 |
+| 导航到时间戳页面时navbar位移 | 见下方详细记录 |
 
 **Git提交：**
 ```
@@ -128,6 +131,9 @@ e28d3ec feat(ui): install shadcn Select, replace native select elements
 df6207a fix(ui): change button active effect to translate-y-px
 5af5f72 fix(style): change primary to white, match standard shadcn dark theme
 952d59b fix(ui): restore logo color to blue/purple with inline style
+55376c2 refactor(header): shadcn-style hero section on homepage, compact header on tool pages
+3191353 fix(header): move hero to HomePage to prevent navbar shift on navigation
+09e6fe4 fix(style): force scrollbar always visible to prevent layout shift on navigation
 ```
 
 ### 3.5 阶段五：优化和部署 ⏳ 待开始
@@ -151,13 +157,13 @@ devtools/
 │   │       └── main.css          # 全局样式（暗色主题变量）
 │   ├── components/
 │   │   ├── layout/
-│   │   │   ├── AppHeader.vue     # 顶部导航（logo + 版本号）
+│   │   │   ├── AppHeader.vue     # 顶部导航栏（logo + badge，纯 navbar，无条件逻辑）
 │   │   │   ├── AppSidebar.vue    # 工具列表侧边栏
 │   │   │   └── AppLayout.vue     # 布局容器
 │   │   └── common/
 │   │       └── ToolCard.vue      # 工具卡片组件
 │   ├── pages/
-│   │   └── HomePage.vue          # 主页面 - 工具列表
+│   │   └── HomePage.vue          # 主页面（含 hero section + 工具卡片列表）
 │   ├── tools/
 │   │   ├── registry.ts           # 工具注册表
 │   │   ├── json-formatter/
@@ -216,10 +222,28 @@ devtools/
 | shadcn primary颜色（白色）导致logo变白 | logo使用inline style `color: hsl(239 84% 67%)` | 2026-03-22 |
 | 原生select样式与shadcn不一致 | 安装shadcn Select组件替换 | 2026-03-22 |
 | Card组件边框使用文字颜色而非border变量 | 添加`@layer base { * { border-color: var(--color-border) } }` | 2026-03-22 |
+| 首页导航到工具页时navbar（logo+badge）位移 | 两个原因叠加：① hero section 放在 AppHeader 中用 `v-if` 条件渲染，DOM 增删触发 reflow ② Timestamp 页面内容超出视口出现滚动条，JSON 页面用固定高度不出现，滚动条显隐导致页面宽度变化 ~15px | 2026-03-22 |
 
----
+### 5.4 Navbar 导航位移问题详解 (2026-03-22)
 
-## 六、关键文件说明
+**现象：** 从首页点击工具卡片（如时间戳）进入工具页时，顶部 navbar 的 logo 和版本号会短暂位移。JSON 页面不出现此问题。
+
+**根因（两层叠加）：**
+
+1. **DOM 结构不稳定：** 最初 hero section 放在 `AppHeader.vue` 中，用 `v-if="isHome"` 条件渲染。导航时 Vue 增删 DOM 节点触发 reflow，影响 sticky navbar 的渲染。
+
+2. **滚动条显隐：** Timestamp 页面内容多（当前时间 + 转换面板 + 批量转换），用 `min-h-[calc(100vh-120px)]`，内容超出视口出现滚动条。JSON 页面用固定 `h-[calc(100vh-120px)]`，内容不超视口无滚动条。滚动条出现/消失导致页面可用宽度变化约 15px，navbar 内部元素随之位移。
+
+**解决方案（两步）：**
+
+1. **AppHeader 精简为纯 navbar：** hero section 移到 `HomePage.vue` 内部渲染，AppHeader 不再有任何条件逻辑，所有页面 DOM 结构完全相同 → `3191353`
+
+2. **强制滚动条始终存在：** `globals.css` 给 `html, body, #app` 加 `overflow-y: scroll`，内容不超时显示为灰色占位条，页面宽度恒定 → `09e6fe4`
+
+**经验教训：**
+- sticky 元素所在的容器应避免 v-if 条件渲染，改用 CSS 控制显示/隐藏
+- 多页面应用中，应统一滚动条行为（始终显示或始终隐藏），避免导航时布局抖动
+- 固定高度（`h-`）vs 最小高度（`min-h-`）会影响滚动条出现与否，需全局考虑
 
 ### 6.1 工具注册机制
 **文件：** `src/tools/registry.ts`
