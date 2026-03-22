@@ -118,7 +118,6 @@
           <!-- Fixed height output area -->
           <div class="p-3 rounded-md h-16 flex items-center bg-muted">
             <div v-if="dateToTimestampResult" class="w-full flex items-center justify-between font-mono text-sm">
-              <span class="text-muted-foreground">毫秒:</span>
               <span class="select-all">{{ dateToTimestampResult.milliseconds }}</span>
               <Button variant="ghost" size="sm" class="hover:bg-background" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
                 复制
