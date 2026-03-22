@@ -98,7 +98,8 @@
             v-model="dateInput"
             type="text"
             placeholder="输入日期，格式: yyyy-MM-dd HH:mm:ss"
-            class="px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+            class="px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+            :class="dateInputError ? 'border-destructive focus:ring-destructive' : 'border-input focus:ring-ring'"
             @input="convertDateToTimestamp"
           />
           
@@ -257,6 +258,7 @@ const timestampToDateResult = ref<TimestampResult | null>(null)
 
 // Date to Timestamp
 const dateInput = ref('')
+const dateInputError = ref(false)
 const timezoneForDate = ref('Asia/Shanghai')
 const dateToTimestampResult = ref<{ seconds: number; milliseconds: number } | null>(null)
 
@@ -320,21 +322,33 @@ function convertTimestampToDate() {
 function convertDateToTimestamp() {
   if (!dateInput.value) {
     dateToTimestampResult.value = null
+    dateInputError.value = false
+    return
+  }
+
+  // Validate format: yyyy-MM-dd HH:mm:ss
+  const formatRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+  if (!formatRegex.test(dateInput.value)) {
+    dateInputError.value = true
+    dateToTimestampResult.value = null
     return
   }
 
   try {
     const date = new Date(dateInput.value)
     if (isNaN(date.getTime())) {
+      dateInputError.value = true
       dateToTimestampResult.value = null
       return
     }
 
+    dateInputError.value = false
     dateToTimestampResult.value = {
       seconds: dateToTimestamp(date, 'seconds'),
       milliseconds: dateToTimestamp(date, 'milliseconds')
     }
   } catch {
+    dateInputError.value = true
     dateToTimestampResult.value = null
   }
 }
