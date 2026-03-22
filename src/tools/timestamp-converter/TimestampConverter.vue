@@ -16,7 +16,12 @@
           <Badge variant="outline" class="text-xs">实时</Badge>
           <span class="text-sm text-muted-foreground">当前时间</span>
         </div>
-        <div class="font-mono text-lg select-all">{{ currentTimeFormatted }}</div>
+        <div class="flex items-center gap-3">
+          <span class="font-mono text-lg select-all">{{ currentTimeFormatted }}</span>
+          <Button variant="ghost" size="sm" @click="copyToClipboard(currentTimeFormatted)">
+            复制
+          </Button>
+        </div>
         <div class="flex items-center gap-2 font-mono text-sm text-muted-foreground">
           <span>毫秒:</span>
           <code class="bg-muted px-2 py-1 rounded select-all">{{ currentTimestamp.milliseconds }}</code>
