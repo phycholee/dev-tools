@@ -26,8 +26,8 @@
   --color-accent-foreground: hsl(0 0% 91%);
   --color-destructive: hsl(0 84% 60%);
   --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(0 0% 22%);
-  --color-input: hsl(0 0% 22%);
+  --color-border: hsl(0 0% 15%);
+  --color-input: hsl(0 0% 15%);
   --color-ring: hsl(0 0% 83%);
 
   /* Border radius */
