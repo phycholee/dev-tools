@@ -11,21 +11,22 @@
 
     <!-- Current Timestamp Display -->
     <Card class="p-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col gap-3">
         <div class="flex items-center gap-2">
           <Badge variant="outline" class="text-xs">实时</Badge>
-          <span class="text-sm text-muted-foreground">当前时间戳</span>
+          <span class="text-sm text-muted-foreground">当前时间</span>
         </div>
-        <div class="flex flex-col sm:flex-row gap-4 font-mono text-sm">
+        <div class="font-mono text-lg select-all">{{ currentTimeFormatted }}</div>
+        <div class="flex flex-col sm:flex-row gap-4 font-mono text-sm text-muted-foreground">
           <div class="flex items-center gap-2">
-            <span class="text-muted-foreground">秒:</span>
+            <span>秒:</span>
             <code class="bg-muted px-2 py-1 rounded select-all">{{ currentTimestamp.seconds }}</code>
             <Button variant="ghost" size="sm" @click="copyToClipboard(String(currentTimestamp.seconds))">
               复制
             </Button>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-muted-foreground">毫秒:</span>
+            <span>毫秒:</span>
             <code class="bg-muted px-2 py-1 rounded select-all">{{ currentTimestamp.milliseconds }}</code>
             <Button variant="ghost" size="sm" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
               复制
@@ -218,7 +219,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, inject } from 'vue'
+import { ref, computed, onMounted, onUnmounted, inject } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -236,6 +237,11 @@ const timezones = TIMEZONES
 
 // Current timestamp (real-time)
 const currentTimestamp = ref({ seconds: 0, milliseconds: 0 })
+const currentTimeFormatted = computed(() => {
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+})
 let updateInterval: ReturnType<typeof setInterval> | null = null
 
 // Timestamp to Date
