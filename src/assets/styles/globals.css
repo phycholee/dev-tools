@@ -64,6 +64,12 @@
 }
 
 /* Base styles */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+}
+
 html, body, #app {
   height: 100%;
   font-family: var(--font-sans);
