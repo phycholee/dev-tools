@@ -11,26 +11,24 @@
 
     <!-- Current Timestamp Display -->
     <Card class="p-4">
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center gap-2">
-          <Badge variant="outline" class="text-xs">实时</Badge>
-          <span class="text-sm text-muted-foreground">当前时间</span>
+      <div class="flex items-center gap-2 mb-4">
+        <h2 class="text-lg font-semibold text-foreground">当前时间</h2>
+        <Badge variant="outline" class="text-xs">实时</Badge>
+      </div>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-4 font-mono text-sm">
+          <span class="text-muted-foreground w-10">时间</span>
+          <span class="select-all">{{ currentTimeFormatted }}</span>
+          <Button variant="ghost" size="sm" class="ml-1" @click="copyToClipboard(currentTimeFormatted)">
+            复制
+          </Button>
         </div>
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center gap-4 font-mono text-sm">
-            <span class="text-muted-foreground w-10">时间</span>
-            <span class="select-all">{{ currentTimeFormatted }}</span>
-            <Button variant="ghost" size="sm" class="ml-1" @click="copyToClipboard(currentTimeFormatted)">
-              复制
-            </Button>
-          </div>
-          <div class="flex items-center gap-4 font-mono text-sm">
-            <span class="text-muted-foreground w-10">毫秒</span>
-            <span class="select-all">{{ currentTimestamp.milliseconds }}</span>
-            <Button variant="ghost" size="sm" class="ml-1" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
-              复制
-            </Button>
-          </div>
+        <div class="flex items-center gap-4 font-mono text-sm">
+          <span class="text-muted-foreground w-10">毫秒</span>
+          <span class="select-all">{{ currentTimestamp.milliseconds }}</span>
+          <Button variant="ghost" size="sm" class="ml-1" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
+            复制
+          </Button>
         </div>
       </div>
     </Card>
