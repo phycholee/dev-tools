@@ -35,109 +35,112 @@
       </div>
     </Card>
 
-    <!-- Timestamp to Date -->
-    <Card class="p-4">
-      <h2 class="text-lg font-semibold text-foreground mb-4">时间戳 → 日期</h2>
-      
-      <div class="flex flex-col gap-3">
-        <div class="flex gap-2">
+    <!-- Conversion Panels (side by side) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Timestamp to Date -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">时间戳 → 日期</h2>
+        
+        <div class="flex flex-col gap-3">
+          <div class="flex gap-2">
+            <input
+              v-model="timestampInput"
+              type="text"
+              placeholder="输入时间戳，例如: 1710912345"
+              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+              @input="convertTimestampToDate"
+            />
+            <select
+              v-model="timestampUnit"
+              class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              @change="convertTimestampToDate"
+            >
+              <option value="auto">自动检测</option>
+              <option value="seconds">秒</option>
+              <option value="milliseconds">毫秒</option>
+            </select>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground">时区:</span>
+            <select
+              v-model="timezoneForTimestamp"
+              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              @change="convertTimestampToDate"
+            >
+              <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
+                {{ tz.label }} ({{ tz.offset }})
+              </option>
+            </select>
+          </div>
+
+          <!-- Fixed height output area -->
+          <div
+            class="p-3 rounded-md h-14 flex items-center"
+            :class="timestampToDateResult?.success ? 'bg-muted' : timestampToDateResult?.error ? 'bg-destructive/10' : 'bg-muted/50'"
+          >
+            <div v-if="timestampToDateResult?.success" class="font-mono text-sm select-all">
+              {{ timestampToDateResult.output }}
+            </div>
+            <div v-else-if="timestampToDateResult?.error" class="text-destructive text-sm flex items-center gap-2">
+              <span>⚠</span>
+              <span>{{ timestampToDateResult.error }}</span>
+            </div>
+            <span v-else class="text-muted-foreground text-sm">结果将显示在这里...</span>
+          </div>
+        </div>
+      </Card>
+
+      <!-- Date to Timestamp -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">日期 → 时间戳</h2>
+        
+        <div class="flex flex-col gap-3">
           <input
-            v-model="timestampInput"
-            type="text"
-            placeholder="输入时间戳，例如: 1710912345"
-            class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
-            @input="convertTimestampToDate"
-          />
-          <select
-            v-model="timestampUnit"
+            v-model="dateInput"
+            type="datetime-local"
             class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            @change="convertTimestampToDate"
-          >
-            <option value="auto">自动检测</option>
-            <option value="seconds">秒</option>
-            <option value="milliseconds">毫秒</option>
-          </select>
-        </div>
-        
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-muted-foreground">时区:</span>
-          <select
-            v-model="timezoneForTimestamp"
-            class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            @change="convertTimestampToDate"
-          >
-            <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
-              {{ tz.label }} ({{ tz.offset }})
-            </option>
-          </select>
-        </div>
-
-        <!-- Fixed height output area -->
-        <div
-          class="p-3 rounded-md h-14 flex items-center"
-          :class="timestampToDateResult?.success ? 'bg-muted' : timestampToDateResult?.error ? 'bg-destructive/10' : 'bg-muted/50'"
-        >
-          <div v-if="timestampToDateResult?.success" class="font-mono text-sm select-all">
-            {{ timestampToDateResult.output }}
+            @input="convertDateToTimestamp"
+          />
+          
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground">时区:</span>
+            <select
+              v-model="timezoneForDate"
+              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              @change="convertDateToTimestamp"
+            >
+              <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
+                {{ tz.label }} ({{ tz.offset }})
+              </option>
+            </select>
           </div>
-          <div v-else-if="timestampToDateResult?.error" class="text-destructive text-sm flex items-center gap-2">
-            <span>⚠</span>
-            <span>{{ timestampToDateResult.error }}</span>
-          </div>
-          <span v-else class="text-muted-foreground text-sm">结果将显示在这里...</span>
-        </div>
-      </div>
-    </Card>
 
-    <!-- Date to Timestamp -->
-    <Card class="p-4">
-      <h2 class="text-lg font-semibold text-foreground mb-4">日期 → 时间戳</h2>
-      
-      <div class="flex flex-col gap-3">
-        <input
-          v-model="dateInput"
-          type="datetime-local"
-          class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          @input="convertDateToTimestamp"
-        />
-        
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-muted-foreground">时区:</span>
-          <select
-            v-model="timezoneForDate"
-            class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            @change="convertDateToTimestamp"
-          >
-            <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
-              {{ tz.label }} ({{ tz.offset }})
-            </option>
-          </select>
-        </div>
-
-        <!-- Fixed height output area -->
-        <div class="p-3 bg-muted rounded-md h-20">
-          <div v-if="dateToTimestampResult" class="flex flex-col gap-2 font-mono text-sm h-full">
-            <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">秒:</span>
-              <code class="select-all">{{ dateToTimestampResult.seconds }}</code>
-              <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.seconds))">
-                复制
-              </Button>
+          <!-- Fixed height output area -->
+          <div class="p-3 bg-muted rounded-md h-20">
+            <div v-if="dateToTimestampResult" class="flex flex-col gap-2 font-mono text-sm h-full">
+              <div class="flex items-center justify-between">
+                <span class="text-muted-foreground">秒:</span>
+                <code class="select-all">{{ dateToTimestampResult.seconds }}</code>
+                <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.seconds))">
+                  复制
+                </Button>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-muted-foreground">毫秒:</span>
+                <code class="select-all">{{ dateToTimestampResult.milliseconds }}</code>
+                <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
+                  复制
+                </Button>
+              </div>
             </div>
-            <div class="flex items-center justify-between">
-              <span class="text-muted-foreground">毫秒:</span>
-              <code class="select-all">{{ dateToTimestampResult.milliseconds }}</code>
-              <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
-                复制
-              </Button>
+            <div v-else class="h-full flex items-center text-muted-foreground text-sm">
+              选择日期时间后显示时间戳...
             </div>
           </div>
-          <div v-else class="h-full flex items-center text-muted-foreground text-sm">
-            选择日期时间后显示时间戳...
-          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
 
     <!-- Batch Conversion -->
     <Card class="p-4">
