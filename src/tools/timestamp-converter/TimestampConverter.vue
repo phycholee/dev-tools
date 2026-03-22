@@ -96,8 +96,9 @@
         <div class="flex flex-col gap-3">
           <input
             v-model="dateInput"
-            type="datetime-local"
-            class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            type="text"
+            placeholder="输入日期，格式: yyyy-MM-dd HH:mm:ss"
+            class="px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             @input="convertDateToTimestamp"
           />
           
@@ -219,7 +220,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, inject } from 'vue'
+import { ref, onMounted, onUnmounted, inject } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -237,11 +238,15 @@ const timezones = TIMEZONES
 
 // Current timestamp (real-time)
 const currentTimestamp = ref({ seconds: 0, milliseconds: 0 })
-const currentTimeFormatted = computed(() => {
+const currentTimeFormatted = ref('')
+
+function updateCurrentTime() {
   const now = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
-})
+  currentTimestamp.value = getCurrentTimestamps()
+  currentTimeFormatted.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+}
+
 let updateInterval: ReturnType<typeof setInterval> | null = null
 
 // Timestamp to Date
@@ -264,10 +269,8 @@ const batchUnit = ref<'auto' | 'seconds' | 'milliseconds'>('auto')
 
 // Initialize current timestamp and start updating
 onMounted(() => {
-  currentTimestamp.value = getCurrentTimestamps()
-  updateInterval = setInterval(() => {
-    currentTimestamp.value = getCurrentTimestamps()
-  }, 1000)
+  updateCurrentTime()
+  updateInterval = setInterval(updateCurrentTime, 1000)
 })
 
 onUnmounted(() => {
