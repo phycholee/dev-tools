@@ -75,6 +75,7 @@ html, body, #app {
   font-family: var(--font-sans);
   background-color: var(--color-background);
   color: var(--color-foreground);
+  overflow-y: scroll;
 }
 
 /* JSON syntax highlighting colors */
