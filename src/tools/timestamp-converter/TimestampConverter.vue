@@ -17,15 +17,17 @@
           <span class="text-sm text-muted-foreground">当前时间</span>
         </div>
         <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between font-mono text-sm">
+          <div class="flex items-center gap-4 font-mono text-sm">
+            <span class="text-muted-foreground w-10">时间</span>
             <span class="select-all">{{ currentTimeFormatted }}</span>
-            <Button variant="ghost" size="sm" @click="copyToClipboard(currentTimeFormatted)">
+            <Button variant="ghost" size="sm" class="ml-1" @click="copyToClipboard(currentTimeFormatted)">
               复制
             </Button>
           </div>
-          <div class="flex items-center justify-between font-mono text-sm">
+          <div class="flex items-center gap-4 font-mono text-sm">
+            <span class="text-muted-foreground w-10">毫秒</span>
             <span class="select-all">{{ currentTimestamp.milliseconds }}</span>
-            <Button variant="ghost" size="sm" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
+            <Button variant="ghost" size="sm" class="ml-1" @click="copyToClipboard(String(currentTimestamp.milliseconds))">
               复制
             </Button>
           </div>
