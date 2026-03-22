@@ -76,14 +76,14 @@
 
           <!-- Fixed height output area -->
           <div class="p-3 rounded-md h-16 flex items-center bg-muted">
-            <div v-if="timestampToDateResult?.success" class="font-mono text-sm select-all">
+            <div v-if="timestampToDateResult?.success" class="w-full font-mono text-sm select-all">
               {{ timestampToDateResult.output }}
             </div>
-            <div v-else-if="timestampToDateResult?.error" class="text-destructive text-sm flex items-center gap-2">
+            <div v-else-if="timestampToDateResult?.error" class="w-full text-destructive text-sm flex items-center gap-2">
               <span>⚠</span>
               <span>{{ timestampToDateResult.error }}</span>
             </div>
-            <span v-else class="text-muted-foreground text-sm">转换结果将显示在这里...</span>
+            <span v-else class="w-full text-center text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
         </div>
       </Card>
@@ -114,24 +114,24 @@
           </div>
 
           <!-- Fixed height output area -->
-          <div class="p-3 bg-muted rounded-md h-16">
-            <div v-if="dateToTimestampResult" class="flex flex-col gap-1 font-mono text-sm h-full justify-center">
+          <div class="p-3 rounded-md h-16 flex items-center bg-muted">
+            <div v-if="dateToTimestampResult" class="w-full flex flex-col gap-1 font-mono text-sm">
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">秒:</span>
-                <code class="select-all">{{ dateToTimestampResult.seconds }}</code>
+                <span class="select-all">{{ dateToTimestampResult.seconds }}</span>
                 <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.seconds))">
                   复制
                 </Button>
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">毫秒:</span>
-                <code class="select-all">{{ dateToTimestampResult.milliseconds }}</code>
+                <span class="select-all">{{ dateToTimestampResult.milliseconds }}</span>
                 <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
                   复制
                 </Button>
               </div>
             </div>
-            <span v-else class="text-muted-foreground text-sm">转换结果将显示在这里...</span>
+            <span v-else class="w-full text-center text-muted-foreground text-sm">转换结果将显示在这里...</span>
           </div>
         </div>
       </Card>
