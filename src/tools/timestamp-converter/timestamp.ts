@@ -80,6 +80,7 @@ export function timestampToDate(timestamp: number, unit?: 'seconds' | 'milliseco
 
 /**
  * Convert timestamp to formatted date string in specified timezone
+ * Format: yyyy-MM-dd HH:mm:ss
  */
 export function timestampToDateString(
   timestamp: number,
@@ -98,7 +99,7 @@ export function timestampToDateString(
       }
     }
 
-    const formatter = new Intl.DateTimeFormat('zh-CN', {
+    const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: timezone,
       year: 'numeric',
       month: '2-digit',
@@ -109,9 +110,19 @@ export function timestampToDateString(
       hour12: false
     })
 
+    const parts = formatter.formatToParts(date)
+    const getPart = (type: string) => parts.find(p => p.type === type)?.value || '00'
+    
+    const year = getPart('year')
+    const month = getPart('month')
+    const day = getPart('day')
+    const hour = getPart('hour').padStart(2, '0')
+    const minute = getPart('minute')
+    const second = getPart('second')
+
     return {
       success: true,
-      output: formatter.format(date)
+      output: `${year}-${month}-${day} ${hour}:${minute}:${second}`
     }
   } catch (e) {
     const err = e as Error
