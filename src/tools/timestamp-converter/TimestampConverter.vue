@@ -47,28 +47,30 @@
               class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
               @input="convertTimestampToDate"
             />
-            <select
-              v-model="timestampUnit"
-              class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              @change="convertTimestampToDate"
-            >
-              <option value="auto">自动检测</option>
-              <option value="seconds">秒</option>
-              <option value="milliseconds">毫秒</option>
-            </select>
+            <Select v-model="timestampUnit" @update:model-value="convertTimestampToDate">
+              <SelectTrigger class="w-[140px]">
+                <SelectValue placeholder="单位" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">自动检测</SelectItem>
+                <SelectItem value="seconds">秒</SelectItem>
+                <SelectItem value="milliseconds">毫秒</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <div class="flex items-center gap-2">
             <span class="text-sm text-muted-foreground">时区:</span>
-            <select
-              v-model="timezoneForTimestamp"
-              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              @change="convertTimestampToDate"
-            >
-              <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
-                {{ tz.label }} ({{ tz.offset }})
-              </option>
-            </select>
+            <Select v-model="timezoneForTimestamp" @update:model-value="convertTimestampToDate">
+              <SelectTrigger class="flex-1">
+                <SelectValue placeholder="选择时区" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="tz in timezones" :key="tz.value" :value="tz.value">
+                  {{ tz.label }} ({{ tz.offset }})
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <!-- Fixed height output area -->
@@ -104,22 +106,24 @@
           
           <div class="flex items-center gap-2">
             <span class="text-sm text-muted-foreground">时区:</span>
-            <select
-              v-model="timezoneForDate"
-              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              @change="convertDateToTimestamp"
-            >
-              <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
-                {{ tz.label }} ({{ tz.offset }})
-              </option>
-            </select>
+            <Select v-model="timezoneForDate" @update:model-value="convertDateToTimestamp">
+              <SelectTrigger class="flex-1">
+                <SelectValue placeholder="选择时区" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="tz in timezones" :key="tz.value" :value="tz.value">
+                  {{ tz.label }} ({{ tz.offset }})
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <!-- Fixed height output area -->
           <div class="p-3 rounded-md h-16 flex items-center bg-muted">
             <div v-if="dateToTimestampResult" class="w-full flex items-center justify-between font-mono text-sm">
+              <span class="text-muted-foreground">毫秒:</span>
               <span class="select-all">{{ dateToTimestampResult.milliseconds }}</span>
-              <Button variant="ghost" size="sm" class="hover:bg-background" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
+              <Button variant="ghost" size="sm" @click="copyToClipboard(String(dateToTimestampResult.milliseconds))">
                 复制
               </Button>
             </div>
@@ -135,22 +139,26 @@
         <h2 class="text-lg font-semibold text-foreground">批量转换</h2>
         <div class="flex items-center gap-2">
           <span class="text-sm text-muted-foreground">时区:</span>
-          <select
-            v-model="timezoneForBatch"
-            class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option v-for="tz in timezones" :key="tz.value" :value="tz.value">
-              {{ tz.label }} ({{ tz.offset }})
-            </option>
-          </select>
-          <select
-            v-model="batchUnit"
-            class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <option value="auto">自动检测</option>
-            <option value="seconds">秒</option>
-            <option value="milliseconds">毫秒</option>
-          </select>
+          <Select v-model="timezoneForBatch">
+            <SelectTrigger class="w-[180px]">
+              <SelectValue placeholder="选择时区" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="tz in timezones" :key="tz.value" :value="tz.value">
+                {{ tz.label }} ({{ tz.offset }})
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <Select v-model="batchUnit">
+            <SelectTrigger class="w-[120px]">
+              <SelectValue placeholder="单位" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="auto">自动检测</SelectItem>
+              <SelectItem value="seconds">秒</SelectItem>
+              <SelectItem value="milliseconds">毫秒</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       
@@ -214,6 +222,13 @@ import { ref, onMounted, onUnmounted, inject } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   getCurrentTimestamps,
   timestampToDateString,
