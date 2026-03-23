@@ -132,7 +132,7 @@ const panelsRef = ref<HTMLElement>()
 const inputWidth = ref(40) // 4:6 ratio = 40%:60%
 let isResizing = false
 
-function startResize(e: MouseEvent) {
+function startResize() {
   isResizing = true
   document.body.style.cursor = 'col-resize'
   document.body.style.userSelect = 'none'

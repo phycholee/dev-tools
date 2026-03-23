@@ -18,24 +18,14 @@
 
     <!-- Content area -->
     <div class="flex-1 relative overflow-hidden">
-      <!-- Input mode -->
-      <div v-if="mode === 'input'" class="h-full relative">
-        <!-- Line numbers (scrollable container) -->
-        <div 
-          ref="lineNumbersRef"
-          class="absolute left-0 top-0 bottom-0 w-12 overflow-hidden text-right pr-2 pt-4 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20 pointer-events-none z-10"
-        >
-          <div v-for="n in lineCount" :key="n">{{ n }}</div>
-        </div>
-        <!-- Textarea -->
-        <textarea
-          ref="textareaRef"
-          :value="modelValue"
+      <!-- Input mode: CodeMirror -->
+      <div v-if="mode === 'input'" class="h-full">
+        <Codemirror
+          :model-value="modelValue"
+          @update:model-value="$emit('update:modelValue', $event)"
           :placeholder="placeholder"
-          class="absolute inset-0 w-full h-full p-4 pl-14 bg-transparent text-foreground font-mono text-sm leading-relaxed resize-none outline-none placeholder:text-muted-foreground/50 overflow-auto"
-          spellcheck="false"
-          @input="handleInput"
-          @scroll="syncTextareaScroll"
+          :extensions="extensions"
+          :style="{ height: '100%' }"
         />
       </div>
 
@@ -68,6 +58,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Badge } from '@/components/ui/badge'
+import { Codemirror } from 'vue-codemirror'
+import { json } from '@codemirror/lang-json'
+import { oneDark } from '@codemirror/theme-one-dark'
 import { highlightJson } from './json'
 
 const props = withDefaults(defineProps<{
@@ -88,7 +81,7 @@ const props = withDefaults(defineProps<{
   isError: false
 })
 
-const emit = defineEmits<{
+defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
@@ -101,16 +94,14 @@ const roundedClass = computed(() => {
   }
 })
 
-const textareaRef = ref<HTMLTextAreaElement>()
-const outputRef = ref<HTMLDivElement>()
-const lineNumbersRef = ref<HTMLDivElement>()
-const outputContainerRef = ref<HTMLDivElement>()
+// CodeMirror extensions
+const extensions = [
+  json(),
+  oneDark
+]
 
-// Calculate line count based on actual newlines
-const lineCount = computed(() => {
-  if (!props.modelValue) return 1
-  return props.modelValue.split('\n').length
-})
+const outputRef = ref<HTMLDivElement>()
+const outputContainerRef = ref<HTMLDivElement>()
 
 // Split highlighted content into lines for output
 const highlightedLines = computed(() => {
@@ -118,17 +109,6 @@ const highlightedLines = computed(() => {
   const highlighted = highlightJson(props.modelValue)
   return highlighted.split('\n')
 })
-
-function handleInput(e: Event) {
-  const target = e.target as HTMLTextAreaElement
-  emit('update:modelValue', target.value)
-}
-
-function syncTextareaScroll() {
-  if (textareaRef.value && lineNumbersRef.value) {
-    lineNumbersRef.value.scrollTop = textareaRef.value.scrollTop
-  }
-}
 
 function selectAllOutput() {
   if (!outputRef.value) return
@@ -147,3 +127,20 @@ const statusVariant = computed(() => {
   return 'secondary'
 })
 </script>
+
+<style>
+/* Override CodeMirror styles to match project theme */
+.cm-editor {
+  height: 100%;
+}
+
+.cm-editor .cm-scroller {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.625;
+}
+
+.cm-editor.cm-focused {
+  outline: none;
+}
+</style>

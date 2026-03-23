@@ -9,14 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/theme-one-dark": "^6.1.3",
     "@vueuse/core": "^14.2.1",
     "class-variance-authority": "*",
     "clsx": "*",
+    "codemirror": "^6.0.2",
     "lucide-vue-next": "*",
     "radix-vue": "*",
     "reka-ui": "^2.9.2",
     "tailwind-merge": "*",
     "vue": "^3.4.0",
+    "vue-codemirror": "^6.1.1",
     "vue-router": "^4.2.0",
     "vue-sonner": "^2.0.9"
   },
