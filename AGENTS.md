@@ -1,0 +1,164 @@
+# DevTools - Agent Guidelines
+
+> Vue 3 developer toolbox. Dark theme (Vercel style). Data stays client-side.
+
+## Build & Run
+
+```bash
+npm install
+npm run dev          # Start dev server (Vite)
+npm run build        # Type check (vue-tsc) + build
+npm run preview      # Preview production build
+```
+
+**No test runner configured.** No eslint/prettier configured. TypeScript strict mode enforces code quality.
+
+## Project Structure
+
+```
+src/
+├── tools/<tool-name>/        # Each tool: Component.vue + util.ts
+│   ├── JsonFormatter.vue
+│   └── json.ts
+├── components/
+│   ├── ui/                   # shadcn-vue primitives (button, card, badge, select)
+│   ├── common/               # App-level shared components
+│   └── layout/               # AppLayout, AppHeader, AppSidebar
+├── lib/utils.ts              # cn() helper (clsx + tailwind-merge)
+├── types/tool.ts             # ToolDefinition, ToolCategory interfaces
+├── pages/                    # Route page components
+├── router/index.ts           # Auto-generates routes from tool registry
+├── tools/registry.ts         # Tool definitions array
+└── assets/styles/globals.css # Tailwind v4 theme + CSS variables
+```
+
+**Path alias:** `@/` → `src/`
+
+## Tech Stack
+
+| Layer | Library |
+|-------|---------|
+| Framework | Vue 3.4 + Composition API (`<script setup lang="ts">`) |
+| Build | Vite 5 + `@vitejs/plugin-vue` |
+| Styling | Tailwind CSS v4 (`@tailwindcss/vite`) + CSS variables |
+| UI Components | shadcn-vue (reka-ui primitives) + class-variance-authority |
+| Router | vue-router 4 |
+| Composables | @vueuse/core |
+| Toast | vue-sonner |
+
+## Code Style
+
+### TypeScript
+
+- **Strict mode enabled** — `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`
+- All function parameters and return values **must** have type declarations
+- Avoid `any` — use concrete types or generics
+- Use `interface` for object structures, not `type` (unless union types)
+- Result pattern for operations that can fail:
+  ```typescript
+  export interface OperationResult {
+    success: boolean
+    output: string
+    error?: string
+  }
+  ```
+
+### Vue Components
+
+- Use `<script setup lang="ts">` — never Options API
+- Props via `defineProps<{ ... }>()` with TypeScript
+- Path imports: `import { Button } from '@/components/ui/button'`
+- Inject global services: `const toast = inject<(msg: string) => void>('toast')`
+- Use `ref()`, `watch()`, `computed()` from Vue
+
+### Naming Conventions
+
+| Type | Convention | Example |
+|------|-----------|---------|
+| Component files | PascalCase | `JsonFormatter.vue` |
+| Utility files | camelCase | `json.ts`, `timestamp.ts` |
+| Variables/functions | camelCase | `formatJson`, `isValidJson` |
+| Constants | UPPER_SNAKE_CASE | `MAX_INPUT_SIZE` |
+| CSS classes | kebab-case | `tool-card`, `json-output` |
+| Interfaces | PascalCase | `ToolDefinition`, `JsonFormatResult` |
+
+### Styling
+
+- Use Tailwind utility classes exclusively — no custom CSS in components unless necessary
+- `cn()` helper from `@/lib/utils` for conditional/merged classes
+- shadcn-vue color tokens: `bg-primary`, `text-foreground`, `bg-destructive`, etc.
+- Responsive: `grid-cols-1 md:grid-cols-2` pattern
+- Animations: `transition-all duration-150`, `hover:scale-105`
+
+### Comments
+
+- JSDoc on all utility functions:
+  ```typescript
+  /**
+   * Format JSON string with indentation
+   * @param input - Raw JSON string
+   * @param indent - Spaces per indent level (default: 2)
+   * @returns Formatted result or error
+   */
+  ```
+- Component: brief functional description at top
+- Complex logic: inline comments explaining the "why"
+
+## Adding a New Tool
+
+1. Create `src/tools/<tool-name>/` directory
+2. Add `<ToolName>.vue` component and `<tool-name>.ts` utility
+3. Register in `src/tools/registry.ts`:
+   ```typescript
+   {
+     id: 'tool-id',
+     name: '工具名称',
+     path: '/tool-path',
+     icon: '🎯',
+     description: '工具描述',
+     category: '分类名',
+     component: () => import('./tool-name/ToolName.vue'),
+     color: '#6366f1'
+   }
+   ```
+4. Route auto-generated from registry — no manual router config needed
+
+## Git Conventions
+
+```bash
+# Commit format
+<type>(<scope>): <subject>
+
+# Types: feat, fix, docs, style, refactor, test, chore
+# Scope: tool name or module (json, timestamp, layout, etc.)
+
+# Examples
+git commit -m "feat(json): add JSON escape/unescape"
+git commit -m "fix(timestamp): handle millisecond detection"
+```
+
+## UI Component Pattern (shadcn-vue)
+
+Components in `src/components/ui/` follow shadcn-vue convention:
+- `Component.vue` — template + script
+- `index.ts` — exports component + variants via `cva()`
+- Use `reka-ui` primitives for accessibility
+- Variants managed by `class-variance-authority`
+
+```typescript
+// index.ts pattern
+import { cva } from "class-variance-authority"
+export { default as Button } from "./Button.vue"
+export const buttonVariants = cva("base-classes", {
+  variants: { variant: { ... }, size: { ... } },
+  defaultVariants: { variant: "default", size: "default" }
+})
+```
+
+## Rules Reference
+
+See `RULES.md` for comprehensive project rules including:
+- Change log requirements (`docs/changelog/`)
+- Product spec versioning (`docs/specs/`)
+- Development workflow checklist
+- Memory file maintenance (`docs/memory/PROJECT_MEMORY.md`)

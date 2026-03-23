@@ -14,6 +14,7 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <ToggleTheme />
         <Badge variant="secondary" class="font-mono text-xs">v0.1.0</Badge>
       </div>
     </div>
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { Badge } from '@/components/ui/badge'
+import { ToggleTheme } from '@/components/ui/toggle-theme'
 
 const router = useRouter()
 

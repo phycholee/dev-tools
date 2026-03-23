@@ -1,8 +1,8 @@
 # DevTools 开发者工具箱 - 产品设计文档
 
-> 文档版本：v1.2  
+> 文档版本：v1.3  
 > 创建日期：2026-03-20  
-> 最后更新：2026-03-21（shadcn-vue migration）
+> 最后更新：2026-03-23（亮色主题切换）
 
 ---
 
@@ -285,38 +285,53 @@ export const tools: ToolDefinition[] = [
 
 ## 四、UI 设计规范
 
-### 4.1 暗色主题配色
+### 4.1 主题系统
+
+#### 主题切换
+- **位置**：Header 右侧，版本号 Badge 左侧
+- **交互**：点击按钮切换亮色/暗色模式
+- **图标**：亮色模式显示月亮图标，暗色模式显示太阳图标
+- **持久化**：用户偏好存储在 localStorage
+
+#### 亮色主题配色
+```css
+/* shadcn-vue 亮色主题 */
+:root {
+  --color-background: hsl(0 0% 100%);       /* #ffffff */
+  --color-foreground: hsl(0 0% 9%);         /* #171717 */
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(0 0% 9%);
+  --color-primary: hsl(0 0% 9%);
+  --color-primary-foreground: hsl(0 0% 98%);
+  --color-secondary: hsl(0 0% 96%);
+  --color-secondary-foreground: hsl(0 0% 9%);
+  --color-muted: hsl(0 0% 96%);
+  --color-muted-foreground: hsl(0 0% 45%);
+  --color-border: hsl(0 0% 90%);
+  --color-input: hsl(0 0% 90%);
+  --color-ring: hsl(0 0% 15%);
+}
+```
+
+#### 暗色主题配色
 *设计系统现在使用 shadcn-vue CSS 变量体系*
 
 ```css
-/* 使用 shadcn-vue CSS 变量体系 */
-:root {
-  /* 背景色 */
-  --bg-primary: #1e1e1e;      /* 主背景 */
-  --bg-secondary: #252526;    /* 次级背景 */
-  --bg-tertiary: #2d2d2d;     /* 输入框背景 */
-  --bg-hover: #37373d;        /* 悬停背景 */
-  
-  /* 文字色 */
-  --text-primary: #cccccc;    /* 主文字 */
-  --text-secondary: #858585;  /* 次要文字 */
-  --text-accent: #4ec9b0;     /* 强调文字 */
-  
-  /* 边框色 */
-  --border-color: #3c3c3c;
-  
-  /* 功能色 */
-  --success: #4ec9b0;
-  --error: #f44747;
-  --warning: #cca700;
-  --info: #3794ff;
-  
-  /* JSON高亮色 */
-  --json-key: #9cdcfe;
-  --json-string: #ce9178;
-  --json-number: #b5cea8;
-  --json-boolean: #569cd6;
-  --json-null: #569cd6;
+/* shadcn-vue 暗色主题 */
+.dark {
+  --color-background: hsl(0 0% 5%);         /* #0d0d0d */
+  --color-foreground: hsl(0 0% 91%);        /* #e8e8e8 */
+  --color-card: hsl(0 0% 12%);
+  --color-card-foreground: hsl(0 0% 91%);
+  --color-primary: hsl(0 0% 98%);
+  --color-primary-foreground: hsl(0 0% 9%);
+  --color-secondary: hsl(0 0% 14%);
+  --color-secondary-foreground: hsl(0 0% 91%);
+  --color-muted: hsl(0 0% 18%);
+  --color-muted-foreground: hsl(0 0% 60%);
+  --color-border: hsl(0 0% 14.9%);
+  --color-input: hsl(0 0% 14.9%);
+  --color-ring: hsl(0 0% 83%);
 }
 ```
 
@@ -324,10 +339,10 @@ export const tools: ToolDefinition[] = [
 
 | 组件 | 样式 |
 |------|------|
-| 按钮 | 背景 `#0e639c`，hover `#1177bb`，圆角 4px |
-| 输入框 | 背景 `#3c3c3c`，边框 `#3c3c3c`，focus 边框 `#007fd4` |
+| 按钮 | 使用 shadcn-vue Button，variant: default/secondary/outline/ghost |
+| 输入框 | 使用 Tailwind 类名，border + bg-background |
 | 代码区域 | 等宽字体，行号，语法高亮 |
-| 卡片 | 背景 `#252526`，边框 `#3c3c3c`，圆角 6px |
+| 卡片 | 使用 shadcn-vue Card，bg-card + border-border |
 
 ### 4.3 响应式设计
 

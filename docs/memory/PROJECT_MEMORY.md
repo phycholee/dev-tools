@@ -1,6 +1,6 @@
 # DevTools 项目 - AI 长期记忆
 
-> 最后更新：2026-03-22 下午
+> 最后更新：2026-03-23 上午
 > 用途：记录任务目标、历史步骤、中间结果、关键决策，支持迭代和中断恢复
 
 ---
@@ -136,7 +136,18 @@ df6207a fix(ui): change button active effect to translate-y-px
 09e6fe4 fix(style): force scrollbar always visible to prevent layout shift on navigation
 ```
 
-### 3.5 阶段五：优化和部署 ⏳ 待开始
+### 3.5 阶段五：亮色主题切换 ⏳ 待开发
+
+**计划内容：**
+- [ ] 重构 globals.css CSS 变量体系（分离亮/暗色）
+- [ ] 创建 ToggleTheme.vue 组件（Sun/Moon 图标切换）
+- [ ] AppHeader.vue 添加主题切换按钮
+- [ ] App.vue 添加主题初始化逻辑（localStorage 持久化）
+- [ ] 亮色主题下所有页面样式验证
+
+**变更记录：** `docs/changelog/2026-03-23-light-theme-toggle.md`
+
+### 3.6 阶段六：优化和部署 ⏳ 待开始
 
 **计划内容：**
 - [ ] 移动端适配
@@ -223,6 +234,16 @@ devtools/
 | 原生select样式与shadcn不一致 | 安装shadcn Select组件替换 | 2026-03-22 |
 | Card组件边框使用文字颜色而非border变量 | 添加`@layer base { * { border-color: var(--color-border) } }` | 2026-03-22 |
 | 首页导航到工具页时navbar（logo+badge）位移 | 两个原因叠加：① hero section 放在 AppHeader 中用 `v-if` 条件渲染，DOM 增删触发 reflow ② Timestamp 页面内容超出视口出现滚动条，JSON 页面用固定高度不出现，滚动条显隐导致页面宽度变化 ~15px | 2026-03-22 |
+
+### 5.4 主题切换设计决策 (2026-03-23)
+
+| 决策点 | 选择 | 原因 |
+|--------|------|------|
+| 切换方式 | 按钮直接切换（非下拉菜单） | 简洁，仅需亮/暗两种模式 |
+| 图标 | lucide-vue-next Sun/Moon | 已安装，符合 shadcn 风格 |
+| 存储 | localStorage | 用户偏好持久化 |
+| 默认主题 | 暗色 | 保持现有用户体验 |
+| CSS 实现 | Tailwind darkMode: 'class' | 已配置，shadcn 官方方案 |
 
 ### 5.4 Navbar 导航位移问题详解 (2026-03-22)
 
@@ -314,6 +335,7 @@ npm run preview  # 预览构建结果
 ## 九、待办事项
 
 ### 高优先级
+- [ ] 亮色主题切换功能实现（阶段五）
 - [ ] 部署到 Vercel / GitHub Pages
 
 ### 中优先级
