@@ -40,7 +40,7 @@
           v-else
           ref="outputRef"
           tabindex="0"
-          class="p-4 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed select-text outline-none"
+          class="p-4 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed select-text outline-none whitespace-pre-wrap break-all"
           @keydown.ctrl.a.prevent="selectAllOutput"
         ><code v-html="highlightedContent"></code></pre>
       </div>
