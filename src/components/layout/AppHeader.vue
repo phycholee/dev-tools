@@ -1,7 +1,7 @@
 <template>
   <header class="bg-background/80 backdrop-blur-sm border-b border-border/40 sticky top-0 z-50">
     <div class="flex items-center justify-between max-w-6xl mx-auto px-8 h-14">
-      <div class="flex items-center gap-2.5 cursor-pointer select-none" @click="goHome">
+      <div class="flex items-center gap-2.5 cursor-pointer select-none -ml-5" @click="goHome">
         <div class="flex items-center justify-center" style="color: hsl(239 84% 67%)">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.9"/>

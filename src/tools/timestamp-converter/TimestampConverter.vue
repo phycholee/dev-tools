@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-[1200px] mx-auto">
+  <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3">
       <span class="text-3xl">⏱</span>
