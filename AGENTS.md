@@ -155,6 +155,52 @@ export const buttonVariants = cva("base-classes", {
 })
 ```
 
+## AI Testing Workflow (Required)
+
+Every AI development task MUST follow this mandatory workflow:
+
+### Development Phases
+
+```
+1. 需求分析 → 2. 设计 → 3. 实现 → 4. 测试 → 5. 提交
+                                       ↓
+                              自动化测试验收流程
+```
+
+### Testing Phase (Mandatory)
+
+After completing feature implementation, AI MUST execute the full testing workflow before marking the task as complete:
+
+1. **启动开发服务器**: `npm run dev`
+2. **运行单元测试**: Vitest for utility functions
+3. **运行 E2E 测试**: Playwright for page interactions
+4. **视觉回归测试**: Screenshot comparison
+5. **Console 错误检测**: Monitor console errors and network failures
+6. **无障碍审计**: axe-core for accessibility issues
+7. **生成测试报告**: Terminal output + HTML report + screenshots on failure
+
+### Test Failure Handling
+
+- Auto-retry up to 3 times on failure
+- Report detailed error with screenshots and logs if retry fails
+- **NEVER skip tests or fake test results**
+
+### Test Directory Structure
+
+```
+tests/
+├── config.ts              # Test configuration
+├── utils/                 # Test utilities
+├── <feature>-test/       # One directory per feature
+│   ├── unit/             # Unit tests (Vitest)
+│   ├── e2e/              # E2E tests (Playwright)
+│   ├── visual/           # Visual regression
+│   │   └── baseline/    # Baseline screenshots
+│   └── axe.config.ts    # Accessibility config
+```
+
+See `docs/superpowers/specs/2026-03-23-ai-testing-workflow-design.md` for detailed testing workflow documentation.
+
 ## Rules Reference
 
 See `RULES.md` for comprehensive project rules including:
