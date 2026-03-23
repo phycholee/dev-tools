@@ -23,7 +23,7 @@ export function formatJson(input: string, indent: number = 2): JsonFormatResult 
     const err = e as Error
     return {
       success: false,
-      output: '',
+      output: err.message,
       error: err.message
     }
   }
@@ -43,7 +43,7 @@ export function compressJson(input: string): JsonFormatResult {
     const err = e as Error
     return {
       success: false,
-      output: '',
+      output: err.message,
       error: err.message
     }
   }
@@ -70,7 +70,7 @@ export function escapeJson(input: string): JsonFormatResult {
     const err = e as Error
     return {
       success: false,
-      output: '',
+      output: err.message,
       error: err.message
     }
   }
@@ -103,7 +103,7 @@ export function unescapeJson(input: string): JsonFormatResult {
     const err = e as Error
     return {
       success: false,
-      output: '',
+      output: err.message,
       error: err.message
     }
   }

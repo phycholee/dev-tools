@@ -24,8 +24,6 @@
           mode="input"
           label="输入"
           placeholder='粘贴 JSON 内容，例如: {"name": "DevTools"}'
-          :status="error ? '语法错误' : input ? '已输入' : undefined"
-          :status-type="error ? 'error' : input ? 'success' : 'info'"
           rounded="left"
         />
       </div>
@@ -42,8 +40,7 @@
           v-model="output"
           mode="output"
           label="输出"
-          :status="error || (output ? '格式化完成' : undefined)"
-          :status-type="error ? 'error' : 'success'"
+          :is-error="hasError"
           rounded="right"
         >
           <template #actions>
@@ -59,15 +56,6 @@
           </template>
         </CodeEditor>
       </div>
-    </div>
-
-    <!-- Error display -->
-    <div
-      v-if="error"
-      class="flex items-center gap-2 px-4 py-3 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive text-sm"
-    >
-      <span>⚠</span>
-      <span>{{ error }}</span>
     </div>
 
     <!-- Action buttons -->
@@ -87,7 +75,7 @@
 
       <div class="w-px h-6 bg-border mx-2" />
 
-      <Button @click="handleCopy" variant="outline" :disabled="!output">
+      <Button @click="handleCopy" variant="outline" :disabled="!output || hasError">
         复制结果
       </Button>
       <Button @click="handleClear" variant="ghost">
@@ -127,7 +115,7 @@ import { formatJson, compressJson, escapeJson, unescapeJson } from './json'
 
 const input = ref('')
 const output = ref('')
-const error = ref('')
+const hasError = ref(false)
 const indent = ref(2)
 const toast = inject<(msg: string) => void>('toast')
 
@@ -179,50 +167,30 @@ onUnmounted(() => {
 
 function handleFormat() {
   const result = formatJson(input.value, indent.value)
-  if (result.success) {
-    output.value = result.output
-    error.value = ''
-  } else {
-    error.value = result.error || 'Unknown error'
-    output.value = ''
-  }
+  output.value = result.output
+  hasError.value = !result.success
 }
 
 function handleCompress() {
   const result = compressJson(input.value)
-  if (result.success) {
-    output.value = result.output
-    error.value = ''
-  } else {
-    error.value = result.error || 'Unknown error'
-    output.value = ''
-  }
+  output.value = result.output
+  hasError.value = !result.success
 }
 
 function handleEscape() {
   const result = escapeJson(input.value)
-  if (result.success) {
-    output.value = result.output
-    error.value = ''
-  } else {
-    error.value = result.error || 'Unknown error'
-    output.value = ''
-  }
+  output.value = result.output
+  hasError.value = !result.success
 }
 
 function handleUnescape() {
   const result = unescapeJson(input.value)
-  if (result.success) {
-    output.value = result.output
-    error.value = ''
-  } else {
-    error.value = result.error || 'Unknown error'
-    output.value = ''
-  }
+  output.value = result.output
+  hasError.value = !result.success
 }
 
 async function handleCopy() {
-  if (!output.value) return
+  if (!output.value || hasError.value) return
   try {
     await navigator.clipboard.writeText(output.value)
     toast?.('已复制到剪贴板')
@@ -241,7 +209,7 @@ async function handleCopy() {
 function handleClear() {
   input.value = ''
   output.value = ''
-  error.value = ''
+  hasError.value = false
 }
 
 // Re-format output when indent changes
@@ -257,18 +225,13 @@ watch(input, (val) => {
   if (debounceTimer) clearTimeout(debounceTimer)
   if (!val.trim()) {
     output.value = ''
-    error.value = ''
+    hasError.value = false
     return
   }
   debounceTimer = setTimeout(() => {
     const result = formatJson(val, indent.value)
-    if (result.success) {
-      output.value = result.output
-      error.value = ''
-    } else {
-      // Don't show error while typing - only on explicit action
-      error.value = ''
-    }
+    output.value = result.output
+    hasError.value = !result.success
   }, 500)
 })
 </script>

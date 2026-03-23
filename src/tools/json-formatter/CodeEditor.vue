@@ -29,14 +29,21 @@
         @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
       />
 
-      <!-- Output mode: syntax highlighted -->
-      <pre
-        v-else
-        ref="outputRef"
-        tabindex="0"
-        class="w-full h-full p-4 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed overflow-auto select-text outline-none"
-        @keydown.ctrl.a.prevent="selectAllOutput"
-      ><code v-html="highlightedContent"></code></pre>
+      <!-- Output mode -->
+      <div v-else class="w-full h-full overflow-auto">
+        <!-- Error state -->
+        <div v-if="isError" class="p-4 text-destructive font-mono text-sm leading-relaxed">
+          ⚠ {{ modelValue }}
+        </div>
+        <!-- Normal output with syntax highlighting -->
+        <pre
+          v-else
+          ref="outputRef"
+          tabindex="0"
+          class="p-4 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed select-text outline-none"
+          @keydown.ctrl.a.prevent="selectAllOutput"
+        ><code v-html="highlightedContent"></code></pre>
+      </div>
     </div>
   </div>
 </template>
@@ -54,12 +61,14 @@ const props = withDefaults(defineProps<{
   status?: string
   statusType?: 'success' | 'error' | 'info'
   rounded?: 'all' | 'left' | 'right' | 'none'
+  isError?: boolean
 }>(), {
   mode: 'input',
   label: 'Input',
   placeholder: 'Paste JSON here...',
   statusType: 'info',
-  rounded: 'all'
+  rounded: 'all',
+  isError: false
 })
 
 const roundedClass = computed(() => {
