@@ -1,13 +1,19 @@
 <template>
-  <div class="relative flex flex-col h-full rounded-lg border border-border bg-card overflow-hidden">
+  <div 
+    class="relative flex flex-col h-full border border-border bg-card overflow-hidden"
+    :class="roundedClass"
+  >
     <!-- Header bar -->
-    <div class="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/30">
+    <div class="flex items-center justify-between px-4 h-9 border-b border-border/50 bg-muted/30">
       <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
         {{ label }}
       </span>
-      <Badge v-if="status" :variant="statusVariant" class="text-xs">
-        {{ status }}
-      </Badge>
+      <div class="flex items-center gap-2">
+        <Badge v-if="status" :variant="statusVariant" class="text-xs">
+          {{ status }}
+        </Badge>
+        <slot name="actions" />
+      </div>
     </div>
 
     <!-- Content area -->
@@ -47,11 +53,22 @@ const props = withDefaults(defineProps<{
   placeholder?: string
   status?: string
   statusType?: 'success' | 'error' | 'info'
+  rounded?: 'all' | 'left' | 'right' | 'none'
 }>(), {
   mode: 'input',
   label: 'Input',
   placeholder: 'Paste JSON here...',
-  statusType: 'info'
+  statusType: 'info',
+  rounded: 'all'
+})
+
+const roundedClass = computed(() => {
+  switch (props.rounded) {
+    case 'left': return 'rounded-l-lg'
+    case 'right': return 'rounded-r-lg'
+    case 'none': return ''
+    default: return 'rounded-lg'
+  }
 })
 
 defineEmits<{

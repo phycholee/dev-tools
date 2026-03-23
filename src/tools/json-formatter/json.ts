@@ -93,11 +93,11 @@ export function unescapeJson(input: string): JsonFormatResult {
       .replace(/\\"/g, '"')
       .replace(/\\\\/g, '\\')
     
-    // Validate the unescaped result is valid JSON
-    JSON.parse(unescaped)
+    // Validate the unescaped result is valid JSON and format it
+    const parsed = JSON.parse(unescaped)
     return {
       success: true,
-      output: unescaped
+      output: JSON.stringify(parsed, null, 2)
     }
   } catch (e) {
     const err = e as Error

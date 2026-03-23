@@ -1,7 +1,11 @@
 <template>
-  <div class="flex flex-col h-[calc(100vh-120px)] p-4 gap-4 w-full max-w-6xl mx-auto">
+  <div 
+    ref="containerRef"
+    class="flex flex-col p-4 gap-4 w-full"
+    :class="isFullscreen ? 'fixed inset-0 z-50 bg-background max-w-none h-screen' : 'h-[calc(100vh-120px)] max-w-6xl mx-auto'"
+  >
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div v-if="!isFullscreen" class="flex items-center justify-between">
       <div class="flex items-center gap-3">
         <span class="text-3xl">{ }</span>
         <div>
@@ -11,26 +15,50 @@
       </div>
     </div>
 
-    <!-- Editor panels -->
-    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+    <!-- Editor panels with resizable divider -->
+    <div ref="panelsRef" class="flex-1 flex min-h-0">
       <!-- Input -->
-      <CodeEditor
-        v-model="input"
-        mode="input"
-        label="输入"
-        placeholder='粘贴 JSON 内容，例如: {"name": "DevTools"}'
-        :status="error ? '语法错误' : input ? '已输入' : undefined"
-        :status-type="error ? 'error' : input ? 'success' : 'info'"
+      <div :style="{ width: inputWidth + '%' }" class="min-w-[200px]">
+        <CodeEditor
+          v-model="input"
+          mode="input"
+          label="输入"
+          placeholder='粘贴 JSON 内容，例如: {"name": "DevTools"}'
+          :status="error ? '语法错误' : input ? '已输入' : undefined"
+          :status-type="error ? 'error' : input ? 'success' : 'info'"
+          rounded="left"
+        />
+      </div>
+
+      <!-- Resizable divider -->
+      <div
+        class="w-1 flex-shrink-0 cursor-col-resize hover:bg-accent/50 transition-colors"
+        @mousedown="startResize"
       />
 
       <!-- Output -->
-      <CodeEditor
-        v-model="output"
-        mode="output"
-        label="输出"
-        :status="error || (output ? '格式化完成' : undefined)"
-        :status-type="error ? 'error' : 'success'"
-      />
+      <div :style="{ width: (100 - inputWidth) + '%' }" class="min-w-[200px]">
+        <CodeEditor
+          v-model="output"
+          mode="output"
+          label="输出"
+          :status="error || (output ? '格式化完成' : undefined)"
+          :status-type="error ? 'error' : 'success'"
+          rounded="right"
+        >
+          <template #actions>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              @click="toggleFullscreen"
+              class="h-6 w-6"
+            >
+              <Minimize2 v-if="isFullscreen" class="h-3.5 w-3.5" />
+              <Maximize2 v-else class="h-3.5 w-3.5" />
+            </Button>
+          </template>
+        </CodeEditor>
+      </div>
     </div>
 
     <!-- Error display -->
@@ -91,8 +119,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, inject } from 'vue'
+import { ref, watch, inject, onUnmounted } from 'vue'
 import { Button } from '@/components/ui/button'
+import { Maximize2, Minimize2 } from 'lucide-vue-next'
 import CodeEditor from './CodeEditor.vue'
 import { formatJson, compressJson, escapeJson, unescapeJson } from './json'
 
@@ -101,6 +130,52 @@ const output = ref('')
 const error = ref('')
 const indent = ref(2)
 const toast = inject<(msg: string) => void>('toast')
+
+// Fullscreen
+const containerRef = ref<HTMLElement>()
+const isFullscreen = ref(false)
+
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value
+}
+
+// Resizable panels
+const panelsRef = ref<HTMLElement>()
+const inputWidth = ref(40) // 4:6 ratio = 40%:60%
+let isResizing = false
+
+function startResize(e: MouseEvent) {
+  isResizing = true
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
+  
+  const onMouseMove = (e: MouseEvent) => {
+    if (!isResizing || !panelsRef.value) return
+    
+    const rect = panelsRef.value.getBoundingClientRect()
+    const percentage = ((e.clientX - rect.left) / rect.width) * 100
+    
+    // Clamp between 20% and 80%
+    inputWidth.value = Math.max(20, Math.min(80, percentage))
+  }
+  
+  const onMouseUp = () => {
+    isResizing = false
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+  }
+  
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
+}
+
+onUnmounted(() => {
+  // Cleanup if component is destroyed while resizing
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+})
 
 function handleFormat() {
   const result = formatJson(input.value, indent.value)
