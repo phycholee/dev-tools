@@ -229,8 +229,9 @@ const renderLines = computed<RenderLine[]>(() => {
   }
 
   function toggleBtn(key: string, collapsed: boolean): string {
+    const cls = collapsed ? 'json-toggle json-toggle-expand' : 'json-toggle json-toggle-collapse'
     const label = collapsed ? '+' : '-'
-    return `<span class="json-toggle" data-key="${key}">${label}</span>`
+    return `<span class="${cls}" data-key="${key}">${label}</span>`
   }
 
   function visit(node: JsonNode, depth: number) {
@@ -400,15 +401,34 @@ const statusVariant = computed(() => {
 
 /* JSON tree toggle button (rendered via v-html) */
 .json-toggle {
-  display: inline-block;
-  width: 1rem;
-  text-align: center;
-  color: var(--color-muted-foreground);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0 1px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
   user-select: none;
-  font-weight: bold;
+  vertical-align: middle;
 }
-.json-toggle:hover {
-  color: var(--color-foreground);
+.json-toggle-expand {
+  color: hsl(180 70% 40%);
+  border: 1px solid hsl(180 70% 40% / 0.5);
+  background: hsl(180 70% 40% / 0.08);
+}
+.json-toggle-expand:hover {
+  background: hsl(180 70% 40% / 0.18);
+}
+.json-toggle-collapse {
+  color: hsl(0 70% 55%);
+  border: 1px solid hsl(0 70% 55% / 0.5);
+  background: hsl(0 70% 55% / 0.08);
+}
+.json-toggle-collapse:hover {
+  background: hsl(0 70% 55% / 0.18);
 }
 </style>
