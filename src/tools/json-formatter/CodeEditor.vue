@@ -47,16 +47,10 @@
               <div class="w-12 flex-shrink-0 text-right pr-2 pl-2 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20">
                 {{ line.lineNumber }}
               </div>
-              <button
-                v-if="line.isContainer"
-                @click.stop="toggleCollapse(line.key)"
-                class="w-5 flex-shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer select-none"
-                :aria-label="line.isCollapsed ? '展开' : '折叠'"
-              >
-                {{ line.isCollapsed ? '▶' : '▼' }}
-              </button>
-              <div v-else class="w-5 flex-shrink-0" />
-              <pre class="flex-1 pl-1 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line.html"></code></pre>
+              <pre
+                class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"
+                @click="handleOutputClick"
+              ><code v-html="line.html"></code></pre>
             </div>
           </template>
           <!-- Fallback: plain highlighted lines (non-JSON output) -->
@@ -201,10 +195,7 @@ const treeRoot = computed(() => {
 interface RenderLine {
   lineNumber: number
   html: string
-  isContainer: boolean
-  isCollapsed: boolean
   key: string
-  indent: number
 }
 
 // Flatten tree into visible render lines
@@ -237,20 +228,22 @@ const renderLines = computed<RenderLine[]>(() => {
     return ' '.repeat(props.indent).repeat(depth)
   }
 
+  function toggleBtn(key: string, collapsed: boolean): string {
+    const label = collapsed ? '+' : '-'
+    return `<span class="json-toggle" data-key="${key}">${label}</span>`
+  }
+
   function visit(node: JsonNode, depth: number) {
     const isContainer = node.type === 'object' || node.type === 'array'
     const hasChildren = isContainer && node.children && node.children.length > 0
-    const isCollapsed = hasChildren && collapsedState.get(String(node.startLine)) === true
+    const nodeKey = String(node.startLine)
+    const isCollapsed = hasChildren && collapsedState.get(nodeKey) === true
 
     if (!isContainer) {
-      // Leaf: "key": value
       lines.push({
         lineNumber: node.startLine,
         html: indentStr(depth) + keyHtml(node.key) + valueHtml(node.value, node.type),
-        isContainer: false,
-        isCollapsed: false,
-        key: String(node.startLine),
-        indent: depth,
+        key: nodeKey,
       })
       return
     }
@@ -261,15 +254,14 @@ const renderLines = computed<RenderLine[]>(() => {
       lines.push({
         lineNumber: node.startLine,
         html: indentStr(depth) + keyHtml(node.key) + bracket,
-        isContainer: false,
-        isCollapsed: false,
-        key: String(node.startLine),
-        indent: depth,
+        key: nodeKey,
       })
       return
     }
 
-    // Collapsed container
+    const openBracket = node.type === 'object' ? '{' : '['
+
+    // Collapsed container: show summary after bracket
     if (isCollapsed) {
       const summary = node.type === 'object'
         ? 'Object{...}'
@@ -277,39 +269,29 @@ const renderLines = computed<RenderLine[]>(() => {
       lines.push({
         lineNumber: node.startLine,
         html: indentStr(depth) + keyHtml(node.key)
+          + openBracket + toggleBtn(nodeKey, true) + ' '
           + `<span class="text-muted-foreground">${summary}</span>`,
-        isContainer: true,
-        isCollapsed: true,
-        key: String(node.startLine),
-        indent: depth,
+        key: nodeKey,
       })
       return
     }
 
-    // Expanded container
-    const openBracket = node.type === 'object' ? '{' : '['
-    const closeBracket = node.type === 'object' ? '}' : ']'
-
+    // Expanded container: opening line with toggle
     lines.push({
       lineNumber: node.startLine,
-      html: indentStr(depth) + keyHtml(node.key) + openBracket,
-      isContainer: true,
-      isCollapsed: false,
-      key: String(node.startLine),
-      indent: depth,
+      html: indentStr(depth) + keyHtml(node.key) + openBracket + toggleBtn(nodeKey, false),
+      key: nodeKey,
     })
 
     for (const child of node.children!) {
       visit(child, depth + 1)
     }
 
+    const closeBracket = node.type === 'object' ? '}' : ']'
     lines.push({
       lineNumber: node.endLine,
       html: indentStr(depth) + closeBracket,
-      isContainer: false,
-      isCollapsed: false,
       key: String(node.endLine) + '_close',
-      indent: depth,
     })
   }
 
@@ -323,6 +305,16 @@ function toggleCollapse(key: string) {
     collapsedState.delete(key)
   } else {
     collapsedState.set(key, true)
+  }
+}
+
+// Event delegation for inline toggle buttons rendered via v-html
+function handleOutputClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (target.classList.contains('json-toggle')) {
+    e.stopPropagation()
+    const key = target.getAttribute('data-key')
+    if (key) toggleCollapse(key)
   }
 }
 
@@ -404,5 +396,19 @@ const statusVariant = computed(() => {
 .cm-editor .cm-content .cm-placeholder {
   color: var(--color-muted-foreground) !important;
   opacity: 0.8;
+}
+
+/* JSON tree toggle button (rendered via v-html) */
+.json-toggle {
+  display: inline-block;
+  width: 1rem;
+  text-align: center;
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+  user-select: none;
+  font-weight: bold;
+}
+.json-toggle:hover {
+  color: var(--color-foreground);
 }
 </style>
