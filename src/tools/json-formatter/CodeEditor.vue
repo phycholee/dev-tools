@@ -211,7 +211,16 @@ const renderLines = computed<RenderLine[]>(() => {
 
   function valueHtml(value: unknown, type: JsonNode['type']): string {
     switch (type) {
-      case 'string': return `<span class="json-string">"${escapeHtml(value as string)}"</span>`
+      case 'string': {
+        // Escape as JSON string to preserve \n, \", \\ etc. in display
+        const escaped = (value as string)
+          .replace(/\\/g, '\\\\')
+          .replace(/"/g, '\\"')
+          .replace(/\n/g, '\\n')
+          .replace(/\r/g, '\\r')
+          .replace(/\t/g, '\\t')
+        return `<span class="json-string">"${escapeHtml(escaped)}"</span>`
+      }
       case 'number': return `<span class="json-number">${value}</span>`
       case 'boolean': return `<span class="json-boolean">${value}</span>`
       case 'null': return '<span class="json-null">null</span>'
