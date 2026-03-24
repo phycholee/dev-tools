@@ -10,11 +10,16 @@ export interface JsonFormatResult {
 }
 
 /**
- * Beautify JSON with specified indentation
+ * Beautify JSON with specified indentation.
+ * If input is a JSON string value (not object/array), returns as-is to preserve escaping.
  */
 export function formatJson(input: string, indent: number = 2): JsonFormatResult {
   try {
     const parsed = JSON.parse(input)
+    // Don't unescape string values — return as-is to preserve escaping for copy-paste
+    if (typeof parsed === 'string') {
+      return { success: true, output: input.trim() }
+    }
     return {
       success: true,
       output: JSON.stringify(parsed, null, indent)
