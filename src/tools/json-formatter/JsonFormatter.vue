@@ -49,6 +49,7 @@
               size="icon-sm"
               @click="toggleFullscreen"
               class="h-6 w-6"
+              :aria-label="isFullscreen ? '退出全屏' : '全屏'"
             >
               <Minimize2 v-if="isFullscreen" class="h-3.5 w-3.5" />
               <Maximize2 v-else class="h-3.5 w-3.5" />

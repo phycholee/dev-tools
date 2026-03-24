@@ -147,11 +147,16 @@ const customTheme = EditorView.theme({
 }, { dark: false })
 
 // CodeMirror extensions - plain text input, no syntax highlighting
-const extensions = [
+const extensions = computed(() => [
   customTheme,
   EditorView.lineWrapping,
-  EditorView.contentAttributes.of({ autocapitalize: 'off', autocomplete: 'off', autocorrect: 'off' })
-]
+  EditorView.contentAttributes.of({ 
+    autocapitalize: 'off', 
+    autocomplete: 'off', 
+    autocorrect: 'off',
+    'aria-label': props.label || 'Code editor'
+  })
+])
 
 const outputRef = ref<HTMLDivElement>()
 const outputContainerRef = ref<HTMLDivElement>()
@@ -228,5 +233,11 @@ const statusVariant = computed(() => {
   padding-left: 8px !important;
   padding-right: 8px !important;
   min-width: unset !important;
+}
+
+/* Improve placeholder contrast */
+.cm-editor .cm-content .cm-placeholder {
+  color: var(--color-muted-foreground) !important;
+  opacity: 0.8;
 }
 </style>

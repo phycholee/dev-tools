@@ -49,7 +49,7 @@
               @input="convertTimestampToDate"
             />
             <Select v-model="timestampUnit" @update:model-value="convertTimestampToDate">
-              <SelectTrigger class="w-[140px]">
+              <SelectTrigger class="w-[140px]" aria-label="时间戳单位">
                 <SelectValue placeholder="单位" />
               </SelectTrigger>
               <SelectContent>
@@ -63,7 +63,7 @@
           <div class="flex items-center gap-2">
             <span class="text-sm text-muted-foreground">时区:</span>
             <Select v-model="timezoneForTimestamp" @update:model-value="convertTimestampToDate">
-              <SelectTrigger class="flex-1">
+              <SelectTrigger class="flex-1" aria-label="时间戳转日期时区">
                 <SelectValue placeholder="选择时区" />
               </SelectTrigger>
               <SelectContent>
@@ -108,7 +108,7 @@
           <div class="flex items-center gap-2">
             <span class="text-sm text-muted-foreground">时区:</span>
             <Select v-model="timezoneForDate" @update:model-value="convertDateToTimestamp">
-              <SelectTrigger class="flex-1">
+              <SelectTrigger class="flex-1" aria-label="日期转时间戳时区">
                 <SelectValue placeholder="选择时区" />
               </SelectTrigger>
               <SelectContent>
@@ -140,7 +140,7 @@
         <div class="flex items-center gap-2">
           <span class="text-sm text-muted-foreground">时区:</span>
           <Select v-model="timezoneForBatch">
-            <SelectTrigger class="w-[180px]">
+            <SelectTrigger class="w-[180px]" aria-label="批量转换时区">
               <SelectValue placeholder="选择时区" />
             </SelectTrigger>
             <SelectContent>
@@ -150,7 +150,7 @@
             </SelectContent>
           </Select>
           <Select v-model="batchUnit">
-            <SelectTrigger class="w-[120px]">
+            <SelectTrigger class="w-[120px]" aria-label="批量转换单位">
               <SelectValue placeholder="单位" />
             </SelectTrigger>
             <SelectContent>

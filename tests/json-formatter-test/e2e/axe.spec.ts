@@ -31,16 +31,17 @@ test.describe('JSON Formatter Accessibility', () => {
     await page.goto('/json-formatter')
 
     // Check that action buttons have accessible names
-    const formatButton = page.locator('button:has-text("格式化")')
+    const formatButton = page.getByRole('button', { name: '格式化' })
     await expect(formatButton).toBeVisible()
 
-    const compressButton = page.locator('button:has-text("压缩")')
+    const compressButton = page.getByRole('button', { name: '压缩' })
     await expect(compressButton).toBeVisible()
 
-    const escapeButton = page.locator('button:has-text("转义")')
+    // Use exact match for "转义" button (not "消除转义")
+    const escapeButton = page.getByRole('button', { name: '转义', exact: true })
     await expect(escapeButton).toBeVisible()
 
-    const unescapeButton = page.locator('button:has-text("消除转义")')
+    const unescapeButton = page.getByRole('button', { name: '消除转义' })
     await expect(unescapeButton).toBeVisible()
   })
 
