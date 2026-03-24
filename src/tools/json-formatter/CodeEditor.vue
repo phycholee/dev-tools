@@ -407,8 +407,8 @@ const statusVariant = computed(() => {
   width: 0.9rem;
   height: 0.9rem;
   margin: 0 1px;
-  border-radius: 50%;
-  font-size: 0.7rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
   font-weight: 900;
   line-height: 1;
   cursor: pointer;
@@ -417,7 +417,7 @@ const statusVariant = computed(() => {
 }
 .json-toggle-expand {
   color: hsl(180 75% 35%);
-  border: 1.5px solid hsl(180 75% 35%);
+  border: 2px solid hsl(180 75% 35%);
   background: hsl(180 70% 40% / 0.1);
 }
 .json-toggle-expand:hover {
@@ -425,7 +425,7 @@ const statusVariant = computed(() => {
 }
 .json-toggle-collapse {
   color: hsl(0 75% 50%);
-  border: 1.5px solid hsl(0 75% 50%);
+  border: 2px solid hsl(0 75% 50%);
   background: hsl(0 70% 55% / 0.1);
 }
 .json-toggle-collapse:hover {
