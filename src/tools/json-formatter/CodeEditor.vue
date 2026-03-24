@@ -234,16 +234,17 @@ const renderLines = computed<RenderLine[]>(() => {
     return `<span class="${cls}" data-key="${key}">${label}</span>`
   }
 
-  function visit(node: JsonNode, depth: number) {
+  function visit(node: JsonNode, depth: number, isLast: boolean = true) {
     const isContainer = node.type === 'object' || node.type === 'array'
     const hasChildren = isContainer && node.children && node.children.length > 0
     const nodeKey = String(node.startLine)
     const isCollapsed = hasChildren && collapsedState.get(nodeKey) === true
+    const comma = isLast ? '' : ','
 
     if (!isContainer) {
       lines.push({
         lineNumber: node.startLine,
-        html: indentStr(depth) + keyHtml(node.key) + valueHtml(node.value, node.type),
+        html: indentStr(depth) + keyHtml(node.key) + valueHtml(node.value, node.type) + comma,
         key: nodeKey,
       })
       return
@@ -254,7 +255,7 @@ const renderLines = computed<RenderLine[]>(() => {
       const bracket = node.type === 'object' ? '{}' : '[]'
       lines.push({
         lineNumber: node.startLine,
-        html: indentStr(depth) + keyHtml(node.key) + bracket,
+        html: indentStr(depth) + keyHtml(node.key) + bracket + comma,
         key: nodeKey,
       })
       return
@@ -271,7 +272,7 @@ const renderLines = computed<RenderLine[]>(() => {
         lineNumber: node.startLine,
         html: indentStr(depth) + keyHtml(node.key)
           + openBracket + toggleBtn(nodeKey, true) + ' '
-          + `<span class="text-muted-foreground">${summary}</span>`,
+          + `<span class="text-muted-foreground">${summary}</span>` + comma,
         key: nodeKey,
       })
       return
@@ -284,14 +285,15 @@ const renderLines = computed<RenderLine[]>(() => {
       key: nodeKey,
     })
 
-    for (const child of node.children!) {
-      visit(child, depth + 1)
+    const children = node.children!
+    for (let i = 0; i < children.length; i++) {
+      visit(children[i], depth + 1, i === children.length - 1)
     }
 
     const closeBracket = node.type === 'object' ? '}' : ']'
     lines.push({
       lineNumber: node.endLine,
-      html: indentStr(depth) + closeBracket,
+      html: indentStr(depth) + closeBracket + comma,
       key: String(node.endLine) + '_close',
     })
   }
