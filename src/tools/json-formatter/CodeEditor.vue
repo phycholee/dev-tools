@@ -407,26 +407,26 @@ const statusVariant = computed(() => {
   width: 0.9rem;
   height: 0.9rem;
   margin: 0 1px;
-  border-radius: 3px;
-  font-size: 0.75rem;
+  padding: 0;
+  border-radius: 5px;
+  font-size: 0.8rem;
   font-weight: 900;
   line-height: 1;
   cursor: pointer;
   user-select: none;
   vertical-align: middle;
+  -webkit-text-stroke: 0.4px;
 }
 .json-toggle-expand {
-  color: hsl(180 75% 35%);
-  border: 2px solid hsl(180 75% 35%);
-  background: hsl(180 70% 40% / 0.1);
+  color: #00cfe8;
+  border: 2px solid #00cfe8;
 }
 .json-toggle-expand:hover {
   background: hsl(180 70% 40% / 0.22);
 }
 .json-toggle-collapse {
-  color: hsl(0 75% 50%);
-  border: 2px solid hsl(0 75% 50%);
-  background: hsl(0 70% 55% / 0.1);
+  color: #ea5455;
+  border: 2px solid #ea5455;
 }
 .json-toggle-collapse:hover {
   background: hsl(0 70% 55% / 0.22);
