@@ -7,7 +7,7 @@ import {
   parseDateString,
   getCurrentTimestamps,
   batchConvertTimestamps,
-} from '@/tools/timestamp-converter/timestamp'
+} from '../../../src/tools/timestamp-converter/timestamp'
 
 describe('Timestamp Converter Utility', () => {
   describe('detectTimestampUnit', () => {

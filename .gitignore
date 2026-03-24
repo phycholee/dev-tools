@@ -12,3 +12,8 @@ dist-ssr
 *.sln
 *.sw?
 screenshot-*.png
+
+# Test reports
+tests/report/
+test-results/
+tests/tests/

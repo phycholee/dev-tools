@@ -6,7 +6,7 @@ import {
   unescapeJson,
   validateJson,
   highlightJson,
-} from '@/tools/json-formatter/json'
+} from '../../../src/tools/json-formatter/json'
 
 describe('JSON Formatter Utility', () => {
   describe('formatJson', () => {

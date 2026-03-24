@@ -7,10 +7,10 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run --config tests/vitest.config.ts",
-    "test:e2e": "npx playwright test",
-    "test:visual": "npx playwright test --grep visual",
-    "test:all": "vitest run --config tests/vitest.config.ts && npx playwright test",
+    "test": "cd tests && npx vitest run",
+    "test:e2e": "cd tests && npx playwright test",
+    "test:visual": "cd tests && npx playwright test --grep visual",
+    "test:all": "cd tests && npx vitest run && npx playwright test",
     "test:report": "node tests/utils/reporter.js"
   },
   "dependencies": {
