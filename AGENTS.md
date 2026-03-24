@@ -9,9 +9,12 @@ npm install
 npm run dev          # Start dev server (Vite)
 npm run build        # Type check (vue-tsc) + build
 npm run preview      # Preview production build
+npm run test         # Unit tests (Vitest)
+npm run test:e2e     # E2E tests (Playwright)
+npm run test:all     # All tests
 ```
 
-**No test runner configured.** No eslint/prettier configured. TypeScript strict mode enforces code quality.
+**No eslint/prettier configured.** TypeScript strict mode enforces code quality.
 
 ## Project Structure
 
