@@ -1,6 +1,6 @@
 # DevTools 项目 - AI 长期记忆
 
-> 最后更新：2026-03-23 上午
+> 最后更新：2026-03-24
 > 用途：记录任务目标、历史步骤、中间结果、关键决策，支持迭代和中断恢复
 
 ---
@@ -136,7 +136,27 @@ df6207a fix(ui): change button active effect to translate-y-px
 09e6fe4 fix(style): force scrollbar always visible to prevent layout shift on navigation
 ```
 
-### 3.5 阶段五：亮色主题切换 ⏳ 待开发
+### 3.5 阶段五：JSON Tree View ✅ 已完成 (2026-03-24)
+
+**完成内容：**
+- [x] `parseJsonTree()` 函数 — 解析 JSON 为树结构，计算行号
+- [x] CodeEditor tree view — 折叠/展开对象和数组
+- [x] 折叠摘要：`Object{...}` / `Array[n]`
+- [x] `indent` prop 支持（跟随用户缩进设置）
+- [x] 13 个 parseJsonTree 单元测试
+- [x] 全部 8 个 E2E 测试通过
+
+**关键问题和教训（重要）：**
+| 问题 | 原因 | 解决方案 | 教训 |
+|------|------|----------|------|
+| 首次实现完全不能用 | 没测试就交付，parseJsonTree 解析格式化文本而非原始 JSON | 改为直接遍历 parsed JSON value 计算行号 | **必须先跑测试再交付** |
+| escape/unescape 输出显示异常 | parseJsonTree 把 escape 输出（合法 JSON 字符串）解析成功，JSON.stringify 把 `\n` 变成实际换行 | treeRoot 只在输出以 `{` 或 `[` 开头时激活 | 非 JSON 输出需要特殊处理 |
+| E2E 测试 DOM 选择器不兼容 | 模板结构改变导致 `div:has(> div.flex > pre)` 失效 | 保持 `div.flex > pre` 结构，tree/fallback 都用相同 DOM | 改动渲染层时必须验证 E2E 选择器 |
+
+**核心教训（2026-03-24）：**
+> **不测试不交付。** 首次实现跳过测试直接交付，结果完全不能用。TDD 不是可选项——先写测试、确认失败、再实现、再跑测试通过，这个流程必须严格遵守。E2E 测试和单元测试同等重要，改动 DOM 结构前必须确认选择器兼容性。
+
+### 3.6 阶段六：亮色主题切换 ⏳ 待开发
 
 **计划内容：**
 - [ ] 重构 globals.css CSS 变量体系（分离亮/暗色）
@@ -234,6 +254,8 @@ devtools/
 | 原生select样式与shadcn不一致 | 安装shadcn Select组件替换 | 2026-03-22 |
 | Card组件边框使用文字颜色而非border变量 | 添加`@layer base { * { border-color: var(--color-border) } }` | 2026-03-22 |
 | 首页导航到工具页时navbar（logo+badge）位移 | 两个原因叠加：① hero section 放在 AppHeader 中用 `v-if` 条件渲染，DOM 增删触发 reflow ② Timestamp 页面内容超出视口出现滚动条，JSON 页面用固定高度不出现，滚动条显隐导致页面宽度变化 ~15px | 2026-03-22 |
+| parseJsonTree 解析格式化文本导致数据丢失 | 首次实现用 formatted text 行解析，遇到 `"key": {` 这类行时丢失值，数组项被跳过 | 改为遍历 parsed JSON value 直接计算行号 | 2026-03-24 |
+| escape 输出进入 tree view 后 `\n` 变成实际换行 | escapeJson 输出是合法 JSON 字符串值，parseJsonTree 解析成功，JSON.stringify 把 `\n` escape sequence 变成实际换行 | treeRoot 仅在输出以 `{` 或 `[` 开头时激活 | 2026-03-24 |
 
 ### 5.4 主题切换设计决策 (2026-03-23)
 

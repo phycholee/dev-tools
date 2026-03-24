@@ -159,13 +159,43 @@ export const buttonVariants = cva("base-classes", {
 
 Every AI development task MUST follow this mandatory workflow:
 
-### Development Phases
+### ⚠️ MANDATORY: Design → Develop → Test → Complete
+
+**NO task is complete without ALL phases passing.**
 
 ```
-1. 需求分析 → 2. 设计 → 3. 实现 → 4. 测试 → 5. 提交
-                                       ↓
-                              自动化测试验收流程
+1. 需求分析 → 2. 设计 → 3. 实现 → 4. 测试 → 5. 完成
+       ↑                              ↓
+       └──── 测试失败则回到实现 ────────┘
 ```
+
+### Phase 1: Design (BEFORE any code)
+
+- [ ] 理解需求，确认边界条件
+- [ ] 检查现有代码模式和 E2E 测试选择器
+- [ ] 确认改动不会破坏现有测试
+- [ ] 如有歧义，必须先问用户
+
+### Phase 2: Develop (TDD mandatory)
+
+- [ ] 先写单元测试（红阶段：确认失败）
+- [ ] 实现功能代码
+- [ ] 跑单元测试（绿阶段：确认通过）
+- [ ] 跑 build 确认编译通过
+
+### Phase 3: Test (BEFORE claiming complete)
+
+- [ ] `npm run test` — 全部单元测试通过
+- [ ] `npm run test:e2e` — 全部 E2E 测试通过
+- [ ] `npm run build` — 编译通过
+- [ ] 如有失败：修复 → 重新测试 → 不跳过任何测试
+
+### ⛔ Hard Rules
+
+1. **不测试不交付** — 跑完测试才算完成
+2. **不跳过测试** — 失败必须修复，不删除测试
+3. **不伪造结果** — 测试输出必须真实
+4. **改动 DOM 前检查 E2E 选择器** — 确认兼容性
 
 ### Testing Phase (Mandatory)
 

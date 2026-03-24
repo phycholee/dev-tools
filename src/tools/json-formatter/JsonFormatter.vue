@@ -41,6 +41,7 @@
           mode="output"
           label="输出"
           :is-error="hasError"
+          :indent="indent"
           rounded="right"
         >
           <template #actions>

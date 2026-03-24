@@ -35,20 +35,43 @@
         <div v-if="isError" class="p-4 pl-16 text-destructive font-mono text-sm leading-relaxed">
           ⚠ {{ modelValue }}
         </div>
-        <!-- Normal output with line numbers -->
+        <!-- Normal output -->
         <div v-else ref="outputRef" tabindex="0" @keydown.ctrl.a.prevent="selectAllOutput">
-          <div 
-            v-for="(line, index) in highlightedLines" 
-            :key="index"
-            class="flex select-text"
-          >
-            <!-- Line number -->
-            <div class="w-12 flex-shrink-0 text-right pr-2 pl-2 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20">
-              {{ index + 1 }}
+          <!-- Tree view (valid JSON) -->
+          <template v-if="treeRoot">
+            <div 
+              v-for="line in renderLines" 
+              :key="line.key"
+              class="flex select-text"
+            >
+              <div class="w-12 flex-shrink-0 text-right pr-2 pl-2 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20">
+                {{ line.lineNumber }}
+              </div>
+              <button
+                v-if="line.isContainer"
+                @click.stop="toggleCollapse(line.key)"
+                class="w-5 flex-shrink-0 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer select-none"
+                :aria-label="line.isCollapsed ? '展开' : '折叠'"
+              >
+                {{ line.isCollapsed ? '▶' : '▼' }}
+              </button>
+              <div v-else class="w-5 flex-shrink-0" />
+              <pre class="flex-1 pl-1 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line.html"></code></pre>
             </div>
-            <!-- Line content -->
-            <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line"></code></pre>
-          </div>
+          </template>
+          <!-- Fallback: plain highlighted lines (non-JSON output) -->
+          <template v-else>
+            <div 
+              v-for="(line, index) in highlightedLines" 
+              :key="index"
+              class="flex select-text"
+            >
+              <div class="w-12 flex-shrink-0 text-right pr-2 pl-2 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20">
+                {{ index + 1 }}
+              </div>
+              <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line"></code></pre>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -56,11 +79,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, reactive } from 'vue'
 import { Badge } from '@/components/ui/badge'
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
-import { highlightJson } from './json'
+import { highlightJson, parseJsonTree, type JsonNode } from './json'
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -71,13 +94,15 @@ const props = withDefaults(defineProps<{
   statusType?: 'success' | 'error' | 'info'
   rounded?: 'all' | 'left' | 'right' | 'none'
   isError?: boolean
+  indent?: number
 }>(), {
   mode: 'input',
   label: 'Input',
   placeholder: 'Paste JSON here...',
   statusType: 'info',
   rounded: 'all',
-  isError: false
+  isError: false,
+  indent: 2
 })
 
 defineEmits<{
@@ -161,7 +186,147 @@ const extensions = computed(() => [
 const outputRef = ref<HTMLDivElement>()
 const outputContainerRef = ref<HTMLDivElement>()
 
-// Split highlighted content into lines for output
+// ─── Tree View ──────────────────────────────────────────────────────────────
+// Collapse state: key = "lineNumber", value = true if collapsed
+const collapsedState = reactive(new Map<string, boolean>())
+
+// Parse JSON into tree (only for objects/arrays, not primitives)
+const treeRoot = computed(() => {
+  if (!props.modelValue) return null
+  const trimmed = props.modelValue.trim()
+  if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return null
+  return parseJsonTree(props.modelValue)
+})
+
+interface RenderLine {
+  lineNumber: number
+  html: string
+  isContainer: boolean
+  isCollapsed: boolean
+  key: string
+  indent: number
+}
+
+// Flatten tree into visible render lines
+const renderLines = computed<RenderLine[]>(() => {
+  const root = treeRoot.value
+  if (!root) return []
+
+  const lines: RenderLine[] = []
+
+  function escapeHtml(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }
+
+  function valueHtml(value: unknown, type: JsonNode['type']): string {
+    switch (type) {
+      case 'string': return `<span class="json-string">"${escapeHtml(value as string)}"</span>`
+      case 'number': return `<span class="json-number">${value}</span>`
+      case 'boolean': return `<span class="json-boolean">${value}</span>`
+      case 'null': return '<span class="json-null">null</span>'
+      default: return ''
+    }
+  }
+
+  function keyHtml(key: string | undefined): string {
+    if (!key) return ''
+    return `<span class="json-key">"${escapeHtml(key)}"</span>: `
+  }
+
+  function indentStr(depth: number): string {
+    return ' '.repeat(props.indent).repeat(depth)
+  }
+
+  function visit(node: JsonNode, depth: number) {
+    const isContainer = node.type === 'object' || node.type === 'array'
+    const hasChildren = isContainer && node.children && node.children.length > 0
+    const isCollapsed = hasChildren && collapsedState.get(String(node.startLine)) === true
+
+    if (!isContainer) {
+      // Leaf: "key": value
+      lines.push({
+        lineNumber: node.startLine,
+        html: indentStr(depth) + keyHtml(node.key) + valueHtml(node.value, node.type),
+        isContainer: false,
+        isCollapsed: false,
+        key: String(node.startLine),
+        indent: depth,
+      })
+      return
+    }
+
+    // Empty container: {} or [] on one line
+    if (!hasChildren) {
+      const bracket = node.type === 'object' ? '{}' : '[]'
+      lines.push({
+        lineNumber: node.startLine,
+        html: indentStr(depth) + keyHtml(node.key) + bracket,
+        isContainer: false,
+        isCollapsed: false,
+        key: String(node.startLine),
+        indent: depth,
+      })
+      return
+    }
+
+    // Collapsed container
+    if (isCollapsed) {
+      const summary = node.type === 'object'
+        ? 'Object{...}'
+        : `Array[${node.children!.length}]`
+      lines.push({
+        lineNumber: node.startLine,
+        html: indentStr(depth) + keyHtml(node.key)
+          + `<span class="text-muted-foreground">${summary}</span>`,
+        isContainer: true,
+        isCollapsed: true,
+        key: String(node.startLine),
+        indent: depth,
+      })
+      return
+    }
+
+    // Expanded container
+    const openBracket = node.type === 'object' ? '{' : '['
+    const closeBracket = node.type === 'object' ? '}' : ']'
+
+    lines.push({
+      lineNumber: node.startLine,
+      html: indentStr(depth) + keyHtml(node.key) + openBracket,
+      isContainer: true,
+      isCollapsed: false,
+      key: String(node.startLine),
+      indent: depth,
+    })
+
+    for (const child of node.children!) {
+      visit(child, depth + 1)
+    }
+
+    lines.push({
+      lineNumber: node.endLine,
+      html: indentStr(depth) + closeBracket,
+      isContainer: false,
+      isCollapsed: false,
+      key: String(node.endLine) + '_close',
+      indent: depth,
+    })
+  }
+
+  visit(root, 0)
+  return lines
+})
+
+function toggleCollapse(key: string) {
+  const current = collapsedState.get(key)
+  if (current) {
+    collapsedState.delete(key)
+  } else {
+    collapsedState.set(key, true)
+  }
+}
+
+// Fallback: plain text lines when no tree (shouldn't happen for valid JSON)
 const highlightedLines = computed(() => {
   if (!props.modelValue) return ['']
   const highlighted = highlightJson(props.modelValue)
