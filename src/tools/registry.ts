@@ -23,6 +23,16 @@ export const tools: ToolDefinition[] = [
     category: '时间日期',
     component: () => import('./timestamp-converter/TimestampConverter.vue'),
     color: '#06b6d4' // 青色
+  },
+  {
+    id: 'url-codec',
+    name: 'URL编解码',
+    path: '/url-codec',
+    icon: '🔗',
+    description: 'URL编码与解码',
+    category: '编解码',
+    component: () => import('./url-codec/UrlCodec.vue'),
+    color: '#10b981'
   }
 ]
 
