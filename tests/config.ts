@@ -39,5 +39,6 @@ export const testConfig = {
   testDirs: [
     'json-formatter-test',
     'timestamp-converter-test',
+    'url-codec-test',
   ],
 }
