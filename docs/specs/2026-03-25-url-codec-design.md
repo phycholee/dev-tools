@@ -34,20 +34,36 @@
 | `encodeURIComponent` | URL 参数值 | 字母、数字、`- _ . ! ~ * ' ( )` |
 | `encodeURI` | 完整 URL | 额外保留 `: / ? # [ ] @ ! $ & ' ( ) * + , ; =` |
 
+关键区别：`encodeURIComponent("a=1&b=2")` → `"a%3D1%26b%3D2"`（编码 `=` 和 `&`），而 `encodeURI("a=1&b=2")` → `"a=1&b=2"`（保留 `=` 和 `&`）。这是两个函数存在的核心价值所在，单元测试必须覆盖此差异。
+
+两个编码函数在正常字符串输入下**不会抛出异常**（唯一例外：含孤立代理对的字符串对 `encodeURIComponent` 会抛 `URIError`，属极罕见的畸形字符串场景）。因此 `success` 字段在编码操作中始终为 `true`，函数签名与 `UrlCodecResult` 保持一致仅为统一接口风格。
+
 ### 2.3 解码策略
 
-1. 优先使用 `decodeURIComponent`（覆盖范围更广）
-2. 若抛出 `URIError`，fallback 到 `decodeURI`
-3. 两者均失败则返回错误信息
+解码分两类错误情形，处理方式不同：
+
+1. **保留字符序列**（如 `%23` → `#`）：`decodeURIComponent` 会抛 `URIError`（因为 `%23` 是保留字符），此时 fallback 到 `decodeURI` 可成功解码
+2. **非法百分号序列**（如 `%GG`）：`decodeURIComponent` 和 `decodeURI` 均会抛 `URIError`，fallback 无意义，直接返回错误
+
+实现逻辑：
+
+```
+try decodeURIComponent(input)
+  → 成功：返回 { success: true, output }
+  → URIError：try decodeURI(input)
+      → 成功：返回 { success: true, output }
+      → URIError：返回 { success: false, error: 原始错误信息 }
+```
 
 ### 2.4 边界条件
 
 | 场景 | 处理方式 |
 |------|---------|
 | 空输入 | "编码"/"解码"按钮 disabled，不执行操作 |
-| 解码非法序列（如 `%GG`） | Card 显示红色错误提示 + 具体原因 |
+| 解码非法序列（如 `%GG`） | Card 显示红色错误提示 + 具体原因，复制按钮 disabled |
 | 解码未编码的普通文本 | 正常返回原文，不报错 |
 | 编码已编码的文本 | 正常执行（幂等，对 `%` 再次编码为 `%25`） |
+| 结果 Card 处于错误状态 | 复制按钮 disabled（与 JSON formatter 保持一致） |
 
 ---
 
@@ -68,7 +84,7 @@
 │                                                     │
 │  [编码]  [解码]  ────────────────────────  [清除]   │
 │                                                     │
-│  ── 编码模式：两张并排 Card（grid-cols-1 lg:grid-cols-2）│
+│  ── 编码模式：两张并排 Card（grid-cols-1 lg:grid-cols-2）
 │  ┌──────────────────┐  ┌──────────────────────┐    │
 │  │ encodeURIComponent│  │ encodeURI            │    │
 │  │ 适用：参数值       │  │ 适用：完整 URL         │    │
@@ -122,22 +138,25 @@ export interface UrlCodecResult {
 }
 
 /**
- * Encode text using encodeURIComponent
- * Suitable for URL parameter values
+ * Encode text using encodeURIComponent.
+ * Suitable for URL parameter values — encodes =, &, #, /, etc.
+ * Always returns success: true for valid JS strings.
  * @param input - Plain text to encode
  */
 export function encodeURIComponentSafe(input: string): UrlCodecResult
 
 /**
- * Encode text using encodeURI
- * Suitable for full URLs (preserves structural characters)
+ * Encode text using encodeURI.
+ * Suitable for full URLs — preserves structural characters (: / ? # & = etc.)
+ * Always returns success: true for valid JS strings.
  * @param input - Full URL or plain text to encode
  */
 export function encodeURISafe(input: string): UrlCodecResult
 
 /**
- * Decode URL-encoded string
- * Tries decodeURIComponent first, falls back to decodeURI
+ * Decode URL-encoded string.
+ * Strategy: try decodeURIComponent → fallback to decodeURI → error.
+ * Returns success: false only when both decoders throw URIError (e.g. %GG).
  * @param input - URL-encoded string to decode
  */
 export function decodeUrlSafe(input: string): UrlCodecResult
@@ -146,6 +165,7 @@ export function decodeUrlSafe(input: string): UrlCodecResult
 ### 4.3 组件状态模型
 
 ```ts
+// Defined in UrlCodec.vue script setup
 type Mode = 'encode' | 'decode'
 
 const input = ref('')
@@ -159,14 +179,16 @@ const decodeResult = ref<UrlCodecResult | null>(null)
 
 - `[编码]`：`mode = 'encode'`，计算 `encodeComponentResult` + `encodeUriResult`
 - `[解码]`：`mode = 'decode'`，计算 `decodeResult`
-- `[清除]`：重置所有 ref 为初始值
-- 空输入时"编码"/"解码"按钮均为 `disabled`
+- `[清除]`：重置所有 ref 为初始值（`input = ''`，`mode = null`，结果全为 `null`）
+- 空输入（`input.trim() === ''`）时"编码"/"解码"按钮均为 `disabled`
 
 **结果 Card 展示：**
 
 - `mode === 'encode'` → `grid grid-cols-1 lg:grid-cols-2`，两张 Card
 - `mode === 'decode'` → 单张全宽 Card
 - `mode === null` → 不渲染结果区域
+
+**复制按钮 disabled 条件：** `!result.success`（与 JSON formatter 的 `hasError` 模式一致）
 
 ---
 
@@ -176,35 +198,41 @@ const decodeResult = ref<UrlCodecResult | null>(null)
 
 ```
 tests/url-codec-test/
+├── axe.config.ts          # axe-core 无障碍配置
 ├── unit/
 │   └── url.test.ts        # 纯函数单元测试（Vitest）
 ├── e2e/
 │   ├── url-codec.spec.ts  # 页面交互（Playwright）
-│   └── axe.spec.ts        # 无障碍审计（axe-core）
+│   └── axe.spec.ts        # 无障碍审计（axe-core，WCAG 2.1 AA）
 └── visual/
-    ├── baseline/           # 基准截图
-    └── visual.spec.ts      # 像素回归对比
+    ├── baseline/           # 基准截图（tests/url-codec-test/visual/baseline/）
+    └── visual.spec.ts      # 像素回归对比（1% 阈值）
 ```
 
 `tests/config.ts` 的 `testDirs` 需追加 `'url-codec-test'`。
 
-### 5.2 单元测试覆盖点
+### 5.2 单元测试覆盖点（`url.test.ts`）
 
 | 函数 | 用例 |
 |------|------|
-| `encodeURIComponentSafe` | 中文字符、空格、`& = +`、空字符串、已编码文本（幂等） |
-| `encodeURISafe` | 完整 URL 保留 `://`、`?`、`#`、`/`；中文参数被编码 |
-| `decodeUrlSafe` | 标准 `%XX` 序列、中文解码、普通文本原样返回、`%GG` 非法序列报错 |
+| `encodeURIComponentSafe` | 中文字符 → `%XX` 序列；空格 → `%20`；`& = +` 被编码；空字符串返回空；已编码文本（`%` → `%25`，幂等） |
+| `encodeURISafe` | 完整 URL 保留 `://`、`?`、`#`、`/`；中文参数被编码；**关键差异用例**：`"a=1&b=2"` → `"a=1&b=2"`（保留 `=` 和 `&`，与 encodeURIComponent 结果不同） |
+| `encodeURIComponent` vs `encodeURI` 差异 | 同一输入 `"a=1&b=2"`：前者 → `"a%3D1%26b%3D2"`，后者 → `"a=1&b=2"` |
+| `decodeUrlSafe` | 标准 `%XX` 序列；中文 `%E4%B8%AD%E6%96%87` → `"中文"`；普通文本原样返回；`%23` → `#`（fallback 到 decodeURI 成功）；`%GG` → `success: false` + 错误信息 |
 
-### 5.3 E2E 测试覆盖点
+### 5.3 E2E 测试覆盖点（`url-codec.spec.ts`）
 
 - 页面可访问，标题为"URL编解码"
-- 空输入时"编码"/"解码"按钮为 disabled
-- 输入内容后点"编码" → 两张 Card 出现，内容正确
-- 输入内容后点"解码" → 一张 Card 出现，内容正确
+- 空输入时"编码"/"解码"按钮为 `disabled`
+- 输入内容后点"编码" → 两张 Card 出现，`encodeURIComponent` 和 `encodeURI` 结果正确
+- 输入内容后点"解码" → 一张 Card 出现，解码结果正确
 - 编码 Card 点"复制" → toast 显示"已复制到剪贴板"
 - 点"清除" → 输入框清空，结果 Card 消失
-- 输入非法编码序列后点"解码" → 错误提示出现
+- 输入非法编码序列（如 `%GG`）后点"解码" → 错误提示出现，复制按钮 disabled
+
+### 5.4 无障碍测试（`axe.spec.ts`）
+
+使用 `@axe-core/playwright` 对工具页面进行 WCAG 2.1 AA 合规审计，配置见 `axe.config.ts`（与现有工具同模式）。
 
 ---
 
@@ -212,11 +240,12 @@ tests/url-codec-test/
 
 按照项目 TDD 强制流程：
 
-1. 先写 `url.ts` 工具函数
+1. 先写 `url.ts` 工具函数骨架
 2. 写单元测试（红阶段确认失败）
 3. 实现函数（绿阶段确认通过）
 4. 实现 `UrlCodec.vue` 组件
-5. 写 E2E 测试
-6. 写视觉回归测试
-7. `npm run build` 确认编译通过
-8. `npm run test && npm run test:e2e` 全部通过
+5. 写 E2E 测试 + axe 无障碍测试
+6. 写视觉回归测试（首次运行生成 baseline）
+7. 更新 `tests/config.ts` 追加 `'url-codec-test'`
+8. `npm run build` 确认编译通过
+9. `npm run test && npm run test:e2e` 全部通过
