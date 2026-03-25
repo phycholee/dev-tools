@@ -44,7 +44,7 @@
             <input
               v-model="timestampInput"
               type="text"
-              placeholder="输入时间戳，例如: 1710912345"
+              placeholder="输入时间戳，例如: 1710912345000"
               class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
               @input="convertTimestampToDate"
             />
@@ -169,7 +169,7 @@
           </div>
           <textarea
             v-model="batchInput"
-            placeholder="1710912345&#10;1710912346&#10;1710912347"
+            placeholder="1710912345000&#10;1710912346000&#10;1710912347000"
             class="h-32 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>

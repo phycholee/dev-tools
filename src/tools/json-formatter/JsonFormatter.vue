@@ -23,7 +23,7 @@
           v-model="input"
           mode="input"
           label="输入"
-          placeholder='粘贴 JSON 内容，例如: {"name": "DevTools"}'
+          placeholder='输入 JSON 内容，例如: {"name": "DevTools"}'
           rounded="left"
         />
       </div>
