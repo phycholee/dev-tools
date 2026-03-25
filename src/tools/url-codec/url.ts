@@ -15,6 +15,7 @@ export interface UrlCodecResult {
  * Suitable for URL parameter values — encodes =, &, #, /, spaces, etc.
  * Always returns success: true for valid JS strings.
  * @param input - Plain text to encode
+ * @returns UrlCodecResult with encoded output; success is always true
  */
 export function encodeURIComponentSafe(input: string): UrlCodecResult {
   return {
@@ -28,6 +29,7 @@ export function encodeURIComponentSafe(input: string): UrlCodecResult {
  * Suitable for full URLs — preserves structural characters (: / ? # & = etc.)
  * Always returns success: true for valid JS strings.
  * @param input - Full URL or plain text to encode
+ * @returns UrlCodecResult with encoded output; success is always true
  */
 export function encodeURISafe(input: string): UrlCodecResult {
   return {
@@ -42,6 +44,7 @@ export function encodeURISafe(input: string): UrlCodecResult {
  * to decodeURI as a defensive second attempt.
  * Returns success: false only when both decoders throw URIError (e.g. %GG).
  * @param input - URL-encoded string to decode
+ * @returns UrlCodecResult with decoded output, or error details on failure
  */
 export function decodeUrlSafe(input: string): UrlCodecResult {
   try {

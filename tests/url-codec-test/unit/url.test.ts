@@ -59,7 +59,7 @@ describe('URL Codec Utility', () => {
       expect(result.output).not.toContain('中文')
     })
 
-    it('KEY DIFFERENCE: should preserve = and & unlike encodeURIComponent', () => {
+    it('should preserve = and & (unlike encodeURIComponent which encodes them)', () => {
       const input = 'a=1&b=2'
       const uriComponentResult = encodeURIComponentSafe(input)
       const uriResult = encodeURISafe(input)
