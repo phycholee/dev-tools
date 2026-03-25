@@ -111,7 +111,7 @@ try decodeURIComponent(input)
   icon: '🔗',
   description: 'URL编码与解码',
   category: '编解码',
-  component: () => import('./url-codec/UrlCodec.vue'),
+  component: () => import('./url-codec/UrlCodec.vue'),  // 必填，懒加载
   color: '#10b981'  // 绿色
 }
 ```
