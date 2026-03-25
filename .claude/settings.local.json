@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vitest:*)",
+      "Bash(python3 -c \":*)",
+      "Bash(xargs grep:*)",
+      "Bash(find /e/llf/projects/dev-tools/tests/node_modules/playwright -name *.js)"
+    ]
+  }
+}

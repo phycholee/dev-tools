@@ -1,6 +1,6 @@
 # DevTools 项目 - AI 长期记忆
 
-> 最后更新：2026-03-24
+> 最后更新：2026-03-25
 > 用途：记录任务目标、历史步骤、中间结果、关键决策，支持迭代和中断恢复
 
 ---
@@ -157,7 +157,40 @@ df6207a fix(ui): change button active effect to translate-y-px
 **核心教训（2026-03-24）：**
 > **不测试不交付。** 首次实现跳过测试直接交付，结果完全不能用。TDD 不是可选项——先写测试、确认失败、再实现、再跑测试通过，这个流程必须严格遵守。E2E 测试和单元测试同等重要，改动 DOM 结构前必须确认选择器兼容性。
 
-### 3.6 阶段六：亮色主题切换 ⏳ 待开发
+### 3.6 阶段六：URL 编解码工具 ✅ 已完成 (2026-03-25)
+
+**完成内容：**
+- [x] `encodeURIComponentSafe` / `encodeURISafe` / `decodeUrlSafe` 纯工具函数
+- [x] UrlCodec.vue 组件：单输入框 + 编码/解码/清除按钮
+- [x] 编码模式：两张并排 Card（encodeURIComponent | encodeURI）
+- [x] 解码模式：一张全宽 Card，错误时显示红色提示
+- [x] 工具注册到 registry，分类"编解码"
+- [x] 全套测试：13 个单元测试 + 8 个 E2E + 4 个 axe + 4 个视觉回归
+
+**Git 提交（关键）：**
+```
+07cc2a4 feat(url-codec): add pure utility functions with unit tests
+feat(url-codec): add UrlCodec component, register tool, fix E2E selector
+test(url-codec): add WCAG 2.1 AA accessibility tests
+test(url-codec): add visual regression tests and register in config
+```
+
+**关键教训（Subagent 工作流）：**
+| 问题 | 原因 | 解决方案 | 教训 |
+|------|------|----------|------|
+| Task 4（实现组件）耗时约 70 分钟 | Task 3 写的 E2E 测试有 selector bug，`getByText('encodeURI')` 子字符串匹配命中 `encodeURIComponent`，Task 4 子 agent 误判为组件实现问题反复排查 | 单独派子 agent 修复 selector | **红阶段验收必须检查失败原因符合预期** |
+
+**Playwright 选择器注意事项：**
+- `getByText('encodeURI')` 会子字符串匹配，页面上有 `encodeURIComponent` 时 strict mode 报错
+- 需改为 `getByText('encodeURI', { exact: true })`
+- 凡是一个字符串是另一个字符串前缀/子串时，必须加 `{ exact: true }`
+
+**Subagent 工作流改进规则（2026-03-25）：**
+> 红阶段子 agent 完成后，必须验证测试失败的错误信息与预期一致。
+> - 预期"module not found" → 实际报 "strict mode: multiple elements" → 说明测试文件有 bug，必须在同一 Task 内修复，不能留给下一个 agent。
+> - Task 的 prompt 中应明确写出预期失败信息，子 agent 遇到不同错误时应立即上报而非调试实现代码。
+
+### 3.7 阶段七：亮色主题切换 ⏳ 待开发
 
 **计划内容：**
 - [ ] 重构 globals.css CSS 变量体系（分离亮/暗色）
