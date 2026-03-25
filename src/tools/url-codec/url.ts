@@ -11,30 +11,34 @@ export interface UrlCodecResult {
 }
 
 /**
- * Encode text using encodeURIComponent.
+ * Encode text using encodeURIComponent, preserving line structure.
+ * Each line is encoded independently so output line count matches input.
  * Suitable for URL parameter values — encodes =, &, #, /, spaces, etc.
- * Always returns success: true for valid JS strings.
- * @param input - Plain text to encode
+ * @param input - Plain text to encode (may contain newlines)
  * @returns UrlCodecResult with encoded output; success is always true
  */
 export function encodeURIComponentSafe(input: string): UrlCodecResult {
+  const lines = input.split('\n')
+  const encoded = lines.map(line => encodeURIComponent(line)).join('\n')
   return {
     success: true,
-    output: encodeURIComponent(input)
+    output: encoded
   }
 }
 
 /**
- * Encode text using encodeURI.
+ * Encode text using encodeURI, preserving line structure.
+ * Each line is encoded independently so output line count matches input.
  * Suitable for full URLs — preserves structural characters (: / ? # & = etc.)
- * Always returns success: true for valid JS strings.
- * @param input - Full URL or plain text to encode
+ * @param input - Full URL or plain text to encode (may contain newlines)
  * @returns UrlCodecResult with encoded output; success is always true
  */
 export function encodeURISafe(input: string): UrlCodecResult {
+  const lines = input.split('\n')
+  const encoded = lines.map(line => encodeURI(line)).join('\n')
   return {
     success: true,
-    output: encodeURI(input)
+    output: encoded
   }
 }
 

@@ -37,6 +37,18 @@ describe('URL Codec Utility', () => {
       expect(result.success).toBe(true)
       expect(result.output).toBe('%2520')
     })
+
+    it('should preserve line breaks - encode each line independently', () => {
+      const result = encodeURIComponentSafe('line1\nline2\nline3')
+      expect(result.success).toBe(true)
+      expect(result.output).toBe('line1\nline2\nline3')
+    })
+
+    it('should encode special chars on each line separately', () => {
+      const result = encodeURIComponentSafe('a=1&b=2\nc=3&d=4')
+      expect(result.success).toBe(true)
+      expect(result.output).toBe('a%3D1%26b%3D2\nc%3D3%26d%3D4')
+    })
   })
 
   describe('encodeURISafe', () => {
@@ -68,6 +80,12 @@ describe('URL Codec Utility', () => {
       expect(uriComponentResult.output).toBe('a%3D1%26b%3D2')
       // encodeURI preserves = and &
       expect(uriResult.output).toBe('a=1&b=2')
+    })
+
+    it('should preserve line breaks - encode each line independently', () => {
+      const result = encodeURISafe('https://example.com/path1\nhttps://example.com/path2')
+      expect(result.success).toBe(true)
+      expect(result.output).toBe('https://example.com/path1\nhttps://example.com/path2')
     })
   })
 

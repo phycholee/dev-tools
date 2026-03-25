@@ -42,10 +42,10 @@
       </div>
     </Card>
 
-    <!-- Encode results: two Cards side by side -->
+    <!-- Encode results: two Cards stacked vertically -->
     <div
       v-if="mode === 'encode'"
-      class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      class="flex flex-col gap-6"
     >
       <!-- encodeURIComponent result -->
       <Card class="p-4">
@@ -53,8 +53,8 @@
           <h2 class="text-sm font-semibold text-foreground">encodeURIComponent</h2>
         </div>
         <p class="text-xs text-muted-foreground mb-3">适用：URL 参数值（编码 = & # 等）</p>
-        <div class="p-3 rounded-md bg-muted min-h-[60px] flex items-start justify-between gap-2">
-          <span class="font-mono text-sm break-all select-all">{{ encodeComponentResult?.output }}</span>
+        <div class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto">
+          <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ encodeComponentResult?.output }}</pre>
           <Button
             variant="ghost"
             size="sm"
@@ -73,8 +73,8 @@
           <h2 class="text-sm font-semibold text-foreground">encodeURI</h2>
         </div>
         <p class="text-xs text-muted-foreground mb-3">适用：完整 URL（保留 : / ? # & = 等）</p>
-        <div class="p-3 rounded-md bg-muted min-h-[60px] flex items-start justify-between gap-2">
-          <span class="font-mono text-sm break-all select-all">{{ encodeUriResult?.output }}</span>
+        <div class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto">
+          <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ encodeUriResult?.output }}</pre>
           <Button
             variant="ghost"
             size="sm"
@@ -104,9 +104,9 @@
       <!-- Success state -->
       <div
         v-else-if="decodeResult?.success"
-        class="p-3 rounded-md bg-muted min-h-[60px] flex items-start justify-between gap-2"
+        class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto"
       >
-        <span class="font-mono text-sm break-all select-all">{{ decodeResult.output }}</span>
+        <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ decodeResult.output }}</pre>
         <Button
           variant="ghost"
           size="sm"
