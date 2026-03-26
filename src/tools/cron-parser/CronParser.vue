@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { parseCron, generateCron, type CronParseResult } from './cron'
 import { presets } from './presets'
 
@@ -85,24 +85,28 @@ watch(input, () => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <div class="flex items-center gap-2 mb-2">
-      <span class="text-xl font-semibold">⏰ Cron 表达式解析</span>
-      <span class="text-sm text-muted-foreground">Cron表达式可视化与解析工具</span>
+  <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">⏰</span>
+      <div>
+        <h1 class="text-xl font-bold text-foreground">Cron 表达式解析</h1>
+        <p class="text-sm text-muted-foreground">Cron表达式可视化与解析工具</p>
+      </div>
     </div>
 
-    <!-- Cron 输入 -->
-    <Card>
-      <CardHeader>
-        <CardTitle>Cron 表达式输入</CardTitle>
-      </CardHeader>
-      <CardContent class="space-y-4">
+    <!-- Cron 输入 + 常见预设 -->
+    <Card class="p-4">
+      <div class="flex items-center gap-2 mb-4">
+        <h2 class="text-lg font-semibold text-foreground">Cron 表达式</h2>
+      </div>
+      <div class="space-y-4">
         <div class="flex gap-2">
           <input
             v-model="input"
             type="text"
             placeholder="*/5 * * * *"
-            class="flex-1 px-3 py-2 bg-background border border-input rounded-md font-mono"
+            class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             :class="{ 'border-destructive': hasError }"
           />
           <Button @click="handleParse">解析</Button>
@@ -111,15 +115,6 @@ watch(input, () => {
         <p class="text-sm text-muted-foreground">
           格式：5位（分 时 日 月 周）或 6位（秒 分 时 日 月 周）
         </p>
-      </CardContent>
-    </Card>
-
-    <!-- 常见预设 -->
-    <Card>
-      <CardHeader>
-        <CardTitle>常见预设</CardTitle>
-      </CardHeader>
-      <CardContent>
         <div class="flex flex-wrap gap-2">
           <Button
             v-for="preset in presets"
@@ -131,16 +126,15 @@ watch(input, () => {
             {{ preset.name }}
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
 
-    <!-- 字段选择器 -->
-    <Card>
-      <CardHeader>
-        <CardTitle>字段选择器（双向编辑）</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="grid grid-cols-5 md:grid-cols-6 gap-4">
+    <!-- 字段选择器 + 解析结果 (side by side) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 字段选择器 -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">字段选择器（双向编辑）</h2>
+        <div class="grid grid-cols-5 md:grid-cols-6 gap-3">
           <template v-if="parseResult?.fields?.length">
             <div
               v-for="(field, index) in parseResult.fields"
@@ -151,62 +145,57 @@ watch(input, () => {
               <input
                 v-model="fields[index]"
                 type="text"
-                class="w-full mt-1 px-2 py-1 bg-background border border-input rounded-md font-mono text-center"
+                class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm"
                 :class="{ 'border-destructive': !field.valid }"
               />
               <p class="text-xs text-muted-foreground mt-1">{{ field.description }}</p>
             </div>
           </template>
           <template v-else>
-            <div class="text-center col-span-5">暂无字段定义</div>
+            <div class="text-center col-span-5 text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
           </template>
         </div>
-      </CardContent>
-    </Card>
+      </Card>
 
-    <!-- 解析结果 -->
-    <Card v-if="parseResult?.success">
-      <CardHeader>
-        <CardTitle>解析结果</CardTitle>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <div class="flex gap-2 flex-wrap">
-          <div
-            v-for="(field, idx) in parseResult.fields"
-            :key="idx"
-            class="px-3 py-2 bg-muted rounded-md text-center"
-          >
-            <div class="text-lg font-mono">{{ field.value }}</div>
-            <div class="text-xs text-muted-foreground">{{ field.label }}</div>
-            <div class="text-xs">{{ field.description }}</div>
+      <!-- 解析结果 -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">解析结果</h2>
+        <div v-if="parseResult?.success" class="space-y-4">
+          <div class="flex gap-2 flex-wrap">
+            <div
+              v-for="(field, idx) in parseResult.fields"
+              :key="idx"
+              class="px-3 py-2 bg-muted rounded-md text-center"
+            >
+              <div class="text-lg font-mono">{{ field.value }}</div>
+              <div class="text-xs text-muted-foreground">{{ field.label }}</div>
+              <div class="text-xs">{{ field.description }}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 text-sm">
+            <span>📝</span>
+            <span>{{ parseResult.description }}</span>
           </div>
         </div>
-        <div class="flex items-center gap-2">
-          <span>📝</span>
-          <span>{{ parseResult.description }}</span>
-        </div>
-      </CardContent>
-    </Card>
+        <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
+      </Card>
+    </div>
 
-    <!-- 接下来 5 次执行时间 -->
-    <Card v-if="parseResult?.success && parseResult.nextRuns?.length">
-      <CardHeader>
-        <CardTitle>接下来 5 次执行时间</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ul class="space-y-1 font-mono text-sm">
+    <!-- 接下来 5 次执行时间 + 时间线 (side by side) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- 接下来 5 次执行时间 -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">接下来 5 次执行时间</h2>
+        <ul v-if="parseResult?.success && parseResult.nextRuns?.length" class="space-y-1 font-mono text-sm">
           <li v-for="(run, idx) in parseResult.nextRuns" :key="idx">• {{ formatDate(run) }}</li>
         </ul>
-      </CardContent>
-    </Card>
+        <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
+      </Card>
 
-    <!-- 今日执行时间线（24h） -->
-    <Card v-if="parseResult?.success">
-      <CardHeader>
-        <CardTitle>今日执行时间线（24h）</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="grid grid-cols-12 gap-1 items-end">
+      <!-- 今日执行时间线（24h） -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">今日执行时间线（24h）</h2>
+        <div v-if="parseResult?.success" class="grid grid-cols-12 gap-1 items-end">
           <div v-for="hour in 24" :key="hour" class="text-center">
             <div class="text-xs text-muted-foreground">{{ hour - 1 }}</div>
             <div
@@ -215,7 +204,8 @@ watch(input, () => {
             />
           </div>
         </div>
-      </CardContent>
-    </Card>
+        <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
+      </Card>
+    </div>
   </div>
 </template>
