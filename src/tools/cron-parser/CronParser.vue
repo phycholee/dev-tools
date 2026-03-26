@@ -124,16 +124,16 @@ watch(input, () => {
             <div
               v-for="(field, index) in parseResult.fields"
               :key="index"
-              class="text-center"
+              class="text-center w-full"
             >
               <div class="text-sm font-medium mb-1">{{ field.label }}</div>
               <input
                 v-model="fields[index]"
                 type="text"
-                class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm"
+                class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm h-8"
                 :class="{ 'border-destructive': !field.valid }"
               />
-              <p class="text-xs text-muted-foreground mt-1">{{ field.description }}</p>
+              <p class="text-xs text-muted-foreground mt-1 truncate" :title="field.description">{{ field.description }}</p>
             </div>
           </template>
           <template v-else>
@@ -149,15 +149,15 @@ watch(input, () => {
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">解析结果</h2>
         <div v-if="parseResult?.success" class="space-y-4">
-          <div class="flex gap-2 flex-wrap">
+          <div class="grid grid-cols-5 md:grid-cols-6 gap-3">
             <div
               v-for="(field, idx) in parseResult.fields"
               :key="idx"
-              class="px-3 py-2 bg-muted rounded-md text-center"
+              class="px-2 py-2 bg-muted rounded-md text-center w-full"
             >
-              <div class="text-lg font-mono">{{ field.value }}</div>
+              <div class="text-lg font-mono h-6 flex items-center justify-center">{{ field.value }}</div>
               <div class="text-xs text-muted-foreground">{{ field.label }}</div>
-              <div class="text-xs">{{ field.description }}</div>
+              <div class="text-xs truncate" :title="field.description">{{ field.description }}</div>
             </div>
           </div>
           <div class="flex items-center gap-2 text-sm">

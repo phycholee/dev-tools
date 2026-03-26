@@ -6,8 +6,8 @@ export type FieldType = 'second' | 'minute' | 'hour' | 'day' | 'month' | 'weekda
 
 export interface CronField {
   value: string
-  label: string
-  description: string
+  label: string        // 中文标签：秒、分、时、日、月、周
+  description: string  // 中文描述
   valid: boolean
   error?: string
 }
@@ -21,13 +21,13 @@ export interface CronParseResult {
 }
 
 // Helper range definitions per field
-const FIELD_RANGES: Record<FieldType, { min: number; max: number }> = {
-  second: { min: 0, max: 59 },
-  minute: { min: 0, max: 59 },
-  hour: { min: 0, max: 23 },
-  day: { min: 1, max: 31 },
-  month: { min: 1, max: 12 },
-  weekday: { min: 0, max: 6 }, // 0 = Sunday
+const FIELD_RANGES: Record<FieldType, { min: number; max: number; label: string }> = {
+  second: { min: 0, max: 59, label: '秒' },
+  minute: { min: 0, max: 59, label: '分' },
+  hour: { min: 0, max: 23, label: '时' },
+  day: { min: 1, max: 31, label: '日' },
+  month: { min: 1, max: 12, label: '月' },
+  weekday: { min: 0, max: 6, label: '周' }, // 0 = 周日
 }
 
 // Note: helper utilities like clamp/parseSingleValue are not required for the public API
@@ -103,27 +103,30 @@ export function validateField(value: string, fieldType: FieldType): { valid: boo
 }
 
 function describeValue(fieldType: FieldType, value: string): string {
-  // Basic human readable description for a field value
+  const { label } = FIELD_RANGES[fieldType]
+  // 通配符
   if (value === '*') {
-    return `every ${fieldType}`
+    return `每${label}`
   }
-  if (value.includes('/')) {
-    const [base, step] = value.split('/')
-    if (base === '*') {
-      return `every ${step} ${fieldType}${step === '1' ? '' : ''}`
-    }
-    if (base.includes('-')) {
-      return `${base} with step ${step}`
-    }
+  // 步长 */N
+  if (value.startsWith('*/')) {
+    const step = value.slice(2)
+    return `每${step}${label}`
+  }
+  // 范围 N-M
+  if (value.includes('-') && !value.includes('/')) {
+    return `${value}范围`
+  }
+  // 范围+步长 N-M/O
+  if (value.includes('-') && value.includes('/')) {
     return `${value}`
   }
-  if (value.includes('-')) {
-    return `${value}`
-  }
+  // 列表 N,M,O
   if (value.includes(',')) {
-    return `at ${value}`
+    return `${value}`
   }
-  return `at ${value}`
+  // 单个值
+  return `第${value}${label}`
 }
 
 export function parseCron(expression: string, baseTime?: Date): CronParseResult {
@@ -145,7 +148,7 @@ export function parseCron(expression: string, baseTime?: Date): CronParseResult 
     const value = fields6[i]
     const type = fieldNames[i]
     const v = validateField(value, type)
-    const label = type.charAt(0).toUpperCase() + type.slice(1)
+    const { label } = FIELD_RANGES[type]  // 使用中文标签
     const field: CronField = {
       value,
       label,
