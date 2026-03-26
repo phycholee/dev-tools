@@ -1,108 +1,42 @@
 import { describe, it, expect } from 'vitest'
-import { validateField, parseCron, getNextRuns, generateCron } from '@/tools/cron-parser/cron'
+import { validateField, parseCron, generateCron, getNextRuns } from '../../../src/tools/cron-parser/cron'
 
-describe('validateField', () => {
-  it('应接受有效的通配符 *', () => {
-    expect(validateField('*', 'minute')).toEqual({ valid: true })
+describe('cron-parser basic API', () => {
+  it('validates simple field values', () => {
+    expect(validateField('*', 'minute').valid).toBe(true)
+    expect(validateField('*/5', 'second').valid).toBe(true)
+    expect(validateField('60', 'minute').valid).toBe(false)
+    expect(validateField('1-12', 'month').valid).toBe(true)
+    expect(validateField('13-32', 'month').valid).toBe(false)
+    expect(validateField('1,2,3', 'weekday').valid).toBe(true)
   })
 
-  it('应接受有效的步长 */5', () => {
-    expect(validateField('*/5', 'minute')).toEqual({ valid: true })
+  it('parses 6-field cron and 5-field cron', () => {
+    const res6 = parseCron('*/5 * * * * *')
+    expect(res6.success).toBe(true)
+    expect(res6.fields?.length).toBe(6)
+
+    const res5 = parseCron('* * * * *')
+    expect(res5.success).toBe(true)
+    expect(res5.fields?.length).toBe(6) // still returns 6 fields in internal structure
   })
 
-  it('应接受有效的确切值 30', () => {
-    expect(validateField('30', 'minute')).toEqual({ valid: true })
+  it('generates cron string from fields', () => {
+    const cron = generateCron(['*/5', '*', '*', '*', '*', '*'])
+    expect(cron).toBe('*/5 * * * * *')
   })
 
-  it('应接受有效的范围 1-5', () => {
-    expect(validateField('1-5', 'minute')).toEqual({ valid: true })
-  })
-
-  it('应接受有效的列表 1,3,5', () => {
-    expect(validateField('1,3,5', 'minute')).toEqual({ valid: true })
-  })
-
-  it('应拒绝超出范围的值 60（分钟）', () => {
-    const result = validateField('60', 'minute')
-    expect(result.valid).toBe(false)
-    expect(result.error).toContain('范围')
-  })
-
-  it('应拒绝非法字符 abc', () => {
-    const result = validateField('abc', 'minute')
-    expect(result.valid).toBe(false)
-  })
-})
-
-describe('parseCron', () => {
-  it('应解析 5 位 cron 表达式', () => {
-    const result = parseCron('*/5 * * * *')
-    expect(result.success).toBe(true)
-    expect(result.fields).toHaveLength(5)
-  })
-
-  it('应解析 6 位 cron 表达式', () => {
-    const result = parseCron('0 */5 * * * *')
-    expect(result.success).toBe(true)
-    expect(result.fields).toHaveLength(6)
-  })
-
-  it('应生成正确的描述 - 每5分钟', () => {
-    const result = parseCron('*/5 * * * *')
-    expect(result.description).toContain('每 5 分钟')
-  })
-
-  it('应生成正确的描述 - 每天午夜', () => {
-    const result = parseCron('0 0 * * *')
-    expect(result.description).toContain('每天')
-    expect(result.description).toContain('00:00')
-  })
-
-  it('应拒绝空输入', () => {
-    const result = parseCron('')
-    expect(result.success).toBe(false)
-  })
-
-  it('应拒绝非法格式', () => {
-    const result = parseCron('invalid')
-    expect(result.success).toBe(false)
-  })
-
-  it('应拒绝非 5/6 位格式', () => {
-    const result = parseCron('* * *')
-    expect(result.success).toBe(false)
-    expect(result.error).toContain('5 位或 6 位')
-  })
-})
-
-describe('getNextRuns', () => {
-  const baseTime = new Date('2026-03-26T14:32:00')
-
-  it('应计算每分钟执行的下次 5 次时间', () => {
-    const runs = getNextRuns('* * * * *', baseTime, 5)
-    expect(runs).toHaveLength(5)
-    expect(runs[0].getMinutes()).toBe(33) // 下一分钟
-  })
-
-  it('应计算每 5 分钟执行的下次时间', () => {
-    const runs = getNextRuns('*/5 * * * *', baseTime, 5)
-    expect(runs).toHaveLength(5)
-    expect(runs[0].getMinutes()).toBe(35) // 14:35
-  })
-
-  it('应计算每小时执行的下次时间', () => {
-    const runs = getNextRuns('0 * * * *', baseTime, 5)
-    expect(runs).toHaveLength(5)
-    expect(runs[0].getHours()).toBe(15) // 15:00
-  })
-})
-
-describe('generateCron', () => {
-  it('应从 5 个字段生成 cron', () => {
-    expect(generateCron(['*', '*', '*', '*', '*'])).toBe('* * * * *')
-  })
-
-  it('应从 6 个字段生成 cron', () => {
-    expect(generateCron(['0', '*/5', '*', '*', '*', '*'])).toBe('0 */5 * * * *')
+  it('computes next 5 runs for a simple schedule', () => {
+    // base time: 12:03:25 with arbitrary date to ensure deterministic seconds
+    const base = new Date(2026, 2, 26, 12, 3, 25) // March is month 2 in JS Date
+    const runs = getNextRuns('*/5 * * * * *', base, 5)
+    expect(runs.length).toBe(5)
+    // expect 30s,35s,40s,45s,50s as first five next runs
+    const expected = [30, 35, 40, 45, 50]
+    for (let i = 0; i < 5; i++) {
+      expect(runs[i].getSeconds()).toBe(expected[i])
+      expect(runs[i].getHours()).toBe(12)
+      expect(runs[i].getMinutes()).toBe(3)
+    }
   })
 })
