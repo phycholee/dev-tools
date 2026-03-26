@@ -18,7 +18,7 @@ describe('cron-parser basic API', () => {
 
     const res5 = parseCron('* * * * *')
     expect(res5.success).toBe(true)
-    expect(res5.fields?.length).toBe(6) // still returns 6 fields in internal structure
+    expect(res5.fields?.length).toBe(5) // 5 位格式返回 5 个字段
   })
 
   it('generates cron string from fields', () => {
@@ -38,5 +38,19 @@ describe('cron-parser basic API', () => {
       expect(runs[i].getHours()).toBe(12)
       expect(runs[i].getMinutes()).toBe(3)
     }
+  })
+
+  it('supports Quartz format with ? character', () => {
+    const res = parseCron('0 0 12 ? * *')
+    expect(res.success).toBe(true)
+    expect(res.fields?.length).toBe(6)
+    expect(res.format).toBe('quartz-6')
+  })
+
+  it('supports Quartz 7-field format', () => {
+    const res = parseCron('0 0 12 ? * * *')
+    expect(res.success).toBe(true)
+    expect(res.fields?.length).toBe(7)
+    expect(res.format).toBe('quartz-7')
   })
 })

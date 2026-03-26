@@ -2,18 +2,35 @@
 import { ref, watch, computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { parseCron, generateCron, type CronParseResult, type CronField } from './cron'
+import {
+  parseCron,
+  generateCron,
+  CRON_FORMATS,
+  type CronParseResult,
+  type CronField,
+  type CronFormat
+} from './cron'
 import { presets } from './presets'
 
-// 默认字段定义
-const defaultFields: CronField[] = [
-  { value: '*', label: '秒', description: '每秒', valid: true },
-  { value: '*', label: '分', description: '每分', valid: true },
-  { value: '*', label: '时', description: '每时', valid: true },
-  { value: '*', label: '日', description: '每日', valid: true },
-  { value: '*', label: '月', description: '每月', valid: true },
-  { value: '*', label: '周', description: '每周', valid: true }
-]
+// Cron 格式选择
+const selectedFormat = ref<CronFormat>('linux-6')
+
+// 默认字段定义（根据格式动态生成）
+const defaultFields = computed<CronField[]>(() => {
+  const formatConfig = CRON_FORMATS[selectedFormat.value]
+  return formatConfig.fields.map(fieldType => {
+    const labels: Record<string, string> = {
+      second: '秒', minute: '分', hour: '时',
+      day: '日', month: '月', weekday: '周', year: '年'
+    }
+    return {
+      value: '*',
+      label: labels[fieldType] || fieldType,
+      description: `每${labels[fieldType] || fieldType}`,
+      valid: true
+    }
+  })
+})
 
 // Cron input area
 const input = ref('')
@@ -22,11 +39,26 @@ const hasError = ref(false)
 
 // 显示的字段（默认或解析结果）
 const displayFields = computed(() => {
-  return parseResult.value?.fields?.length ? parseResult.value.fields : defaultFields
+  return parseResult.value?.fields?.length ? parseResult.value.fields : defaultFields.value
 })
 
-// 字段值数组
-const fields = ref<string[]>(['*', '*', '*', '*', '*', '*'])
+// 字段值数组（根据格式动态调整）
+const fields = ref<string[]>([])
+
+// 初始化字段值
+function initFields() {
+  const formatConfig = CRON_FORMATS[selectedFormat.value]
+  fields.value = formatConfig.fields.map(() => '*')
+}
+initFields()
+
+// 格式切换时重置
+watch(selectedFormat, () => {
+  initFields()
+  input.value = ''
+  parseResult.value = null
+  hasError.value = false
+})
 
 // Helpers
 function formatDate(date: Date): string {
@@ -46,7 +78,7 @@ function handleParse() {
     parseResult.value = null
     return
   }
-  const res = parseCron(input.value)
+  const res = parseCron(input.value, undefined, selectedFormat.value)
   parseResult.value = res
   hasError.value = !res.success
   if (res.success && res.fields) {
@@ -56,7 +88,7 @@ function handleParse() {
 
 function handleClear() {
   input.value = ''
-  fields.value = ['*', '*', '*', '*', '*', '*']
+  initFields()
   parseResult.value = null
   hasError.value = false
 }
@@ -68,16 +100,19 @@ function handleCopy() {
 }
 
 function applyPreset(expression: string) {
+  // 自动检测预设的格式
+  const detectedFormat: CronFormat = expression.trim().split(/\s+/).length === 5 ? 'linux-5' : 'linux-6'
+  selectedFormat.value = detectedFormat
   input.value = expression
   handleParse()
 }
 
-// Reactive: keep cron expression in sync with field changes (two-way editing)
+// Reactive: keep cron expression in sync with field changes
 watch(fields, (newFields) => {
   try {
     input.value = generateCron(newFields)
     hasError.value = false
-    parseResult.value = parseCron(input.value)
+    parseResult.value = parseCron(input.value, undefined, selectedFormat.value)
   } catch {
     hasError.value = true
   }
@@ -97,30 +132,48 @@ watch(input, () => {
       <span class="text-3xl">⏰</span>
       <div>
         <h1 class="text-xl font-bold text-foreground">Cron 表达式解析</h1>
-        <p class="text-sm text-muted-foreground">Cron表达式可视化与解析工具</p>
+        <p class="text-sm text-muted-foreground">支持 Linux 5/6 位和 Quartz/Spring 6/7 位格式</p>
       </div>
     </div>
 
-    <!-- 第一行：Cron 输入 + 常见预设 | 字段选择器 -->
+    <!-- 第一行：Cron 输入 + 字段选择器 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Cron 输入 + 常见预设 -->
+      <!-- Cron 输入 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">Cron 表达式</h2>
         <div class="space-y-4">
+          <!-- 格式选择器 -->
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground">格式：</span>
+            <select
+              v-model="selectedFormat"
+              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option v-for="(config, key) in CRON_FORMATS" :key="key" :value="key">
+                {{ config.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- 输入框 -->
           <div class="flex gap-2">
             <input
               v-model="input"
               type="text"
-              placeholder="*/5 * * * *"
+              :placeholder="CRON_FORMATS[selectedFormat].example"
               class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': hasError }"
             />
             <Button variant="outline" @click="handleCopy" title="复制">📋</Button>
             <Button variant="outline" @click="handleClear">清除</Button>
           </div>
+
+          <!-- 格式说明 -->
           <p class="text-sm text-muted-foreground">
-            格式：5位（分 时 日 月 周）或 6位（秒 分 时 日 月 周）
+            {{ CRON_FORMATS[selectedFormat].name }}：{{ CRON_FORMATS[selectedFormat].fieldCount }} 个字段
           </p>
+
+          <!-- 常见预设 -->
           <div class="flex flex-wrap gap-2">
             <Button
               v-for="preset in presets"
@@ -138,7 +191,7 @@ watch(input, () => {
       <!-- 字段选择器 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">字段选择器（双向编辑）</h2>
-        <div class="grid grid-cols-6 gap-3">
+        <div class="grid gap-3" :class="displayFields.length === 5 ? 'grid-cols-5' : displayFields.length === 6 ? 'grid-cols-6' : 'grid-cols-7'">
           <div
             v-for="(field, index) in displayFields"
             :key="index"
@@ -157,13 +210,13 @@ watch(input, () => {
       </Card>
     </div>
 
-    <!-- 第二行：解析结果 | 接下来 5 次执行时间 -->
+    <!-- 第二行：解析结果 + 执行时间 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 解析结果 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">解析结果</h2>
         <div class="space-y-4">
-          <div class="grid grid-cols-6 gap-3">
+          <div class="grid gap-3" :class="displayFields.length === 5 ? 'grid-cols-5' : displayFields.length === 6 ? 'grid-cols-6' : 'grid-cols-7'">
             <div
               v-for="(field, idx) in displayFields"
               :key="idx"
@@ -181,7 +234,7 @@ watch(input, () => {
         </div>
       </Card>
 
-      <!-- 接下来 5 次执行时间 -->
+      <!-- 执行时间 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">接下来 5 次执行时间</h2>
         <ul v-if="parseResult?.success && parseResult.nextRuns?.length" class="space-y-1 font-mono text-sm">
