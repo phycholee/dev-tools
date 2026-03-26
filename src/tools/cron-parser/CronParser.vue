@@ -1,48 +1,70 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { parseCron, generateCron, type CronParseResult } from './cron'
+import { parseCron, generateCron, type CronParseResult, type CronField } from './cron'
 import { presets } from './presets'
+
+// 默认字段定义
+const defaultFields: CronField[] = [
+  { value: '*', label: '秒', description: '每秒', valid: true },
+  { value: '*', label: '分', description: '每分', valid: true },
+  { value: '*', label: '时', description: '每时', valid: true },
+  { value: '*', label: '日', description: '每日', valid: true },
+  { value: '*', label: '月', description: '每月', valid: true },
+  { value: '*', label: '周', description: '每周', valid: true }
+]
 
 // Cron input area
 const input = ref('')
-// Field values for the 5 (sec optional) cron fields
-const fields = ref<string[]>(['*', '*', '*', '*', '*'])
 const parseResult = ref<CronParseResult | null>(null)
 const hasError = ref(false)
 
+// 显示的字段（默认或解析结果）
+const displayFields = computed(() => {
+  return parseResult.value?.fields?.length ? parseResult.value.fields : defaultFields
+})
+
+// 字段值数组
+const fields = ref<string[]>(['*', '*', '*', '*', '*', '*'])
+
 // Helpers
 function formatDate(date: Date): string {
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  })
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
 // Actions
 function handleParse() {
-  hasError.value = false
+  if (!input.value.trim()) {
+    hasError.value = false
+    parseResult.value = null
+    return
+  }
   const res = parseCron(input.value)
   parseResult.value = res
+  hasError.value = !res.success
   if (res.success && res.fields) {
-    // Sync fields from parse result
     fields.value = res.fields.map(f => f.value)
-  } else {
-    hasError.value = true
   }
 }
 
 function handleClear() {
   input.value = ''
-  fields.value = ['*', '*', '*', '*', '*']
+  fields.value = ['*', '*', '*', '*', '*', '*']
   parseResult.value = null
   hasError.value = false
+}
+
+function handleCopy() {
+  if (input.value) {
+    navigator.clipboard.writeText(input.value)
+  }
 }
 
 function applyPreset(expression: string) {
@@ -53,7 +75,6 @@ function applyPreset(expression: string) {
 // Reactive: keep cron expression in sync with field changes (two-way editing)
 watch(fields, (newFields) => {
   try {
-    // generateCron expects an array of field strings
     input.value = generateCron(newFields)
     hasError.value = false
     parseResult.value = parseCron(input.value)
@@ -64,9 +85,7 @@ watch(fields, (newFields) => {
 
 // Auto-parse when input changes
 watch(input, () => {
-  if (input.value.trim()) {
-    handleParse()
-  }
+  handleParse()
 })
 
 </script>
@@ -96,7 +115,7 @@ watch(input, () => {
               class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': hasError }"
             />
-            <Button @click="handleParse">解析</Button>
+            <Button variant="outline" @click="handleCopy" title="复制">📋</Button>
             <Button variant="outline" @click="handleClear">清除</Button>
           </div>
           <p class="text-sm text-muted-foreground">
@@ -119,26 +138,21 @@ watch(input, () => {
       <!-- 字段选择器 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">字段选择器（双向编辑）</h2>
-        <div class="grid grid-cols-5 md:grid-cols-6 gap-3">
-          <template v-if="parseResult?.fields?.length">
-            <div
-              v-for="(field, index) in parseResult.fields"
-              :key="index"
-              class="text-center w-full"
-            >
-              <div class="text-sm font-medium mb-1">{{ field.label }}</div>
-              <input
-                v-model="fields[index]"
-                type="text"
-                class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm h-8"
-                :class="{ 'border-destructive': !field.valid }"
-              />
-              <p class="text-xs text-muted-foreground mt-1 truncate" :title="field.description">{{ field.description }}</p>
-            </div>
-          </template>
-          <template v-else>
-            <div class="text-center col-span-5 text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
-          </template>
+        <div class="grid grid-cols-6 gap-3">
+          <div
+            v-for="(field, index) in displayFields"
+            :key="index"
+            class="text-center w-full"
+          >
+            <div class="text-sm font-medium mb-1">{{ field.label }}</div>
+            <input
+              v-model="fields[index]"
+              type="text"
+              class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm h-8"
+              :class="{ 'border-destructive': !field.valid }"
+            />
+            <p class="text-xs text-muted-foreground mt-1 truncate" :title="field.description">{{ field.description }}</p>
+          </div>
         </div>
       </Card>
     </div>
@@ -148,10 +162,10 @@ watch(input, () => {
       <!-- 解析结果 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">解析结果</h2>
-        <div v-if="parseResult?.success" class="space-y-4">
-          <div class="grid grid-cols-5 md:grid-cols-6 gap-3">
+        <div class="space-y-4">
+          <div class="grid grid-cols-6 gap-3">
             <div
-              v-for="(field, idx) in parseResult.fields"
+              v-for="(field, idx) in displayFields"
               :key="idx"
               class="px-2 py-2 bg-muted rounded-md text-center w-full"
             >
@@ -160,12 +174,11 @@ watch(input, () => {
               <div class="text-xs truncate" :title="field.description">{{ field.description }}</div>
             </div>
           </div>
-          <div class="flex items-center gap-2 text-sm">
+          <div v-if="parseResult?.description" class="flex items-center gap-2 text-sm">
             <span>📝</span>
             <span>{{ parseResult.description }}</span>
           </div>
         </div>
-        <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
       </Card>
 
       <!-- 接下来 5 次执行时间 -->
@@ -174,7 +187,7 @@ watch(input, () => {
         <ul v-if="parseResult?.success && parseResult.nextRuns?.length" class="space-y-1 font-mono text-sm">
           <li v-for="(run, idx) in parseResult.nextRuns" :key="idx">• {{ formatDate(run) }}</li>
         </ul>
-        <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
+        <div v-else class="text-muted-foreground text-sm">输入有效的 Cron 表达式后显示</div>
       </Card>
     </div>
   </div>

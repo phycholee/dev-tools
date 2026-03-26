@@ -5,6 +5,7 @@ export interface CronPreset {
 }
 
 export const presets: CronPreset[] = [
+  { name: '每秒', expression: '* * * * * *', description: '每秒执行' },
   { name: '每分钟', expression: '* * * * *', description: '每分钟执行' },
   { name: '每小时', expression: '0 * * * *', description: '每小时整点执行' },
   { name: '每天午夜', expression: '0 0 * * *', description: '每天 00:00 执行' },
