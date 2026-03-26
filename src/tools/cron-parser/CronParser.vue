@@ -25,19 +25,6 @@ function formatDate(date: Date): string {
   })
 }
 
-function hasExecutionInHour(hour: number): boolean {
-  if (!parseResult.value?.nextRuns) return false
-  const today = new Date()
-  return parseResult.value.nextRuns.some((run: Date) => {
-    return (
-      run.getFullYear() === today.getFullYear() &&
-      run.getMonth() === today.getMonth() &&
-      run.getDate() === today.getDate() &&
-      run.getHours() === hour
-    )
-  })
-}
-
 // Actions
 function handleParse() {
   hasError.value = false
@@ -95,42 +82,40 @@ watch(input, () => {
       </div>
     </div>
 
-    <!-- Cron 输入 + 常见预设 -->
-    <Card class="p-4">
-      <div class="flex items-center gap-2 mb-4">
-        <h2 class="text-lg font-semibold text-foreground">Cron 表达式</h2>
-      </div>
-      <div class="space-y-4">
-        <div class="flex gap-2">
-          <input
-            v-model="input"
-            type="text"
-            placeholder="*/5 * * * *"
-            class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
-            :class="{ 'border-destructive': hasError }"
-          />
-          <Button @click="handleParse">解析</Button>
-          <Button variant="outline" @click="handleClear">清除</Button>
-        </div>
-        <p class="text-sm text-muted-foreground">
-          格式：5位（分 时 日 月 周）或 6位（秒 分 时 日 月 周）
-        </p>
-        <div class="flex flex-wrap gap-2">
-          <Button
-            v-for="preset in presets"
-            :key="preset.expression"
-            variant="secondary"
-            size="sm"
-            @click="applyPreset(preset.expression)"
-          >
-            {{ preset.name }}
-          </Button>
-        </div>
-      </div>
-    </Card>
-
-    <!-- 字段选择器 + 解析结果 (side by side) -->
+    <!-- 第一行：Cron 输入 + 常见预设 | 字段选择器 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Cron 输入 + 常见预设 -->
+      <Card class="p-4">
+        <h2 class="text-lg font-semibold text-foreground mb-4">Cron 表达式</h2>
+        <div class="space-y-4">
+          <div class="flex gap-2">
+            <input
+              v-model="input"
+              type="text"
+              placeholder="*/5 * * * *"
+              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+              :class="{ 'border-destructive': hasError }"
+            />
+            <Button @click="handleParse">解析</Button>
+            <Button variant="outline" @click="handleClear">清除</Button>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            格式：5位（分 时 日 月 周）或 6位（秒 分 时 日 月 周）
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <Button
+              v-for="preset in presets"
+              :key="preset.expression"
+              variant="secondary"
+              size="sm"
+              @click="applyPreset(preset.expression)"
+            >
+              {{ preset.name }}
+            </Button>
+          </div>
+        </div>
+      </Card>
+
       <!-- 字段选择器 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">字段选择器（双向编辑）</h2>
@@ -156,7 +141,10 @@ watch(input, () => {
           </template>
         </div>
       </Card>
+    </div>
 
+    <!-- 第二行：解析结果 | 接下来 5 次执行时间 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 解析结果 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">解析结果</h2>
@@ -179,31 +167,13 @@ watch(input, () => {
         </div>
         <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
       </Card>
-    </div>
 
-    <!-- 接下来 5 次执行时间 + 时间线 (side by side) -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 接下来 5 次执行时间 -->
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">接下来 5 次执行时间</h2>
         <ul v-if="parseResult?.success && parseResult.nextRuns?.length" class="space-y-1 font-mono text-sm">
           <li v-for="(run, idx) in parseResult.nextRuns" :key="idx">• {{ formatDate(run) }}</li>
         </ul>
-        <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
-      </Card>
-
-      <!-- 今日执行时间线（24h） -->
-      <Card class="p-4">
-        <h2 class="text-lg font-semibold text-foreground mb-4">今日执行时间线（24h）</h2>
-        <div v-if="parseResult?.success" class="grid grid-cols-12 gap-1 items-end">
-          <div v-for="hour in 24" :key="hour" class="text-center">
-            <div class="text-xs text-muted-foreground">{{ hour - 1 }}</div>
-            <div
-              class="h-6 rounded mt-1"
-              :class="hasExecutionInHour(hour - 1) ? 'bg-primary' : 'bg-muted'"
-            />
-          </div>
-        </div>
         <div v-else class="text-muted-foreground text-sm">输入 Cron 表达式开始解析</div>
       </Card>
     </div>
