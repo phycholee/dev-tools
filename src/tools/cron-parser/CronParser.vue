@@ -13,6 +13,7 @@ import {
 import {
   parseCron,
   generateCron,
+  detectCronFormat,
   CRON_FORMATS,
   type CronParseResult,
   type CronField,
@@ -65,12 +66,32 @@ function initFields() {
 }
 initFields()
 
-// 格式切换时重置
+// 格式切换时重新解析（保留用户输入）
 watch(selectedFormat, () => {
   initFields()
-  input.value = ''
-  parseResult.value = null
-  hasError.value = false
+  // 手动切换格式时，跳过自动检测
+  if (isManualFormatChange.value) {
+    isManualFormatChange.value = false
+    if (input.value.trim()) {
+      const res = parseCron(input.value, undefined, selectedFormat.value)
+      parseResult.value = res
+      hasError.value = !res.success
+      if (res.success && res.fields) {
+        fields.value = res.fields.map(f => f.value)
+      }
+    } else {
+      parseResult.value = null
+      hasError.value = false
+    }
+  } else {
+    // 自动检测导致的格式变化，正常解析
+    if (input.value.trim()) {
+      handleParse()
+    } else {
+      parseResult.value = null
+      hasError.value = false
+    }
+  }
 })
 
 // Helpers
@@ -84,6 +105,9 @@ function formatDate(date: Date): string {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
+// 是否由用户手动切换格式（防止自动检测时触发循环）
+const isManualFormatChange = ref(false)
+
 // Actions
 function handleParse() {
   if (!input.value.trim()) {
@@ -91,6 +115,16 @@ function handleParse() {
     parseResult.value = null
     return
   }
+
+  // 自动检测格式（仅当用户没有手动切换时）
+  if (!isManualFormatChange.value) {
+    const detected = detectCronFormat(input.value)
+    if (detected !== selectedFormat.value) {
+      selectedFormat.value = detected
+      return // watch(selectedFormat) 会重新调用 handleParse
+    }
+  }
+
   const res = parseCron(input.value, undefined, selectedFormat.value)
   parseResult.value = res
   hasError.value = !res.success
@@ -137,6 +171,7 @@ watch(input, () => {
 // AcceptableValue from reka-ui can be string | number | bigint | object | null | undefined
 function handleFormatChange(value: unknown) {
   if (value && typeof value === 'string') {
+    isManualFormatChange.value = true
     selectedFormat.value = value as CronFormat
   }
 }
