@@ -65,7 +65,7 @@ export const CRON_FORMATS: Record<CronFormat, CronFormatConfig> = {
     supportsL: true,
     supportsW: true,
     supportsHash: true,
-    example: '0 0/5 * ? * *'
+    example: '0 0/5 * * * ?'
   },
   'quartz-7': {
     name: 'Quartz/Spring (7位)',
@@ -75,7 +75,7 @@ export const CRON_FORMATS: Record<CronFormat, CronFormatConfig> = {
     supportsL: true,
     supportsW: true,
     supportsHash: true,
-    example: '0 0/5 * ? * * *'
+    example: '0 0/5 * * * ? *'
   }
 }
 

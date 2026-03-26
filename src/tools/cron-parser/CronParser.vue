@@ -3,6 +3,14 @@ import { ref, watch, computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   parseCron,
   generateCron,
   CRON_FORMATS,
@@ -10,10 +18,15 @@ import {
   type CronField,
   type CronFormat
 } from './cron'
-import { presets } from './presets'
+import { presetsByFormat } from './presets'
 
 // Cron 格式选择
 const selectedFormat = ref<CronFormat>('linux-6')
+
+// 当前格式的预设
+const currentPresets = computed(() => {
+  return presetsByFormat[selectedFormat.value] || []
+})
 
 // 默认字段定义（根据格式动态生成）
 const defaultFields = computed<CronField[]>(() => {
@@ -100,26 +113,7 @@ function handleCopy() {
 }
 
 function applyPreset(expression: string) {
-  // 转换为当前格式
-  const parts = expression.trim().split(/\s+/)
-  const targetFieldCount = CRON_FORMATS[selectedFormat.value].fieldCount
-
-  let convertedExpression = expression
-
-  // 如果预设是 5 位，当前格式是 6 位或更多，添加秒字段
-  if (parts.length === 5 && targetFieldCount >= 6) {
-    convertedExpression = '0 ' + expression
-  }
-  // 如果预设是 6 位，当前格式是 5 位，去掉秒字段
-  else if (parts.length === 6 && targetFieldCount === 5) {
-    convertedExpression = parts.slice(1).join(' ')
-  }
-  // 如果当前格式是 7 位，添加年字段
-  if (convertedExpression.trim().split(/\s+/).length === 6 && targetFieldCount === 7) {
-    convertedExpression = convertedExpression.trim() + ' *'
-  }
-
-  input.value = convertedExpression
+  input.value = expression
   handleParse()
 }
 
@@ -138,6 +132,14 @@ watch(fields, (newFields) => {
 watch(input, () => {
   handleParse()
 })
+
+// Format change handler for shadcn select
+// AcceptableValue from reka-ui can be string | number | bigint | object | null | undefined
+function handleFormatChange(value: unknown) {
+  if (value && typeof value === 'string') {
+    selectedFormat.value = value as CronFormat
+  }
+}
 
 </script>
 
@@ -164,17 +166,25 @@ watch(input, () => {
               v-model="input"
               type="text"
               :placeholder="CRON_FORMATS[selectedFormat].example"
-              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
-              :class="{ 'border-destructive': hasError }"
+              class="flex-1 px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+              :class="hasError ? 'border-destructive text-destructive' : 'border-input'"
             />
-            <select
-              v-model="selectedFormat"
-              class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option v-for="(config, key) in CRON_FORMATS" :key="key" :value="key">
-                {{ config.name }}
-              </option>
-            </select>
+            <Select :model-value="selectedFormat" @update:model-value="handleFormatChange">
+              <SelectTrigger class="w-[180px]">
+                <SelectValue placeholder="选择格式" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem
+                    v-for="(config, key) in CRON_FORMATS"
+                    :key="key"
+                    :value="key"
+                  >
+                    {{ config.name }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
           <!-- 操作按钮 -->
@@ -188,17 +198,21 @@ watch(input, () => {
             {{ CRON_FORMATS[selectedFormat].name }}：{{ CRON_FORMATS[selectedFormat].fieldCount }} 个字段
           </p>
 
-          <!-- 常见预设 -->
-          <div class="flex flex-wrap gap-2">
-            <Button
-              v-for="preset in presets"
-              :key="preset.expression"
-              variant="secondary"
-              size="sm"
-              @click="applyPreset(preset.expression)"
-            >
-              {{ preset.name }}
-            </Button>
+          <!-- 常见预设（根据格式动态显示） -->
+          <div class="space-y-2">
+            <p class="text-sm font-medium text-foreground">常用预设</p>
+            <div class="flex flex-wrap gap-2">
+              <Button
+                v-for="preset in currentPresets"
+                :key="preset.expression"
+                variant="secondary"
+                size="sm"
+                @click="applyPreset(preset.expression)"
+                :title="preset.description"
+              >
+                {{ preset.name }}
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
@@ -245,6 +259,10 @@ watch(input, () => {
           <div v-if="parseResult?.description" class="flex items-center gap-2 text-sm">
             <span>📝</span>
             <span>{{ parseResult.description }}</span>
+          </div>
+          <div v-if="parseResult?.error" class="flex items-center gap-2 text-sm text-destructive">
+            <span>⚠️</span>
+            <span>{{ parseResult.error }}</span>
           </div>
         </div>
       </Card>
