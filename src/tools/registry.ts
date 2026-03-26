@@ -34,6 +34,17 @@ export const tools: ToolDefinition[] = [
     component: () => import('./url-codec/UrlCodec.vue'),
     color: '#10b981'
   }
+  ,
+  {
+    id: 'cron-parser',
+    name: 'Cron解析',
+    path: '/cron-parser',
+    icon: '⏰',
+    description: 'Cron表达式解析与可视化',
+    category: '开发辅助',
+    component: () => import('./cron-parser/CronParser.vue'),
+    color: '#f59e0b'
+  }
 ]
 
 /**
