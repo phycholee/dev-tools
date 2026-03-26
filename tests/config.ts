@@ -40,5 +40,6 @@ export const testConfig = {
     'json-formatter-test',
     'timestamp-converter-test',
     'url-codec-test',
+    'cron-parser-test',
   ],
 }
