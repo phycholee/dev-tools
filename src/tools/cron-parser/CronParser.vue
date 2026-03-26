@@ -100,10 +100,26 @@ function handleCopy() {
 }
 
 function applyPreset(expression: string) {
-  // 自动检测预设的格式
-  const detectedFormat: CronFormat = expression.trim().split(/\s+/).length === 5 ? 'linux-5' : 'linux-6'
-  selectedFormat.value = detectedFormat
-  input.value = expression
+  // 转换为当前格式
+  const parts = expression.trim().split(/\s+/)
+  const targetFieldCount = CRON_FORMATS[selectedFormat.value].fieldCount
+
+  let convertedExpression = expression
+
+  // 如果预设是 5 位，当前格式是 6 位或更多，添加秒字段
+  if (parts.length === 5 && targetFieldCount >= 6) {
+    convertedExpression = '0 ' + expression
+  }
+  // 如果预设是 6 位，当前格式是 5 位，去掉秒字段
+  else if (parts.length === 6 && targetFieldCount === 5) {
+    convertedExpression = parts.slice(1).join(' ')
+  }
+  // 如果当前格式是 7 位，添加年字段
+  if (convertedExpression.trim().split(/\s+/).length === 6 && targetFieldCount === 7) {
+    convertedExpression = convertedExpression.trim() + ' *'
+  }
+
+  input.value = convertedExpression
   handleParse()
 }
 
@@ -142,20 +158,7 @@ watch(input, () => {
       <Card class="p-4">
         <h2 class="text-lg font-semibold text-foreground mb-4">Cron 表达式</h2>
         <div class="space-y-4">
-          <!-- 格式选择器 -->
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground">格式：</span>
-            <select
-              v-model="selectedFormat"
-              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option v-for="(config, key) in CRON_FORMATS" :key="key" :value="key">
-                {{ config.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- 输入框 -->
+          <!-- 输入框 + 格式选择器 -->
           <div class="flex gap-2">
             <input
               v-model="input"
@@ -164,7 +167,19 @@ watch(input, () => {
               class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
               :class="{ 'border-destructive': hasError }"
             />
-            <Button variant="outline" @click="handleCopy" title="复制">📋</Button>
+            <select
+              v-model="selectedFormat"
+              class="px-3 py-2 bg-background border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option v-for="(config, key) in CRON_FORMATS" :key="key" :value="key">
+                {{ config.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="flex gap-2">
+            <Button variant="outline" @click="handleCopy" :disabled="!input">复制</Button>
             <Button variant="outline" @click="handleClear">清除</Button>
           </div>
 
