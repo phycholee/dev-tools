@@ -381,6 +381,10 @@ export function parseCron(expression: string, baseTime?: Date, format?: CronForm
 }
 
 export function generateCron(fields: string[]): string {
+  // 如果所有字段都为空，返回空字符串
+  if (fields.every(field => field.trim() === '')) {
+    return ''
+  }
   return fields.join(' ')
 }
 

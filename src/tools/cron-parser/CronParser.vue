@@ -38,7 +38,7 @@ const defaultFields = computed<CronField[]>(() => {
       day: '日', month: '月', weekday: '周', year: '年'
     }
     return {
-      value: '*',
+      value: '', // 不填充默认值，保持空状态
       label: labels[fieldType] || fieldType,
       description: `每${labels[fieldType] || fieldType}`,
       valid: true
@@ -59,16 +59,12 @@ const displayFields = computed(() => {
 // 字段值数组（根据格式动态调整）
 const fields = ref<string[]>([])
 
-// 初始化字段值
-function initFields() {
-  const formatConfig = CRON_FORMATS[selectedFormat.value]
-  fields.value = formatConfig.fields.map(() => '*')
-}
-initFields()
+// 初始化为空字符串数组，不填充默认值
+const formatConfig = CRON_FORMATS[selectedFormat.value]
+fields.value = formatConfig.fields.map(() => '')
 
 // 格式切换时重新解析（保留用户输入）
 watch(selectedFormat, () => {
-  initFields()
   // 手动切换格式时，跳过自动检测
   if (isManualFormatChange.value) {
     isManualFormatChange.value = false
@@ -80,6 +76,9 @@ watch(selectedFormat, () => {
         fields.value = res.fields.map(f => f.value)
       }
     } else {
+      // 输入框为空时，清空 fields 而不是填充默认值
+      const formatConfig = CRON_FORMATS[selectedFormat.value]
+      fields.value = formatConfig.fields.map(() => '')
       parseResult.value = null
       hasError.value = false
     }
@@ -88,6 +87,9 @@ watch(selectedFormat, () => {
     if (input.value.trim()) {
       handleParse()
     } else {
+      // 输入框为空时，清空 fields 而不是填充默认值
+      const formatConfig = CRON_FORMATS[selectedFormat.value]
+      fields.value = formatConfig.fields.map(() => '')
       parseResult.value = null
       hasError.value = false
     }
@@ -135,7 +137,9 @@ function handleParse() {
 
 function handleClear() {
   input.value = ''
-  initFields()
+  // 清空 fields 而不是填充默认值
+  const formatConfig = CRON_FORMATS[selectedFormat.value]
+  fields.value = formatConfig.fields.map(() => '')
   parseResult.value = null
   hasError.value = false
 }
@@ -156,7 +160,12 @@ watch(fields, (newFields) => {
   try {
     input.value = generateCron(newFields)
     hasError.value = false
-    parseResult.value = parseCron(input.value, undefined, selectedFormat.value)
+    // 只有当 input 不为空时才进行校验
+    if (input.value.trim()) {
+      parseResult.value = parseCron(input.value, undefined, selectedFormat.value)
+    } else {
+      parseResult.value = null
+    }
   } catch {
     hasError.value = true
   }
@@ -277,7 +286,7 @@ function handleFormatChange(value: unknown) {
     <!-- 第二行：解析结果 + 执行时间 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 解析结果 -->
-      <Card class="p-4">
+      <Card class="p-4 h-[194px]">
         <h2 class="text-lg font-semibold text-foreground mb-4">解析结果</h2>
         <div class="space-y-4">
           <div class="grid gap-3" :class="displayFields.length === 5 ? 'grid-cols-5' : displayFields.length === 6 ? 'grid-cols-6' : 'grid-cols-7'">
@@ -303,7 +312,7 @@ function handleFormatChange(value: unknown) {
       </Card>
 
       <!-- 执行时间 -->
-      <Card class="p-4">
+      <Card class="p-4 h-[194px]">
         <h2 class="text-lg font-semibold text-foreground mb-4">接下来 5 次执行时间</h2>
         <ul v-if="parseResult?.success && parseResult.nextRuns?.length" class="space-y-1 font-mono text-sm">
           <li v-for="(run, idx) in parseResult.nextRuns" :key="idx">• {{ formatDate(run) }}</li>
