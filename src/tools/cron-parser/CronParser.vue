@@ -198,6 +198,36 @@ function handleFormatChange(value: unknown) {
       </div>
     </div>
 
+    <!-- Help tip - Cron 是最复杂的工具，需要详细说明 -->
+    <div class="p-4 bg-muted/50 rounded-lg border border-border/50">
+      <div class="flex items-start gap-3">
+        <span class="text-muted-foreground text-lg">📚</span>
+        <div class="flex-1">
+          <div class="text-sm text-foreground font-medium mb-2">Cron 表达式快速指南</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+            <div>
+              <div class="font-medium text-foreground mb-1">Linux 格式（5 位）</div>
+              <div class="font-mono text-xs bg-background p-2 rounded border">* * * * *</div>
+              <div class="mt-1 text-xs">分 时 日 月 周</div>
+            </div>
+            <div>
+              <div class="font-medium text-foreground mb-1">Quartz 格式（6-7 位）</div>
+              <div class="font-mono text-xs bg-background p-2 rounded border">* * * * * * *</div>
+              <div class="mt-1 text-xs">秒 分 时 日 月 周 年(可选)</div>
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-muted-foreground">
+            <strong class="text-foreground">常用符号：</strong> 
+            <span class="font-mono">*</span> 任意值 · 
+            <span class="font-mono">,</span> 枚举 · 
+            <span class="font-mono">-</span> 范围 · 
+            <span class="font-mono">/</span> 步长 · 
+            <span class="font-mono">?</span> 不指定（仅日和周）
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 第一行：Cron 输入 + 字段选择器 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Cron 输入 -->

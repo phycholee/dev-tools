@@ -1,103 +1,343 @@
+/* Google Fonts - Plus Jakarta Sans for UI, JetBrains Mono for code */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
-/* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+/* ============================================
+   DevTools Typography System
+   Plus Jakarta Sans + JetBrains Mono
+   Modern, friendly, excellent readability
+   ============================================ */
 
-/* Light theme (default) */
+/* ============================================
+   DevTools Color System
+   Modern dual-theme with system preference support
+   Using OKLCH for perceptually uniform colors
+   ============================================ */
+
+/* Light theme (default) - Warm, modern, clean */
 :root {
-  /* Colors */
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(0 0% 9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 9%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(0 0% 9%);
-  --color-primary: hsl(0 0% 9%);
-  --color-primary-foreground: hsl(0 0% 98%);
-  --color-secondary: hsl(0 0% 96%);
-  --color-secondary-foreground: hsl(0 0% 9%);
-  --color-muted: hsl(0 0% 96%);
-  --color-muted-foreground: hsl(0 0% 45%);
-  --color-accent: hsl(0 0% 96%);
-  --color-accent-foreground: hsl(0 0% 9%);
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(0 0% 90%);
-  --color-input: hsl(0 0% 90%);
-  --color-ring: hsl(0 0% 15%);
+  /* Brand colors - Indigo-based */
+  --color-brand-hue: 239;
+  --color-brand: oklch(55% 0.2 var(--color-brand-hue));
+  --color-brand-light: oklch(65% 0.15 var(--color-brand-hue));
+  --color-brand-dark: oklch(45% 0.2 var(--color-brand-hue));
+
+  /* Background layers - warm gray tint */
+  --color-background: oklch(98.5% 0.003 250);
+  --color-background-secondary: oklch(97% 0.005 250);
+  --color-background-tertiary: oklch(95% 0.008 250);
+
+  /* Surface colors */
+  --color-card: oklch(99% 0.002 250);
+  --color-card-hover: oklch(97.5% 0.004 250);
+  --color-popover: oklch(99% 0.002 250);
+
+  /* Text colors */
+  --color-foreground: oklch(25% 0.02 250);
+  --color-foreground-secondary: oklch(45% 0.015 250);
+  --color-foreground-muted: oklch(55% 0.01 250);
+
+  /* Interactive colors */
+  --color-primary: var(--color-brand);
+  --color-primary-hover: var(--color-brand-light);
+  --color-primary-foreground: oklch(99% 0.005 250);
+
+  --color-secondary: oklch(93% 0.01 250);
+  --color-secondary-hover: oklch(90% 0.015 250);
+  --color-secondary-foreground: oklch(30% 0.02 250);
+
+  --color-muted: oklch(94% 0.008 250);
+  --color-muted-foreground: oklch(50% 0.01 250);
+
+  --color-accent: oklch(93% 0.015 var(--color-brand-hue));
+  --color-accent-foreground: oklch(35% 0.08 var(--color-brand-hue));
+
+  /* Semantic colors */
+  --color-success: oklch(55% 0.18 145);
+  --color-success-foreground: oklch(99% 0.005 145);
+  --color-warning: oklch(65% 0.15 75);
+  --color-warning-foreground: oklch(25% 0.05 75);
+  --color-destructive: oklch(55% 0.2 25);
+  --color-destructive-foreground: oklch(99% 0.005 25);
+  --color-info: oklch(55% 0.15 250);
+  --color-info-foreground: oklch(99% 0.005 250);
+
+  /* Border and input */
+  --color-border: oklch(90% 0.008 250);
+  --color-border-hover: oklch(85% 0.012 250);
+  --color-input: oklch(92% 0.006 250);
+  --color-input-focus: var(--color-brand);
+  --color-ring: oklch(55% 0.2 var(--color-brand-hue));
+  --color-ring-offset: var(--color-background);
 
   /* JSON syntax highlighting - light theme */
-  --json-key: #0451a5;
-  --json-string: #a31515;
-  --json-number: #098658;
-  --json-boolean: #0000ff;
-  --json-null: #0000ff;
+  --json-key: oklch(45% 0.15 250);
+  --json-string: oklch(50% 0.15 25);
+  --json-number: oklch(50% 0.12 145);
+  --json-boolean: oklch(50% 0.18 250);
+  --json-null: oklch(50% 0.18 250);
 
   /* Scrollbar - light theme */
-  --scrollbar-thumb: hsl(0 0% 75%);
-  --scrollbar-thumb-hover: hsl(0 0% 65%);
+  --scrollbar-thumb: oklch(80% 0.01 250);
+  --scrollbar-thumb-hover: oklch(70% 0.015 250);
+
+  /* Tool card colors */
+  --tool-json: oklch(55% 0.18 250);
+  --tool-timestamp: oklch(60% 0.15 195);
+  --tool-url: oklch(55% 0.15 145);
+  --tool-cron: oklch(65% 0.15 75);
 }
 
-/* Dark theme */
+/* Dark theme - Modern, layered, comfortable */
 .dark {
-  --color-background: hsl(0 0% 5%);
-  --color-foreground: hsl(0 0% 91%);
-  --color-card: hsl(0 0% 12%);
-  --color-card-foreground: hsl(0 0% 91%);
-  --color-popover: hsl(0 0% 12%);
-  --color-popover-foreground: hsl(0 0% 91%);
-  --color-primary: hsl(0 0% 98%);
-  --color-primary-foreground: hsl(0 0% 9%);
-  --color-secondary: hsl(0 0% 14%);
-  --color-secondary-foreground: hsl(0 0% 91%);
-  --color-muted: hsl(0 0% 18%);
-  --color-muted-foreground: hsl(0 0% 60%);
-  --color-accent: hsl(0 0% 18%);
-  --color-accent-foreground: hsl(0 0% 91%);
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(0 0% 14.9%);
-  --color-input: hsl(0 0% 14.9%);
-  --color-ring: hsl(0 0% 83%);
+  /* Brand colors - slightly lighter for dark mode */
+  --color-brand: oklch(65% 0.2 var(--color-brand-hue));
+  --color-brand-light: oklch(72% 0.15 var(--color-brand-hue));
+  --color-brand-dark: oklch(58% 0.2 var(--color-brand-hue));
+
+  /* Background layers - cool blue-gray tint */
+  --color-background: oklch(15% 0.015 250);
+  --color-background-secondary: oklch(18% 0.012 250);
+  --color-background-tertiary: oklch(22% 0.01 250);
+
+  /* Surface colors */
+  --color-card: oklch(20% 0.012 250);
+  --color-card-hover: oklch(23% 0.015 250);
+  --color-popover: oklch(20% 0.012 250);
+
+  /* Text colors */
+  --color-foreground: oklch(92% 0.005 250);
+  --color-foreground-secondary: oklch(75% 0.008 250);
+  --color-foreground-muted: oklch(60% 0.01 250);
+
+  /* Interactive colors */
+  --color-primary: var(--color-brand);
+  --color-primary-hover: var(--color-brand-light);
+  --color-primary-foreground: oklch(15% 0.02 250);
+
+  --color-secondary: oklch(25% 0.015 250);
+  --color-secondary-hover: oklch(28% 0.018 250);
+  --color-secondary-foreground: oklch(90% 0.005 250);
+
+  --color-muted: oklch(22% 0.012 250);
+  --color-muted-foreground: oklch(60% 0.01 250);
+
+  --color-accent: oklch(25% 0.08 var(--color-brand-hue));
+  --color-accent-foreground: oklch(85% 0.08 var(--color-brand-hue));
+
+  /* Semantic colors - adjusted for dark mode */
+  --color-success: oklch(65% 0.15 145);
+  --color-success-foreground: oklch(15% 0.02 145);
+  --color-warning: oklch(70% 0.12 75);
+  --color-warning-foreground: oklch(20% 0.04 75);
+  --color-destructive: oklch(60% 0.18 25);
+  --color-destructive-foreground: oklch(15% 0.02 25);
+  --color-info: oklch(65% 0.12 250);
+  --color-info-foreground: oklch(15% 0.02 250);
+
+  /* Border and input */
+  --color-border: oklch(28% 0.01 250);
+  --color-border-hover: oklch(35% 0.015 250);
+  --color-input: oklch(25% 0.008 250);
+  --color-input-focus: var(--color-brand);
+  --color-ring: oklch(65% 0.2 var(--color-brand-hue));
+  --color-ring-offset: var(--color-background);
 
   /* JSON syntax highlighting - dark theme */
-  --json-key: #9cdcfe;
-  --json-string: #ce9178;
-  --json-number: #b5cea8;
-  --json-boolean: #569cd6;
-  --json-null: #569cd6;
+  --json-key: oklch(72% 0.12 250);
+  --json-string: oklch(70% 0.12 45);
+  --json-number: oklch(72% 0.1 145);
+  --json-boolean: oklch(70% 0.14 250);
+  --json-null: oklch(70% 0.14 250);
 
   /* Scrollbar - dark theme */
-  --scrollbar-thumb: hsl(0 0% 25%);
-  --scrollbar-thumb-hover: hsl(0 0% 35%);
+  --scrollbar-thumb: oklch(30% 0.01 250);
+  --scrollbar-thumb-hover: oklch(35% 0.015 250);
+
+  /* Tool card colors - brighter for dark mode */
+  --tool-json: oklch(65% 0.18 250);
+  --tool-timestamp: oklch(68% 0.15 195);
+  --tool-url: oklch(65% 0.15 145);
+  --tool-cron: oklch(72% 0.15 75);
+}
+
+/* System preference support */
+@media (prefers-color-scheme: light) {
+  :root:not(.dark) {
+    /* Light theme is default, this ensures system preference is respected */
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    /* Apply dark theme variables when system prefers dark */
+    --color-brand: oklch(65% 0.2 var(--color-brand-hue));
+    --color-brand-light: oklch(72% 0.15 var(--color-brand-hue));
+    --color-brand-dark: oklch(58% 0.2 var(--color-brand-hue));
+    --color-background: oklch(15% 0.015 250);
+    --color-background-secondary: oklch(18% 0.012 250);
+    --color-background-tertiary: oklch(22% 0.01 250);
+    --color-card: oklch(20% 0.012 250);
+    --color-card-hover: oklch(23% 0.015 250);
+    --color-popover: oklch(20% 0.012 250);
+    --color-foreground: oklch(92% 0.005 250);
+    --color-foreground-secondary: oklch(75% 0.008 250);
+    --color-foreground-muted: oklch(60% 0.01 250);
+    --color-primary: var(--color-brand);
+    --color-primary-hover: var(--color-brand-light);
+    --color-primary-foreground: oklch(15% 0.02 250);
+    --color-secondary: oklch(25% 0.015 250);
+    --color-secondary-hover: oklch(28% 0.018 250);
+    --color-secondary-foreground: oklch(90% 0.005 250);
+    --color-muted: oklch(22% 0.012 250);
+    --color-muted-foreground: oklch(60% 0.01 250);
+    --color-accent: oklch(25% 0.08 var(--color-brand-hue));
+    --color-accent-foreground: oklch(85% 0.08 var(--color-brand-hue));
+    --color-success: oklch(65% 0.15 145);
+    --color-success-foreground: oklch(15% 0.02 145);
+    --color-warning: oklch(70% 0.12 75);
+    --color-warning-foreground: oklch(20% 0.04 75);
+    --color-destructive: oklch(60% 0.18 25);
+    --color-destructive-foreground: oklch(15% 0.02 25);
+    --color-info: oklch(65% 0.12 250);
+    --color-info-foreground: oklch(15% 0.02 250);
+    --color-border: oklch(28% 0.01 250);
+    --color-border-hover: oklch(35% 0.015 250);
+    --color-input: oklch(25% 0.008 250);
+    --color-input-focus: var(--color-brand);
+    --color-ring: oklch(65% 0.2 var(--color-brand-hue));
+    --color-ring-offset: var(--color-background);
+    --json-key: oklch(72% 0.12 250);
+    --json-string: oklch(70% 0.12 45);
+    --json-number: oklch(72% 0.1 145);
+    --json-boolean: oklch(70% 0.14 250);
+    --json-null: oklch(70% 0.14 250);
+    --scrollbar-thumb: oklch(30% 0.01 250);
+    --scrollbar-thumb-hover: oklch(35% 0.015 250);
+    --tool-json: oklch(65% 0.18 250);
+    --tool-timestamp: oklch(68% 0.15 195);
+    --tool-url: oklch(65% 0.15 145);
+    --tool-cron: oklch(72% 0.15 75);
+  }
 }
 
 /* Tailwind v4 theme configuration - references CSS variables */
 @theme {
+  /* ============================================
+     Typography System
+     Primary: Plus Jakarta Sans (modern, friendly, excellent readability)
+     Monospace: JetBrains Mono (code, data display)
+     
+     Font Loading Strategy:
+     - font-display: swap for minimal layout shift
+     - Only load weights we use: 400, 500, 600, 700
+     - Fallback to system fonts for instant render
+     ============================================ */
+  
   /* Font families */
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Colors - reference CSS variables for theme switching */
+  /* ============================================
+     Type Scale (Modular Scale 1.25)
+     Based on 1rem (16px) base
+     
+     Display: 2.441rem (39px) - Hero headings
+     H1: 1.953rem (31px) - Page titles
+     H2: 1.563rem (25px) - Section headings
+     H3: 1.25rem (20px) - Subsection headings
+     Body: 1rem (16px) - Default text
+     Small: 0.875rem (14px) - Secondary text
+     Caption: 0.75rem (12px) - Labels, badges
+     ============================================ */
+  
+  /* Font sizes - semantic tokens */
+  --text-display: 2.441rem;
+  --text-h1: 1.953rem;
+  --text-h2: 1.563rem;
+  --text-h3: 1.25rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+
+  /* Line heights - optimized for each context */
+  --leading-display: 1.1;
+  --leading-heading: 1.2;
+  --leading-body: 1.6;
+  --leading-tight: 1.3;
+
+  /* Font weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+
+  /* Brand colors */
+  --color-brand: var(--color-brand);
+  --color-brand-light: var(--color-brand-light);
+  --color-brand-dark: var(--color-brand-dark);
+
+  /* Background layers */
   --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
+  --color-background-secondary: var(--color-background-secondary);
+  --color-background-tertiary: var(--color-background-tertiary);
+
+  /* Surface colors */
   --color-card: var(--color-card);
-  --color-card-foreground: var(--color-card-foreground);
+  --color-card-hover: var(--color-card-hover);
+  --color-card-foreground: var(--color-foreground);
   --color-popover: var(--color-popover);
-  --color-popover-foreground: var(--color-popover-foreground);
+  --color-popover-foreground: var(--color-foreground);
+
+  /* Text colors */
+  --color-foreground: var(--color-foreground);
+  --color-foreground-secondary: var(--color-foreground-secondary);
+  --color-foreground-muted: var(--color-foreground-muted);
+
+  /* Interactive colors */
   --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
   --color-primary-foreground: var(--color-primary-foreground);
+
   --color-secondary: var(--color-secondary);
+  --color-secondary-hover: var(--color-secondary-hover);
   --color-secondary-foreground: var(--color-secondary-foreground);
+
   --color-muted: var(--color-muted);
   --color-muted-foreground: var(--color-muted-foreground);
+
   --color-accent: var(--color-accent);
   --color-accent-foreground: var(--color-accent-foreground);
+
+  /* Semantic colors */
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--color-warning-foreground);
   --color-destructive: var(--color-destructive);
   --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-info: var(--color-info);
+  --color-info-foreground: var(--color-info-foreground);
+
+  /* Border and input */
   --color-border: var(--color-border);
+  --color-border-hover: var(--color-border-hover);
   --color-input: var(--color-input);
+  --color-input-focus: var(--color-input-focus);
   --color-ring: var(--color-ring);
+  --color-ring-offset: var(--color-ring-offset);
+
+  /* Tool card colors */
+  --color-tool-json: var(--tool-json);
+  --color-tool-timestamp: var(--tool-timestamp);
+  --color-tool-url: var(--tool-url);
+  --color-tool-cron: var(--tool-cron);
 
   /* Border radius */
   --radius-lg: 0.625rem;
@@ -109,7 +349,20 @@
   --animate-slideInLeft: slideInLeft 0.3s ease-out backwards;
 }
 
-/* Keyframes */
+/* ============================================
+   Custom Easing Functions
+   Natural deceleration for modern feel
+   ============================================ */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ============================================
+   Keyframes
+   ============================================ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -132,19 +385,221 @@
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes checkmark {
+  0% { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   Animation Utility Classes
+   ============================================ */
+.animate-fadeIn {
+  animation: fadeIn 0.4s var(--ease-out-expo) backwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.3s var(--ease-out-expo) backwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s var(--ease-out-expo) backwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s var(--ease-out-expo) backwards;
+}
+
+.animate-shake {
+  animation: shake 0.5s var(--ease-out-expo);
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Staggered animations for lists */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+
+/* ============================================
+   Interaction States
+   ============================================ */
+
+/* Error shake for inputs */
+.input-error {
+  animation: shake 0.5s var(--ease-out-expo);
+  border-color: var(--color-destructive) !important;
+}
+
+/* Success pulse */
+.success-pulse {
+  animation: pulse 0.5s var(--ease-out-expo);
+}
+
+/* ============================================
+   Reduced Motion Support
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Base styles */
 @layer base {
   * {
     border-color: var(--color-border);
   }
-}
 
-html, body, #app {
-  height: 100%;
-  font-family: var(--font-sans);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  overflow-y: scroll;
+  /* Optimize font rendering */
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+  }
+
+  /* Base typography */
+  html, body, #app {
+    height: 100%;
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    font-weight: var(--font-normal);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    overflow-y: scroll;
+  }
+
+  /* Headings hierarchy */
+  h1, .text-display {
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h2, .text-h1 {
+    font-size: var(--text-h1);
+    line-height: var(--leading-heading);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h3, .text-h2 {
+    font-size: var(--text-h2);
+    line-height: var(--leading-heading);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h4, .text-h3 {
+    font-size: var(--text-h3);
+    line-height: var(--leading-tight);
+    font-weight: var(--font-semibold);
+  }
+
+  /* Body text */
+  p, .text-body {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    font-weight: var(--font-normal);
+  }
+
+  /* Secondary text */
+  .text-small {
+    font-size: var(--text-small);
+    line-height: var(--leading-body);
+    font-weight: var(--font-normal);
+  }
+
+  /* Labels and captions */
+  .text-caption {
+    font-size: var(--text-caption);
+    line-height: var(--leading-tight);
+    font-weight: var(--font-medium);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* Code and monospace */
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+    font-feature-settings: 'zero' 1, 'ss01' 1;
+  }
+
+  /* Tabular numbers for data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Better link styling */
+  a {
+    text-decoration-skip-ink: auto;
+    text-underline-offset: 0.15em;
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
 }
 
 /* JSON syntax highlighting colors */

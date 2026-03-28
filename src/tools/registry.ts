@@ -2,6 +2,14 @@ import type { ToolDefinition, ToolCategory } from '../types/tool'
 
 /**
  * 所有已注册的工具列表
+ * 
+ * 颜色现在通过 CSS 变量管理，定义在 globals.css 中：
+ * - --tool-json: JSON 格式化工具颜色
+ * - --tool-timestamp: 时间戳转换工具颜色
+ * - --tool-url: URL 编解码工具颜色
+ * - --tool-cron: Cron 解析工具颜色
+ * 
+ * ToolCard 组件根据工具 ID 自动应用对应的颜色类
  */
 export const tools: ToolDefinition[] = [
   {
@@ -12,7 +20,7 @@ export const tools: ToolDefinition[] = [
     description: 'JSON美化、转义',
     category: '数据处理',
     component: () => import('./json-formatter/JsonFormatter.vue'),
-    color: '#6366f1' // 靛蓝紫
+    // 颜色通过 CSS 变量 --tool-json 管理
   },
   {
     id: 'timestamp-converter',
@@ -22,7 +30,7 @@ export const tools: ToolDefinition[] = [
     description: '时间戳与日期互转',
     category: '时间日期',
     component: () => import('./timestamp-converter/TimestampConverter.vue'),
-    color: '#06b6d4' // 青色
+    // 颜色通过 CSS 变量 --tool-timestamp 管理
   },
   {
     id: 'url-codec',
@@ -32,9 +40,8 @@ export const tools: ToolDefinition[] = [
     description: 'URL编码与解码',
     category: '编解码',
     component: () => import('./url-codec/UrlCodec.vue'),
-    color: '#10b981'
-  }
-  ,
+    // 颜色通过 CSS 变量 --tool-url 管理
+  },
   {
     id: 'cron-parser',
     name: 'Cron解析',
@@ -43,7 +50,7 @@ export const tools: ToolDefinition[] = [
     description: 'Cron表达式解析与可视化',
     category: '开发辅助',
     component: () => import('./cron-parser/CronParser.vue'),
-    color: '#f59e0b'
+    // 颜色通过 CSS 变量 --tool-cron 管理
   }
 ]
 

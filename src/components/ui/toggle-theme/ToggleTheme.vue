@@ -7,29 +7,26 @@ const isDark = ref(true)
 
 function toggleTheme() {
   isDark.value = !isDark.value
-  updateTheme()
+  applyTheme()
 }
 
-function updateTheme() {
+function applyTheme() {
   if (isDark.value) {
     document.documentElement.classList.add('dark')
+    document.documentElement.classList.remove('light')
     localStorage.setItem('theme', 'dark')
   } else {
     document.documentElement.classList.remove('dark')
+    document.documentElement.classList.add('light')
     localStorage.setItem('theme', 'light')
   }
 }
 
 onMounted(() => {
-  // Check localStorage first, then system preference
-  const stored = localStorage.getItem('theme')
-  if (stored) {
-    isDark.value = stored === 'dark'
-  } else {
-    // Default to dark theme (existing behavior)
-    isDark.value = true
-  }
-  updateTheme()
+  // Load saved preference, default to dark
+  const savedTheme = localStorage.getItem('theme')
+  isDark.value = savedTheme !== 'light' // Default to dark
+  applyTheme()
 })
 </script>
 
@@ -39,6 +36,7 @@ onMounted(() => {
     size="icon"
     @click="toggleTheme"
     class="h-9 w-9 transition-all duration-200"
+    :title="isDark ? '切换为亮色' : '切换为深色'"
   >
     <Sun v-if="isDark" class="h-4 w-4" />
     <Moon v-else class="h-4 w-4" />

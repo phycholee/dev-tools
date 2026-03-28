@@ -16,25 +16,25 @@
 
         <!-- Action buttons -->
         <div class="flex flex-wrap items-center gap-2">
-          <Button @click="handleFormat" variant="default" size="sm">
+          <Button @click="handleFormat" variant="default" size="sm" title="格式化 JSON (自动执行)">
             格式化
           </Button>
-          <Button @click="handleCompress" variant="secondary" size="sm">
+          <Button @click="handleCompress" variant="secondary" size="sm" title="压缩为单行">
             压缩
           </Button>
-          <Button @click="handleEscape" variant="secondary" size="sm">
+          <Button @click="handleEscape" variant="secondary" size="sm" title="转义特殊字符">
             转义
           </Button>
-          <Button @click="handleUnescape" variant="secondary" size="sm">
+          <Button @click="handleUnescape" variant="secondary" size="sm" title="消除转义字符">
             消除转义
           </Button>
 
           <div class="w-px h-5 bg-border mx-1" />
 
-          <Button @click="handleCopy" variant="outline" size="sm" :disabled="!output || hasError">
+          <Button @click="handleCopy" variant="outline" size="sm" :disabled="!output || hasError" title="复制结果">
             复制
           </Button>
-          <Button @click="handleClear" variant="ghost" size="sm">
+          <Button @click="handleClear" variant="ghost" size="sm" title="清空输入和输出">
             清空
           </Button>
 
@@ -48,6 +48,7 @@
               :variant="indent === 2 ? 'default' : 'outline'"
               size="sm"
               class="h-7 px-2 text-xs"
+              title="2空格缩进"
             >
               2
             </Button>
@@ -56,9 +57,22 @@
               :variant="indent === 4 ? 'default' : 'outline'"
               size="sm"
               class="h-7 px-2 text-xs"
+              title="4空格缩进"
             >
               4
             </Button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help tip -->
+      <div class="mt-3 p-3 bg-muted/50 rounded-lg border border-border/50">
+        <div class="flex items-start gap-2">
+          <span class="text-muted-foreground text-sm">💡</span>
+          <div class="text-sm text-muted-foreground">
+            <strong class="text-foreground">使用提示：</strong> 
+            粘贴 JSON 到左侧输入框，工具会自动格式化并显示在右侧。支持美化、压缩、转义和消除转义操作。
+            <span class="text-xs opacity-75 ml-2">输入时自动格式化，无需手动点击</span>
           </div>
         </div>
       </div>

@@ -10,6 +10,19 @@
       </div>
     </div>
 
+    <!-- Help tip -->
+    <div class="p-3 bg-muted/50 rounded-lg border border-border/50">
+      <div class="flex items-start gap-2">
+        <span class="text-muted-foreground text-sm">💡</span>
+        <div class="text-sm text-muted-foreground">
+          <strong class="text-foreground">使用提示：</strong> 
+          <strong>encodeURIComponent</strong> 用于编码URL参数值（会编码 = & # 等字符）。
+          <strong>encodeURI</strong> 用于编码完整URL（保留 : / ? # & = 等字符）。
+          <span class="text-xs opacity-75 ml-2">解码时自动识别编码类型</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Input -->
     <Card class="p-4">
       <textarea

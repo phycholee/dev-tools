@@ -9,6 +9,18 @@
       </div>
     </div>
 
+    <!-- Help tip -->
+    <div class="p-3 bg-muted/50 rounded-lg border border-border/50">
+      <div class="flex items-start gap-2">
+        <span class="text-muted-foreground text-sm">💡</span>
+        <div class="text-sm text-muted-foreground">
+          <strong class="text-foreground">使用提示：</strong> 
+          支持秒和毫秒时间戳，自动检测格式。可选择时区进行转换。批量转换支持多行时间戳（每行一个）。
+          <span class="text-xs opacity-75 ml-2">示例：1710912345000 → 2024-03-20 10:05:45</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Current Timestamp Display -->
     <Card class="p-4">
       <div class="flex items-center gap-2 mb-4">
