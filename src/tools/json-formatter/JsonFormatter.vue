@@ -1,22 +1,75 @@
 <template>
   <div 
     ref="containerRef"
-    class="flex flex-col p-4 gap-4 w-full"
-    :class="isFullscreen ? 'fixed inset-0 z-50 bg-background max-w-none h-screen' : 'h-[calc(100vh-120px)] max-w-6xl mx-auto'"
+    class="flex flex-col w-full min-h-[calc(100vh-80px)]"
   >
-    <!-- Header -->
-    <div v-if="!isFullscreen" class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="text-3xl">{ }</span>
-        <div>
-          <h1 class="text-xl font-bold text-foreground">JSON格式化</h1>
-          <p class="text-sm text-muted-foreground">JSON美化、压缩、转义工具</p>
+    <!-- Header: max-w-6xl to align with DevTools header -->
+    <div class="max-w-6xl mx-auto w-full px-4 pt-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">{ }</span>
+          <div>
+            <h1 class="text-xl font-bold text-foreground">JSON格式化</h1>
+            <p class="text-sm text-muted-foreground">JSON美化、压缩、转义工具</p>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+          <Button @click="handleFormat" variant="default" size="sm">
+            格式化
+          </Button>
+          <Button @click="handleCompress" variant="secondary" size="sm">
+            压缩
+          </Button>
+          <Button @click="handleEscape" variant="secondary" size="sm">
+            转义
+          </Button>
+          <Button @click="handleUnescape" variant="secondary" size="sm">
+            消除转义
+          </Button>
+
+          <div class="w-px h-5 bg-border mx-1" />
+
+          <Button @click="handleCopy" variant="outline" size="sm" :disabled="!output || hasError">
+            复制
+          </Button>
+          <Button @click="handleClear" variant="ghost" size="sm">
+            清空
+          </Button>
+
+          <div class="w-px h-5 bg-border mx-1" />
+
+          <!-- Indent selector -->
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-muted-foreground">缩进:</span>
+            <Button
+              @click="indent = 2"
+              :variant="indent === 2 ? 'default' : 'outline'"
+              size="sm"
+              class="h-7 px-2 text-xs"
+            >
+              2
+            </Button>
+            <Button
+              @click="indent = 4"
+              :variant="indent === 4 ? 'default' : 'outline'"
+              size="sm"
+              class="h-7 px-2 text-xs"
+            >
+              4
+            </Button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Editor panels with resizable divider -->
-    <div ref="panelsRef" class="flex-1 flex min-h-0">
+    <!-- Editor panels: expand to full width when wide mode -->
+    <div 
+      ref="panelsRef" 
+      class="flex-1 flex min-h-0 pb-4 pt-4 mx-auto"
+      :class="isWide ? 'w-[calc(100%-2rem)] px-4' : 'max-w-6xl w-full px-4'"
+    >
       <!-- Input -->
       <div :style="{ width: inputWidth + '%' }" class="min-w-[200px]">
         <CodeEditor
@@ -48,61 +101,15 @@
             <Button
               variant="ghost"
               size="icon-sm"
-              @click="toggleFullscreen"
+              @click="toggleWide"
               class="h-6 w-6"
-              :aria-label="isFullscreen ? '退出全屏' : '全屏'"
+              :aria-label="isWide ? '退出宽屏' : '宽屏'"
             >
-              <Minimize2 v-if="isFullscreen" class="h-3.5 w-3.5" />
+              <Minimize2 v-if="isWide" class="h-3.5 w-3.5" />
               <Maximize2 v-else class="h-3.5 w-3.5" />
             </Button>
           </template>
         </CodeEditor>
-      </div>
-    </div>
-
-    <!-- Action buttons -->
-    <div class="flex flex-wrap items-center gap-3">
-      <Button @click="handleFormat" variant="default">
-        格式化
-      </Button>
-      <Button @click="handleCompress" variant="secondary">
-        压缩
-      </Button>
-      <Button @click="handleEscape" variant="secondary">
-        转义
-      </Button>
-      <Button @click="handleUnescape" variant="secondary">
-        消除转义
-      </Button>
-
-      <div class="w-px h-6 bg-border mx-2" />
-
-      <Button @click="handleCopy" variant="outline" :disabled="!output || hasError">
-        复制结果
-      </Button>
-      <Button @click="handleClear" variant="ghost">
-        清空
-      </Button>
-
-      <div class="w-px h-6 bg-border mx-2" />
-
-      <!-- Indent selector -->
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-muted-foreground">缩进:</span>
-        <Button
-          @click="indent = 2"
-          :variant="indent === 2 ? 'default' : 'outline'"
-          size="sm"
-        >
-          2空格
-        </Button>
-        <Button
-          @click="indent = 4"
-          :variant="indent === 4 ? 'default' : 'outline'"
-          size="sm"
-        >
-          4空格
-        </Button>
       </div>
     </div>
   </div>
@@ -121,12 +128,12 @@ const hasError = ref(false)
 const indent = ref(2)
 const toast = inject<(msg: string) => void>('toast')
 
-// Fullscreen
+// Wide mode
 const containerRef = ref<HTMLElement>()
-const isFullscreen = ref(false)
+const isWide = ref(false)
 
-function toggleFullscreen() {
-  isFullscreen.value = !isFullscreen.value
+function toggleWide() {
+  isWide.value = !isWide.value
 }
 
 // Resizable panels
