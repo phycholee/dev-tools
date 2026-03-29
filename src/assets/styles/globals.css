@@ -87,7 +87,7 @@
   --tool-timestamp: oklch(60% 0.15 195);
   --tool-url: oklch(55% 0.15 145);
   --tool-cron: oklch(65% 0.15 75);
-  --tool-base64: oklch(55% 0.15 280);
+  --tool-base64: oklch(60% 0.18 330);
 }
 
 /* Dark theme - Modern, layered, comfortable */
@@ -161,7 +161,7 @@
   --tool-timestamp: oklch(68% 0.15 195);
   --tool-url: oklch(65% 0.15 145);
   --tool-cron: oklch(72% 0.15 75);
-  --tool-base64: oklch(65% 0.15 280);
+  --tool-base64: oklch(68% 0.18 330);
 }
 
 /* System preference support */
