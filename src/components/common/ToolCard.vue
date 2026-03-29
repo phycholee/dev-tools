@@ -60,6 +60,7 @@ const toolAccentClass = computed(() => {
     'timestamp-converter': 'bg-tool-timestamp',
     'url-codec': 'bg-tool-url',
     'cron-parser': 'bg-tool-cron',
+    'base64-codec': 'bg-tool-base64',
   }
   return colorMap[props.tool.id] || 'bg-brand'
 })
@@ -70,6 +71,7 @@ const toolGlowClass = computed(() => {
     'timestamp-converter': 'bg-gradient-to-r from-transparent via-tool-timestamp to-transparent',
     'url-codec': 'bg-gradient-to-r from-transparent via-tool-url to-transparent',
     'cron-parser': 'bg-gradient-to-r from-transparent via-tool-cron to-transparent',
+    'base64-codec': 'bg-gradient-to-r from-transparent via-tool-base64 to-transparent',
   }
   return colorMap[props.tool.id] || 'bg-gradient-to-r from-transparent via-brand to-transparent'
 })
@@ -80,6 +82,7 @@ const toolIconContainerClass = computed(() => {
     'timestamp-converter': 'bg-tool-timestamp/10 border-tool-timestamp/20',
     'url-codec': 'bg-tool-url/10 border-tool-url/20',
     'cron-parser': 'bg-tool-cron/10 border-tool-cron/20',
+    'base64-codec': 'bg-tool-base64/10 border-tool-base64/20',
   }
   return colorMap[props.tool.id] || 'bg-brand/10 border-brand/20'
 })
@@ -90,6 +93,7 @@ const toolIconClass = computed(() => {
     'timestamp-converter': 'text-tool-timestamp',
     'url-codec': 'text-tool-url',
     'cron-parser': 'text-tool-cron',
+    'base64-codec': 'text-tool-base64',
   }
   return colorMap[props.tool.id] || 'text-brand'
 })
