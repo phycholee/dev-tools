@@ -41,5 +41,6 @@ export const testConfig = {
     'timestamp-converter-test',
     'url-codec-test',
     'cron-parser-test',
+    'base64-codec-test',
   ],
 }
