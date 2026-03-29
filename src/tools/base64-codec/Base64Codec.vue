@@ -17,7 +17,8 @@
         <div class="text-sm text-muted-foreground">
           <strong class="text-foreground">使用提示：</strong> 
           <strong>标准Base64</strong> 使用 + 和 / 字符。
-          <strong>URL安全Base64</strong> 使用 - 和 _ 字符，适合URL参数。
+          <strong>URL安全</strong> 使用 - 和 _ 字符，保留填充符 =，适合URL参数。
+          <strong>Base64url</strong> 使用 - 和 _ 字符，移除填充符，适合JWT令牌、URL路径、文件名。
           <span class="text-xs opacity-75 ml-2">解码时自动识别格式</span>
         </div>
       </div>
