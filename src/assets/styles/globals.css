@@ -87,6 +87,7 @@
   --tool-timestamp: oklch(60% 0.15 195);
   --tool-url: oklch(55% 0.15 145);
   --tool-cron: oklch(65% 0.15 75);
+  --tool-base64: oklch(55% 0.15 280);
 }
 
 /* Dark theme - Modern, layered, comfortable */
@@ -160,6 +161,7 @@
   --tool-timestamp: oklch(68% 0.15 195);
   --tool-url: oklch(65% 0.15 145);
   --tool-cron: oklch(72% 0.15 75);
+  --tool-base64: oklch(65% 0.15 280);
 }
 
 /* System preference support */
@@ -219,6 +221,7 @@
     --tool-timestamp: oklch(68% 0.15 195);
     --tool-url: oklch(65% 0.15 145);
     --tool-cron: oklch(72% 0.15 75);
+    --tool-base64: oklch(65% 0.15 280);
   }
 }
 
@@ -337,7 +340,8 @@
   --color-tool-json: var(--tool-json);
   --color-tool-timestamp: var(--tool-timestamp);
   --color-tool-url: var(--tool-url);
-  --color-tool-cron: var(--tool-cron);
+    --color-tool-cron: var(--tool-cron);
+    --color-tool-base64: var(--tool-base64);
 
   /* Border radius */
   --radius-lg: 0.625rem;

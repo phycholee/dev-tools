@@ -51,6 +51,15 @@ export const tools: ToolDefinition[] = [
     category: '开发辅助',
     component: () => import('./cron-parser/CronParser.vue'),
     // 颜色通过 CSS 变量 --tool-cron 管理
+  },
+  {
+    id: 'base64-codec',
+    name: 'Base64编解码',
+    path: '/base64-codec',
+    icon: '🔐',
+    description: 'Base64编码与解码，支持多种格式',
+    category: '编解码',
+    component: () => import('./base64-codec/Base64Codec.vue'),
   }
 ]
 
