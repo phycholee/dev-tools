@@ -3,7 +3,7 @@
   <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3">
-      <span class="text-3xl">🔐</span>
+      <Binary class="w-8 h-8 text-tool-base64" />
       <div>
         <h1 class="text-xl font-bold text-foreground">Base64编解码</h1>
         <p class="text-sm text-muted-foreground">Base64编码与解码工具，支持多种格式</p>
@@ -100,6 +100,7 @@
 import { ref, watch, inject } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Binary } from 'lucide-vue-next'
 import {
   encodeBase64,
   decodeBase64,

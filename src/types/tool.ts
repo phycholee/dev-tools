@@ -10,8 +10,8 @@ export interface ToolDefinition {
   name: string
   /** 路由路径 */
   path: string
-  /** 图标（文本或emoji） */
-  icon: string
+  /** 图标（emoji 字符串 或 Lucide 组件） */
+  icon: string | Component
   /** 工具简介 */
   description: string
   /** 分类（用于主页分组显示） */

@@ -2,7 +2,7 @@
   <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3">
-      <span class="text-3xl">⏱</span>
+      <Clock class="w-8 h-8 text-tool-timestamp" />
       <div>
         <h1 class="text-xl font-bold text-foreground">时间戳转换</h1>
         <p class="text-sm text-muted-foreground">时间戳与日期互转、时区转换</p>
@@ -234,6 +234,7 @@ import { ref, onMounted, onUnmounted, inject } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { Clock } from 'lucide-vue-next'
 import {
   Select,
   SelectContent,

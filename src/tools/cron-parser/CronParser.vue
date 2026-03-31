@@ -2,6 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { CalendarClock } from 'lucide-vue-next'
 import {
   Select,
   SelectContent,
@@ -191,7 +192,7 @@ function handleFormatChange(value: unknown) {
   <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3">
-      <span class="text-3xl">⏰</span>
+      <CalendarClock class="w-8 h-8 text-tool-cron" />
       <div>
         <h1 class="text-xl font-bold text-foreground">Cron 表达式解析</h1>
         <p class="text-sm text-muted-foreground">支持 Linux 5/6 位和 Quartz/Spring 6/7 位格式</p>

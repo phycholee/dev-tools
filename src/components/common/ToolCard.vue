@@ -22,7 +22,14 @@
           class="flex items-center justify-center w-20 h-20 rounded-xl shrink-0 transition-all duration-250 border group-hover:scale-105"
           :class="toolIconContainerClass"
         >
+          <component
+            v-if="typeof tool.icon !== 'string'"
+            :is="tool.icon"
+            class="w-9 h-9"
+            :class="toolIconClass"
+          />
           <span
+            v-else
             class="text-3xl transition-all duration-250"
             :class="toolIconClass"
           >
@@ -61,6 +68,7 @@ const toolAccentClass = computed(() => {
     'url-codec': 'bg-tool-url',
     'cron-parser': 'bg-tool-cron',
     'base64-codec': 'bg-tool-base64',
+    'regex-tester': 'bg-tool-regex',
   }
   return colorMap[props.tool.id] || 'bg-brand'
 })
@@ -72,6 +80,7 @@ const toolGlowClass = computed(() => {
     'url-codec': 'bg-gradient-to-r from-transparent via-tool-url to-transparent',
     'cron-parser': 'bg-gradient-to-r from-transparent via-tool-cron to-transparent',
     'base64-codec': 'bg-gradient-to-r from-transparent via-tool-base64 to-transparent',
+    'regex-tester': 'bg-gradient-to-r from-transparent via-tool-regex to-transparent',
   }
   return colorMap[props.tool.id] || 'bg-gradient-to-r from-transparent via-brand to-transparent'
 })
@@ -83,6 +92,7 @@ const toolIconContainerClass = computed(() => {
     'url-codec': 'bg-tool-url/10 border-tool-url/20',
     'cron-parser': 'bg-tool-cron/10 border-tool-cron/20',
     'base64-codec': 'bg-tool-base64/10 border-tool-base64/20',
+    'regex-tester': 'bg-tool-regex/10 border-tool-regex/20',
   }
   return colorMap[props.tool.id] || 'bg-brand/10 border-brand/20'
 })
@@ -94,6 +104,7 @@ const toolIconClass = computed(() => {
     'url-codec': 'text-tool-url',
     'cron-parser': 'text-tool-cron',
     'base64-codec': 'text-tool-base64',
+    'regex-tester': 'text-tool-regex',
   }
   return colorMap[props.tool.id] || 'text-brand'
 })

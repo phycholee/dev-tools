@@ -7,7 +7,7 @@
     <div class="max-w-6xl mx-auto w-full px-4 pt-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <span class="text-3xl">{ }</span>
+          <Braces class="w-8 h-8 text-tool-json" />
           <div>
             <h1 class="text-xl font-bold text-foreground">JSON格式化</h1>
             <p class="text-sm text-muted-foreground">JSON美化、压缩、转义工具</p>
@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import { ref, watch, inject, onUnmounted } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Maximize2, Minimize2 } from 'lucide-vue-next'
+import { Maximize2, Minimize2, Braces } from 'lucide-vue-next'
 import CodeEditor from './CodeEditor.vue'
 import { formatJson, compressJson, escapeJson, unescapeJson } from './json'
 

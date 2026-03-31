@@ -4,3 +4,8 @@
 
 2026-03-26
 用户输入cron表达式的时候，自动检测select类型，然后切换匹配的类型。输入框不要有默认值，有placeholder即可。同时切换select的时候，不要去掉用户输入的值 
+
+
+## icon
+
+npx skills add nweii/agent-stuff@suggest-lucide-icons -g -y

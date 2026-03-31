@@ -1,6 +1,6 @@
 # DevTools 项目 - AI 长期记忆
 
-> 最后更新：2026-03-25
+> 最后更新：2026-03-31
 > 用途：记录任务目标、历史步骤、中间结果、关键决策，支持迭代和中断恢复
 
 ---
@@ -347,7 +347,24 @@ interface ToolDefinition {
 1. 在 `src/tools/` 下创建工具目录
 2. 创建工具组件
 3. 在 `registry.ts` 中注册工具
-4. 自动出现在侧边栏、主页和路由中
+4. 在 `globals.css` 中添加 `--tool-<name>` CSS 变量（亮色+暗色+@media prefers-color-scheme）
+5. **在 `ToolCard.vue` 中添加颜色映射**（4处：toolAccentClass、toolGlowClass、toolIconContainerClass、toolIconClass）
+6. 自动出现在侧边栏、主页和路由中
+
+### ⚠️ 反复出现的问题：新增工具忘记添加 ToolCard 颜色映射
+
+**问题：** 新工具在主页卡片显示蓝色（fallback 到 brand 颜色），而非预期的工具专属颜色。
+
+**原因：** `ToolCard.vue` 有 4 个硬编码的颜色映射表（`toolAccentClass`、`toolGlowClass`、`toolIconContainerClass`、`toolIconClass`），新增工具时必须手动添加，否则 fallback 到 `bg-brand`。
+
+**已发生次数：** 2 次（base64-codec、regex-tester）
+
+**教训：** 添加新工具时，必须同时检查以下 3 个文件：
+- `registry.ts` — 工具注册
+- `globals.css` — CSS 变量定义
+- `ToolCard.vue` — 颜色映射（4 处）
+
+**TODO：** 考虑重构 ToolCard 颜色映射，改为动态读取 registry 中的 color 字段，避免手动维护映射表。
 
 ---
 

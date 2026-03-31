@@ -1,4 +1,12 @@
 import type { ToolDefinition, ToolCategory } from '../types/tool'
+import {
+  Braces,
+  Clock,
+  Link,
+  CalendarClock,
+  Binary,
+  TextSearch,
+} from 'lucide-vue-next'
 
 /**
  * 所有已注册的工具列表
@@ -16,7 +24,7 @@ export const tools: ToolDefinition[] = [
     id: 'json-formatter',
     name: 'JSON格式化',
     path: '/json-formatter',
-    icon: '{ }',
+    icon: Braces,
     description: 'JSON美化、转义',
     category: '数据处理',
     component: () => import('./json-formatter/JsonFormatter.vue'),
@@ -26,7 +34,7 @@ export const tools: ToolDefinition[] = [
     id: 'timestamp-converter',
     name: '时间戳转换',
     path: '/timestamp-converter',
-    icon: '⏱',
+    icon: Clock,
     description: '时间戳与日期互转',
     category: '时间日期',
     component: () => import('./timestamp-converter/TimestampConverter.vue'),
@@ -36,7 +44,7 @@ export const tools: ToolDefinition[] = [
     id: 'url-codec',
     name: 'URL编解码',
     path: '/url-codec',
-    icon: '🔗',
+    icon: Link,
     description: 'URL编码与解码',
     category: '编解码',
     component: () => import('./url-codec/UrlCodec.vue'),
@@ -44,9 +52,9 @@ export const tools: ToolDefinition[] = [
   },
   {
     id: 'cron-parser',
-    name: 'Cron解析',
+    name: 'Cron表达式解析',
     path: '/cron-parser',
-    icon: '⏰',
+    icon: CalendarClock,
     description: 'Cron表达式解析与可视化',
     category: '开发辅助',
     component: () => import('./cron-parser/CronParser.vue'),
@@ -56,10 +64,19 @@ export const tools: ToolDefinition[] = [
     id: 'base64-codec',
     name: 'Base64编解码',
     path: '/base64-codec',
-    icon: '🔐',
-    description: 'Base64编码与解码，支持多种格式',
+    icon: Binary,
+    description: 'Base64编码与解码',
     category: '编解码',
     component: () => import('./base64-codec/Base64Codec.vue'),
+  },
+  {
+    id: 'regex-tester',
+    name: '正则测试',
+    path: '/regex-tester',
+    icon: TextSearch,
+    description: '正则表达式匹配',
+    category: '开发辅助',
+    component: () => import('./regex-tester/RegexTester.vue'),
   }
 ]
 

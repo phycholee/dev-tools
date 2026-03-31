@@ -3,7 +3,7 @@
   <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3">
-      <span class="text-3xl">🔗</span>
+      <Link class="w-8 h-8 text-tool-url" />
       <div>
         <h1 class="text-xl font-bold text-foreground">URL 编解码</h1>
         <p class="text-sm text-muted-foreground">URL编码与解码工具</p>
@@ -138,6 +138,7 @@
 import { ref, inject } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { Link } from 'lucide-vue-next'
 import {
   encodeURIComponentSafe,
   encodeURISafe,
