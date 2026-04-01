@@ -6,17 +6,16 @@ export { default as Button } from "./Button.vue"
 export const buttonVariants = cva(
   `inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium 
    ring-offset-background 
-   transition-all duration-200 ease-out-expo
+   transition-all duration-150
    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 
    disabled:pointer-events-none disabled:opacity-50 
    [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 
-   active:scale-[0.98] active:duration-75
-   hover:scale-[1.02] hover:shadow-md
+   active:translate-y-px
    select-none`,
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-primary/25",
+        default: "border border-transparent bg-foreground text-background hover:bg-foreground/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-destructive/25",
         outline:
