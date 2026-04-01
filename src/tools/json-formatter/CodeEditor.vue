@@ -44,7 +44,7 @@
               :key="line.key"
               class="flex select-text"
             >
-              <div class="w-12 flex-shrink-0 text-right pr-2 pl-2 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20">
+              <div class="line-number">
                 {{ line.lineNumber }}
               </div>
               <pre
@@ -60,7 +60,7 @@
               :key="index"
               class="flex select-text"
             >
-              <div class="w-12 flex-shrink-0 text-right pr-2 pl-2 text-muted-foreground/50 font-mono text-sm leading-relaxed select-none bg-muted/20">
+              <div class="line-number">
                 {{ index + 1 }}
               </div>
               <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line"></code></pre>
@@ -139,15 +139,13 @@ const customTheme = EditorView.theme({
     backgroundColor: 'color-mix(in srgb, var(--color-muted) 20%, transparent)',
     color: 'color-mix(in srgb, var(--color-muted-foreground) 50%, transparent)',
     border: 'none',
-    width: '48px',
-    minWidth: '48px',
-    textAlign: 'right'
+    minWidth: '48px'
   },
   '.cm-gutter': {
-    textAlign: 'right'
+    width: '100%'
   },
   '.cm-gutter.cm-lineNumbers': {
-    textAlign: 'right'
+    width: '100%'
   },
   '.cm-gutter.cm-lineNumbers .cm-gutterElement': {
     textAlign: 'right',
@@ -337,6 +335,8 @@ const highlightedLines = computed(() => {
   return highlighted.split('\n')
 })
 
+
+
 function selectAllOutput() {
   if (!outputRef.value) return
   const range = document.createRange()
@@ -356,6 +356,22 @@ const statusVariant = computed(() => {
 </script>
 
 <style>
+/* Line number - match CodeMirror gutter style */
+.line-number {
+  flex-shrink: 0;
+  text-align: right;
+  padding-left: 8px;
+  padding-right: 8px;
+  min-width: 48px;
+  width: max-content;
+  color: color-mix(in srgb, var(--color-muted-foreground) 50%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.625;
+  user-select: none;
+  background-color: color-mix(in srgb, var(--color-muted) 20%, transparent);
+}
+
 /* Override CodeMirror styles to match project theme */
 .cm-editor {
   height: 100%;
@@ -389,19 +405,18 @@ const statusVariant = computed(() => {
 }
 
 /* Line number right alignment */
-.cm-editor .cm-gutters {
-  text-align: right !important;
+.cm-editor .cm-gutter {
+  width: 100% !important;
 }
 
 .cm-editor .cm-gutter.cm-lineNumbers {
-  text-align: right !important;
+  width: 100% !important;
 }
 
 .cm-editor .cm-gutter.cm-lineNumbers .cm-gutterElement {
   text-align: right !important;
   padding-left: 8px !important;
   padding-right: 8px !important;
-  min-width: unset !important;
 }
 
 /* Improve placeholder contrast */
