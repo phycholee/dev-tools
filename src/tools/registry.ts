@@ -5,7 +5,7 @@ import {
   Link,
   CalendarClock,
   Binary,
-  TextSearch,
+  Regex,
 } from 'lucide-vue-next'
 
 /**
@@ -71,9 +71,9 @@ export const tools: ToolDefinition[] = [
   },
   {
     id: 'regex-tester',
-    name: '正则测试',
+    name: '正则表达式测试',
     path: '/regex-tester',
-    icon: TextSearch,
+    icon: Regex,
     description: '正则表达式匹配',
     category: '开发辅助',
     component: () => import('./regex-tester/RegexTester.vue'),

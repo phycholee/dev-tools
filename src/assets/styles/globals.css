@@ -88,7 +88,7 @@
   --tool-url: oklch(55% 0.15 145);
   --tool-cron: oklch(65% 0.15 75);
   --tool-base64: oklch(60% 0.18 330);
-  --tool-regex: oklch(70% 0.17 45);
+  --tool-regex: oklch(60% 0.18 280);
 }
 
 /* Dark theme - Modern, layered, comfortable */
@@ -163,7 +163,7 @@
   --tool-url: oklch(65% 0.15 145);
   --tool-cron: oklch(72% 0.15 75);
   --tool-base64: oklch(68% 0.18 330);
-  --tool-regex: oklch(75% 0.17 45);
+    --tool-regex: oklch(68% 0.18 280);
 }
 
 /* System preference support */
@@ -224,7 +224,7 @@
     --tool-url: oklch(65% 0.15 145);
     --tool-cron: oklch(72% 0.15 75);
     --tool-base64: oklch(65% 0.15 280);
-    --tool-regex: oklch(75% 0.17 45);
+  --tool-regex: oklch(68% 0.18 280);
   }
 }
 
