@@ -1,7 +1,7 @@
 <template>
   <div 
     ref="containerRef"
-    class="flex flex-col w-full min-h-[calc(100vh-80px)]"
+    class="flex flex-col w-full h-[calc(100vh-80px)]"
   >
     <!-- Header: max-w-6xl to align with DevTools header -->
     <div class="max-w-6xl mx-auto w-full px-4 pt-4">
@@ -85,7 +85,7 @@
       :class="isWide ? 'w-[calc(100%-2rem)] px-4' : 'max-w-6xl w-full px-4'"
     >
       <!-- Input -->
-      <div :style="{ width: inputWidth + '%' }" class="min-w-[200px]">
+      <div :style="{ width: inputWidth + '%' }" class="min-w-[200px] min-h-0">
         <CodeEditor
           v-model="input"
           mode="input"
@@ -102,7 +102,7 @@
       />
 
       <!-- Output -->
-      <div :style="{ width: (100 - inputWidth) + '%' }" class="min-w-[200px]">
+      <div :style="{ width: (100 - inputWidth) + '%' }" class="min-w-[200px] min-h-0">
         <CodeEditor
           v-model="output"
           mode="output"

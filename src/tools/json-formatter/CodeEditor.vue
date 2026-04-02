@@ -30,42 +30,50 @@
       </div>
 
       <!-- Output mode -->
-      <div v-else class="h-full overflow-auto" ref="outputContainerRef">
+      <div v-else class="h-full overflow-auto" ref="outputContainerRef" @scroll="onScroll">
         <!-- Error state -->
         <div v-if="isError" class="p-4 pl-16 text-destructive font-mono text-sm leading-relaxed">
           ⚠ {{ modelValue }}
         </div>
         <!-- Normal output -->
         <div v-else ref="outputRef" tabindex="0" @keydown.ctrl.a.prevent="selectAllOutput">
-          <!-- Tree view (valid JSON) -->
-          <template v-if="treeRoot">
+          <!-- Virtual scroll: total height placeholder + visible window -->
+          <div :style="{ height: totalHeight + 'px', position: 'relative' }">
             <div
-              v-for="line in renderLines"
-              :key="line.key"
-              class="flex select-text"
+              :style="{ transform: `translateY(${visibleStartOffset}px)` }"
+              class="absolute inset-x-0"
+              @click="handleOutputClick"
             >
-              <div class="line-number" :style="{ width: gutterWidth }">
-                {{ line.lineNumber }}
-              </div>
-              <pre
-                class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"
-                @click="handleOutputClick"
-              ><code v-html="line.html"></code></pre>
+              <!-- Tree view (valid JSON) -->
+              <template v-if="treeRoot">
+                <div
+                  v-for="line in visibleLines"
+                  :key="line.key"
+                  class="flex select-text"
+                >
+                  <div class="line-number" :style="{ width: gutterWidth }">
+                    {{ line.num }}
+                  </div>
+                  <pre
+                    class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"
+                  ><code v-html="line.html"></code></pre>
+                </div>
+              </template>
+              <!-- Fallback: plain highlighted lines (non-JSON output) -->
+              <template v-else>
+                <div
+                  v-for="line in visibleLines"
+                  :key="line.key"
+                  class="flex select-text"
+                >
+                  <div class="line-number" :style="{ width: gutterWidth }">
+                    {{ line.num }}
+                  </div>
+                  <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line.html"></code></pre>
+                </div>
+              </template>
             </div>
-          </template>
-          <!-- Fallback: plain highlighted lines (non-JSON output) -->
-          <template v-else>
-            <div
-              v-for="(line, index) in highlightedLines"
-              :key="index"
-              class="flex select-text"
-            >
-              <div class="line-number" :style="{ width: gutterWidth }">
-                {{ index + 1 }}
-              </div>
-              <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line"></code></pre>
-            </div>
-          </template>
+          </div>
         </div>
       </div>
     </div>
@@ -73,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive } from 'vue'
+import { computed, ref, reactive, onMounted } from 'vue'
 import { Badge } from '@/components/ui/badge'
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
@@ -163,13 +171,12 @@ const customTheme = EditorView.theme({
   }
 }, { dark: false })
 
-// CodeMirror extensions - plain text input, no syntax highlighting
+// CodeMirror extensions — no line wrapping (avoids expensive layout calc on large input)
 const extensions = computed(() => [
   customTheme,
-  EditorView.lineWrapping,
-  EditorView.contentAttributes.of({ 
-    autocapitalize: 'off', 
-    autocomplete: 'off', 
+  EditorView.contentAttributes.of({
+    autocapitalize: 'off',
+    autocomplete: 'off',
     autocorrect: 'off',
     'aria-label': props.label || 'Code editor'
   })
@@ -178,11 +185,71 @@ const extensions = computed(() => [
 const outputRef = ref<HTMLDivElement>()
 const outputContainerRef = ref<HTMLDivElement>()
 
+// ─── Virtual Scroll ──────────────────────────────────────────────────────────
+const LINE_HEIGHT = 26 // 0.875rem font × 1.625 line-height ≈ 26px
+const BUFFER = 10 // extra lines above/below viewport
+
+const scrollTop = ref(0)
+const containerHeight = ref(0)
+
+function onScroll() {
+  if (outputContainerRef.value) {
+    scrollTop.value = outputContainerRef.value.scrollTop
+  }
+}
+
+onMounted(() => {
+  if (outputContainerRef.value) {
+    containerHeight.value = outputContainerRef.value.clientHeight
+    const ro = new ResizeObserver((entries) => {
+      containerHeight.value = entries[0].contentRect.height
+    })
+    ro.observe(outputContainerRef.value)
+  }
+})
+
+// ─── HTML Helpers (standalone, reused for on-demand rendering) ────────────────
+
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function valueHtml(value: unknown, type: JsonNode['type']): string {
+  switch (type) {
+    case 'string': {
+      const escaped = (value as string)
+        .replace(/\\/g, '\\\\')
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')
+      return `<span class="json-string">"${escapeHtml(escaped)}"</span>`
+    }
+    case 'number': return `<span class="json-number">${value}</span>`
+    case 'boolean': return `<span class="json-boolean">${value}</span>`
+    case 'null': return '<span class="json-null">null</span>'
+    default: return ''
+  }
+}
+
+function keyHtml(key: string | undefined): string {
+  if (!key) return ''
+  return `<span class="json-key">"${escapeHtml(key)}"</span>: `
+}
+
+function indentStr(depth: number): string {
+  return ' '.repeat(props.indent).repeat(depth)
+}
+
+function toggleBtnHtml(key: string, collapsed: boolean): string {
+  const cls = collapsed ? 'json-toggle json-toggle-expand' : 'json-toggle json-toggle-collapse'
+  const label = collapsed ? '+' : '-'
+  return `<span class="${cls}" data-key="${key}">${label}</span>`
+}
+
 // ─── Tree View ──────────────────────────────────────────────────────────────
-// Collapse state: key = "lineNumber", value = true if collapsed
 const collapsedState = reactive(new Map<string, boolean>())
 
-// Parse JSON into tree (only for objects/arrays, not primitives)
 const treeRoot = computed(() => {
   if (!props.modelValue) return null
   const trimmed = props.modelValue.trim()
@@ -190,106 +257,75 @@ const treeRoot = computed(() => {
   return parseJsonTree(props.modelValue)
 })
 
-interface RenderLine {
-  lineNumber: number
-  html: string
+const isTreeMode = computed(() => treeRoot.value !== null)
+
+// Lightweight line descriptor — no HTML strings
+interface TreeLine {
+  num: number
   key: string
+  depth: number
+  nodeKey?: string
+  nodeValue?: unknown
+  nodeType?: JsonNode['type']
+  isContainer: boolean
+  hasChildren: boolean
+  isCollapsed: boolean
+  comma: boolean
+  bracket?: string
+  summary?: string
 }
 
-// Flatten tree into visible render lines
-const renderLines = computed<RenderLine[]>(() => {
+// Phase 1: Walk tree → lightweight descriptors only (fast, no string ops)
+const treeFlatLines = computed<TreeLine[]>(() => {
   const root = treeRoot.value
   if (!root) return []
-
-  const lines: RenderLine[] = []
-
-  function escapeHtml(s: string): string {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  }
-
-  function valueHtml(value: unknown, type: JsonNode['type']): string {
-    switch (type) {
-      case 'string': {
-        // Escape as JSON string to preserve \n, \", \\ etc. in display
-        const escaped = (value as string)
-          .replace(/\\/g, '\\\\')
-          .replace(/"/g, '\\"')
-          .replace(/\n/g, '\\n')
-          .replace(/\r/g, '\\r')
-          .replace(/\t/g, '\\t')
-        return `<span class="json-string">"${escapeHtml(escaped)}"</span>`
-      }
-      case 'number': return `<span class="json-number">${value}</span>`
-      case 'boolean': return `<span class="json-boolean">${value}</span>`
-      case 'null': return '<span class="json-null">null</span>'
-      default: return ''
-    }
-  }
-
-  function keyHtml(key: string | undefined): string {
-    if (!key) return ''
-    return `<span class="json-key">"${escapeHtml(key)}"</span>: `
-  }
-
-  function indentStr(depth: number): string {
-    return ' '.repeat(props.indent).repeat(depth)
-  }
-
-  function toggleBtn(key: string, collapsed: boolean): string {
-    const cls = collapsed ? 'json-toggle json-toggle-expand' : 'json-toggle json-toggle-collapse'
-    const label = collapsed ? '+' : '-'
-    return `<span class="${cls}" data-key="${key}">${label}</span>`
-  }
+  const lines: TreeLine[] = []
 
   function visit(node: JsonNode, depth: number, isLast: boolean = true) {
     const isContainer = node.type === 'object' || node.type === 'array'
     const hasChildren = isContainer && node.children && node.children.length > 0
     const nodeKey = String(node.startLine)
     const isCollapsed = hasChildren && collapsedState.get(nodeKey) === true
-    const comma = isLast ? '' : ','
+    const comma = !isLast
 
     if (!isContainer) {
       lines.push({
-        lineNumber: node.startLine,
-        html: indentStr(depth) + keyHtml(node.key) + valueHtml(node.value, node.type) + comma,
-        key: nodeKey,
+        num: node.startLine, key: nodeKey, depth,
+        nodeKey: node.key, nodeValue: node.value, nodeType: node.type,
+        isContainer: false, hasChildren: false, isCollapsed: false, comma
       })
       return
     }
 
-    // Empty container: {} or [] on one line
     if (!hasChildren) {
-      const bracket = node.type === 'object' ? '{}' : '[]'
       lines.push({
-        lineNumber: node.startLine,
-        html: indentStr(depth) + keyHtml(node.key) + bracket + comma,
-        key: nodeKey,
+        num: node.startLine, key: nodeKey, depth,
+        nodeKey: node.key,
+        bracket: node.type === 'object' ? '{}' : '[]',
+        isContainer: true, hasChildren: false, isCollapsed: false, comma
       })
       return
     }
 
     const openBracket = node.type === 'object' ? '{' : '['
 
-    // Collapsed container: show summary after bracket
     if (isCollapsed) {
-      const summary = node.type === 'object'
-        ? 'Object{...}'
-        : `Array[${node.children!.length}]`
       lines.push({
-        lineNumber: node.startLine,
-        html: indentStr(depth) + keyHtml(node.key)
-          + openBracket + toggleBtn(nodeKey, true) + ' '
-          + `<span class="text-muted-foreground">${summary}</span>` + comma,
-        key: nodeKey,
+        num: node.startLine, key: nodeKey, depth,
+        nodeKey: node.key, bracket: openBracket,
+        isContainer: true, hasChildren: true, isCollapsed: true, comma,
+        summary: node.type === 'object'
+          ? 'Object{...}'
+          : `Array[${node.children!.length}]`
       })
       return
     }
 
-    // Expanded container: opening line with toggle
+    // Opening line
     lines.push({
-      lineNumber: node.startLine,
-      html: indentStr(depth) + keyHtml(node.key) + openBracket + toggleBtn(nodeKey, false),
-      key: nodeKey,
+      num: node.startLine, key: nodeKey, depth,
+      nodeKey: node.key, bracket: openBracket,
+      isContainer: true, hasChildren: true, isCollapsed: false, comma: false
     })
 
     const children = node.children!
@@ -299,15 +335,92 @@ const renderLines = computed<RenderLine[]>(() => {
 
     const closeBracket = node.type === 'object' ? '}' : ']'
     lines.push({
-      lineNumber: node.endLine,
-      html: indentStr(depth) + closeBracket + comma,
-      key: String(node.endLine) + '_close',
+      num: node.endLine, key: String(node.endLine) + '_close', depth,
+      bracket: closeBracket,
+      isContainer: true, hasChildren: false, isCollapsed: false, comma
     })
   }
 
   visit(root, 0)
   return lines
 })
+
+// Phase 2: Generate HTML only for visible lines (called per visible line)
+function treeLineToHtml(line: TreeLine): string {
+  const indent = indentStr(line.depth)
+
+  // Close bracket / empty container
+  if (line.bracket && !line.hasChildren) {
+    return indent + keyHtml(line.nodeKey) + line.bracket + (line.comma ? ',' : '')
+  }
+
+  // Collapsed container
+  if (line.isCollapsed) {
+    return indent + keyHtml(line.nodeKey) + line.bracket!
+      + toggleBtnHtml(line.key, true) + ' '
+      + `<span class="text-muted-foreground">${line.summary}</span>`
+      + (line.comma ? ',' : '')
+  }
+
+  // Opening bracket
+  if (line.bracket) {
+    return indent + keyHtml(line.nodeKey) + line.bracket + toggleBtnHtml(line.key, false)
+  }
+
+  // Leaf value
+  return indent + keyHtml(line.nodeKey) + valueHtml(line.nodeValue, line.nodeType!) + (line.comma ? ',' : '')
+}
+
+// ─── Fallback lines (non-tree, pre-highlighted) ──────────────────────────────
+
+const fallbackLines = computed<string[]>(() => {
+  if (!props.modelValue) return []
+  return highlightJson(props.modelValue).split('\n')
+})
+
+// ─── Visible Lines (HTML generated on-demand for ~30 lines only) ─────────────
+
+interface VisibleLine {
+  num: number
+  key: string
+  html: string
+}
+
+const totalLineCount = computed(() =>
+  isTreeMode.value ? treeFlatLines.value.length : fallbackLines.value.length
+)
+
+const totalHeight = computed(() => totalLineCount.value * LINE_HEIGHT)
+
+const visibleStartIdx = computed(() =>
+  Math.max(0, Math.floor(scrollTop.value / LINE_HEIGHT) - BUFFER)
+)
+
+const visibleStartOffset = computed(() => visibleStartIdx.value * LINE_HEIGHT)
+
+const visibleLines = computed<VisibleLine[]>(() => {
+  const total = totalLineCount.value
+  if (total === 0) return []
+
+  const startIdx = visibleStartIdx.value
+  const endIdx = Math.min(total, Math.ceil((scrollTop.value + containerHeight.value) / LINE_HEIGHT) + BUFFER)
+
+  if (isTreeMode.value) {
+    return treeFlatLines.value.slice(startIdx, endIdx).map(line => ({
+      num: line.num,
+      key: line.key,
+      html: treeLineToHtml(line)
+    }))
+  }
+
+  return fallbackLines.value.slice(startIdx, endIdx).map((html, i) => ({
+    num: startIdx + i + 1,
+    key: String(startIdx + i),
+    html
+  }))
+})
+
+// ─── Collapse / Expand ───────────────────────────────────────────────────────
 
 function toggleCollapse(key: string) {
   const current = collapsedState.get(key)
@@ -318,7 +431,6 @@ function toggleCollapse(key: string) {
   }
 }
 
-// Event delegation for inline toggle buttons rendered via v-html
 function handleOutputClick(e: MouseEvent) {
   const target = e.target as HTMLElement
   if (target.classList.contains('json-toggle')) {
@@ -328,14 +440,7 @@ function handleOutputClick(e: MouseEvent) {
   }
 }
 
-// Fallback: plain text lines when no tree (shouldn't happen for valid JSON)
-const highlightedLines = computed(() => {
-  if (!props.modelValue) return ['']
-  const highlighted = highlightJson(props.modelValue)
-  return highlighted.split('\n')
-})
-
-
+// ─── Select All ──────────────────────────────────────────────────────────────
 
 function selectAllOutput() {
   if (!outputRef.value) return
@@ -348,11 +453,12 @@ function selectAllOutput() {
   }
 }
 
-// Auto-size gutter based on max line number digit count
+// ─── Gutter Width ────────────────────────────────────────────────────────────
+
 const gutterWidth = computed(() => {
-  const maxLine = treeRoot.value ? renderLines.value.length : highlightedLines.value.length
+  const maxLine = totalLineCount.value
+  if (maxLine === 0) return '48px'
   const digits = maxLine.toString().length
-  // Each digit ≈ 0.5625rem at 0.875rem font-size in JetBrains Mono; +2ch padding
   return `calc(${digits}ch + 2rem)`
 })
 
