@@ -39,12 +39,12 @@
         <div v-else ref="outputRef" tabindex="0" @keydown.ctrl.a.prevent="selectAllOutput">
           <!-- Tree view (valid JSON) -->
           <template v-if="treeRoot">
-            <div 
-              v-for="line in renderLines" 
+            <div
+              v-for="line in renderLines"
               :key="line.key"
               class="flex select-text"
             >
-              <div class="line-number">
+              <div class="line-number" :style="{ width: gutterWidth }">
                 {{ line.lineNumber }}
               </div>
               <pre
@@ -55,12 +55,12 @@
           </template>
           <!-- Fallback: plain highlighted lines (non-JSON output) -->
           <template v-else>
-            <div 
-              v-for="(line, index) in highlightedLines" 
+            <div
+              v-for="(line, index) in highlightedLines"
               :key="index"
               class="flex select-text"
             >
-              <div class="line-number">
+              <div class="line-number" :style="{ width: gutterWidth }">
                 {{ index + 1 }}
               </div>
               <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line"></code></pre>
@@ -348,6 +348,14 @@ function selectAllOutput() {
   }
 }
 
+// Auto-size gutter based on max line number digit count
+const gutterWidth = computed(() => {
+  const maxLine = treeRoot.value ? renderLines.value.length : highlightedLines.value.length
+  const digits = maxLine.toString().length
+  // Each digit ≈ 0.5625rem at 0.875rem font-size in JetBrains Mono; +2ch padding
+  return `calc(${digits}ch + 2rem)`
+})
+
 const statusVariant = computed(() => {
   if (props.statusType === 'success') return 'default'
   if (props.statusType === 'error') return 'destructive'
@@ -363,7 +371,6 @@ const statusVariant = computed(() => {
   padding-left: 8px;
   padding-right: 8px;
   min-width: 48px;
-  width: max-content;
   color: color-mix(in srgb, var(--color-muted-foreground) 50%, transparent);
   font-family: var(--font-mono);
   font-size: 0.875rem;
