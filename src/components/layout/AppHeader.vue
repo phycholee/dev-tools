@@ -39,7 +39,7 @@
 import { inject } from 'vue'
 import type { Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { GalleryHorizontal, Shrink } from 'lucide-vue-next'
+import { GalleryHorizontal } from 'lucide-vue-next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ToggleTheme } from '@/components/ui/toggle-theme'
