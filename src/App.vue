@@ -6,10 +6,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, provide } from 'vue'
+import { ref, computed, watch, provide } from 'vue'
+import { useRoute } from 'vue-router'
 import AppLayout from './components/layout/AppLayout.vue'
 import AppToast from './components/common/AppToast.vue'
+import { findToolByPath } from './tools/registry'
 
+// Toast
 const toastRef = ref<InstanceType<typeof AppToast>>()
 
 function toast(message: string) {
@@ -17,4 +20,25 @@ function toast(message: string) {
 }
 
 provide('toast', toast)
+
+// Fullscreen state
+const route = useRoute()
+const isFullscreen = ref(false)
+
+const currentToolSupportsFullscreen = computed(() => {
+  const tool = findToolByPath(route.path)
+  return tool?.fullscreen === true
+})
+
+function toggleFullscreen() {
+  isFullscreen.value = !isFullscreen.value
+}
+
+watch(() => route.path, () => {
+  isFullscreen.value = false
+})
+
+provide('isFullscreen', isFullscreen)
+provide('currentToolSupportsFullscreen', currentToolSupportsFullscreen)
+provide('toggleFullscreen', toggleFullscreen)
 </script>

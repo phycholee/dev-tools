@@ -1,10 +1,9 @@
 <template>
-  <div 
-    ref="containerRef"
+  <div
     class="flex flex-col w-full h-[calc(100vh-80px)]"
   >
-    <!-- Header: max-w-6xl to align with DevTools header -->
-    <div class="max-w-6xl mx-auto w-full px-4 pt-4">
+    <!-- Header -->
+    <div class="w-full px-4 pt-4 mx-auto transition-all duration-200" :class="isFullscreen ? '' : 'max-w-6xl'">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <Braces class="w-8 h-8 text-tool-json" />
@@ -70,7 +69,7 @@
         <div class="flex items-start gap-2">
           <span class="text-muted-foreground text-sm">💡</span>
           <div class="text-sm text-muted-foreground">
-            <strong class="text-foreground">使用提示：</strong> 
+            <strong class="text-foreground">使用提示：</strong>
             粘贴 JSON 到左侧输入框，工具会自动格式化并显示在右侧。支持美化、压缩、转义和消除转义操作。
             <span class="text-xs opacity-75 ml-2">输入时自动格式化，无需手动点击</span>
           </div>
@@ -78,11 +77,11 @@
       </div>
     </div>
 
-    <!-- Editor panels: expand to full width when wide mode -->
-    <div 
-      ref="panelsRef" 
-      class="flex-1 flex min-h-0 pb-4 pt-4 mx-auto"
-      :class="isWide ? 'w-[calc(100%-2rem)] px-4' : 'max-w-6xl w-full px-4'"
+    <!-- Editor panels -->
+    <div
+      ref="panelsRef"
+      class="flex-1 flex min-h-0 pb-2 pt-2 mx-auto transition-all duration-200"
+      :class="isFullscreen ? 'w-full px-4' : 'max-w-6xl w-full px-4'"
     >
       <!-- Input -->
       <div :style="{ width: inputWidth + '%' }" class="min-w-[200px] min-h-0">
@@ -110,20 +109,7 @@
           :is-error="hasError"
           :indent="indent"
           rounded="right"
-        >
-          <template #actions>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              @click="toggleWide"
-              class="h-6 w-6"
-              :aria-label="isWide ? '退出宽屏' : '宽屏'"
-            >
-              <Minimize2 v-if="isWide" class="h-3.5 w-3.5" />
-              <Maximize2 v-else class="h-3.5 w-3.5" />
-            </Button>
-          </template>
-        </CodeEditor>
+        />
       </div>
     </div>
   </div>
@@ -131,8 +117,9 @@
 
 <script setup lang="ts">
 import { ref, watch, inject, onUnmounted } from 'vue'
+import type { Ref } from 'vue'
 import { Button } from '@/components/ui/button'
-import { Maximize2, Minimize2, Braces } from 'lucide-vue-next'
+import { Braces } from 'lucide-vue-next'
 import CodeEditor from './CodeEditor.vue'
 import { formatJson, compressJson, escapeJson, unescapeJson } from './json'
 
@@ -141,14 +128,7 @@ const output = ref('')
 const hasError = ref(false)
 const indent = ref(2)
 const toast = inject<(msg: string) => void>('toast')
-
-// Wide mode
-const containerRef = ref<HTMLElement>()
-const isWide = ref(false)
-
-function toggleWide() {
-  isWide.value = !isWide.value
-}
+const isFullscreen = inject<Ref<boolean>>('isFullscreen')!
 
 // Resizable panels
 const panelsRef = ref<HTMLElement>()
@@ -159,17 +139,17 @@ function startResize() {
   isResizing = true
   document.body.style.cursor = 'col-resize'
   document.body.style.userSelect = 'none'
-  
+
   const onMouseMove = (e: MouseEvent) => {
     if (!isResizing || !panelsRef.value) return
-    
+
     const rect = panelsRef.value.getBoundingClientRect()
     const percentage = ((e.clientX - rect.left) / rect.width) * 100
-    
+
     // Clamp between 20% and 80%
     inputWidth.value = Math.max(20, Math.min(80, percentage))
   }
-  
+
   const onMouseUp = () => {
     isResizing = false
     document.body.style.cursor = ''
@@ -177,7 +157,7 @@ function startResize() {
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
   }
-  
+
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', onMouseUp)
 }

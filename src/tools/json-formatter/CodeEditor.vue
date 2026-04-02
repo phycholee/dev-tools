@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onMounted } from 'vue'
+import { computed, ref, reactive, onMounted, watch } from 'vue'
 import { Badge } from '@/components/ui/badge'
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
@@ -171,9 +171,10 @@ const customTheme = EditorView.theme({
   }
 }, { dark: false })
 
-// CodeMirror extensions — no line wrapping (avoids expensive layout calc on large input)
+// CodeMirror extensions
 const extensions = computed(() => [
   customTheme,
+  EditorView.lineWrapping,
   EditorView.contentAttributes.of({
     autocapitalize: 'off',
     autocomplete: 'off',
@@ -254,6 +255,8 @@ const treeRoot = computed(() => {
   if (!props.modelValue) return null
   const trimmed = props.modelValue.trim()
   if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) return null
+  // Only use tree view for multi-line JSON (single-line has no meaningful collapsible structure)
+  if (!trimmed.includes('\n')) return null
   return parseJsonTree(props.modelValue)
 })
 
@@ -390,11 +393,23 @@ const totalLineCount = computed(() =>
   isTreeMode.value ? treeFlatLines.value.length : fallbackLines.value.length
 )
 
+// Scroll back to top when content shrinks significantly
+watch(totalLineCount, (newCount, oldCount) => {
+  if (newCount < oldCount && outputContainerRef.value) {
+    const maxScroll = newCount * LINE_HEIGHT - containerHeight.value
+    if (scrollTop.value > maxScroll) {
+      outputContainerRef.value.scrollTop = Math.max(0, maxScroll)
+    }
+  }
+})
+
 const totalHeight = computed(() => totalLineCount.value * LINE_HEIGHT)
 
-const visibleStartIdx = computed(() =>
-  Math.max(0, Math.floor(scrollTop.value / LINE_HEIGHT) - BUFFER)
-)
+const visibleStartIdx = computed(() => {
+  const total = totalLineCount.value
+  const idx = Math.max(0, Math.floor(scrollTop.value / LINE_HEIGHT) - BUFFER)
+  return Math.min(idx, total)
+})
 
 const visibleStartOffset = computed(() => visibleStartIdx.value * LINE_HEIGHT)
 

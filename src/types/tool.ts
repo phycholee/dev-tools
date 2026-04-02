@@ -20,6 +20,8 @@ export interface ToolDefinition {
   component: () => Promise<Component>
   /** 主题色（用于卡片装饰） */
   color?: string
+  /** 是否支持全屏模式 */
+  fullscreen?: boolean
 }
 
 /**

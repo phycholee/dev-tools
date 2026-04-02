@@ -29,6 +29,7 @@ export const tools: ToolDefinition[] = [
     category: '数据处理',
     component: () => import('./json-formatter/JsonFormatter.vue'),
     // 颜色通过 CSS 变量 --tool-json 管理
+    fullscreen: true,
   },
   {
     id: 'timestamp-converter',
