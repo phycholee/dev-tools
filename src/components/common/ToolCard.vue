@@ -19,13 +19,13 @@
       <CardContent class="flex items-center gap-5 p-8 pl-10">
         <!-- Icon -->
         <div
-          class="flex items-center justify-center w-20 h-20 rounded-xl shrink-0 transition-[transform,border-color] duration-250 border group-hover:scale-105"
+          class="flex items-center justify-center w-16 h-16 rounded-xl shrink-0 transition-[transform,border-color] duration-250 border group-hover:scale-105"
           :class="toolIconContainerClass"
         >
           <component
             v-if="typeof tool.icon !== 'string'"
             :is="tool.icon"
-            class="w-9 h-9"
+            class="w-8 h-8"
             :class="toolIconClass"
           />
           <span

@@ -203,7 +203,7 @@ function handleFormatChange(value: unknown) {
     </div>
 
     <!-- Help tip - Cron 是最复杂的工具，需要详细说明 -->
-    <div class="p-4 bg-muted/50 rounded-lg border border-border/50">
+    <div class="p-3 bg-muted/50 rounded-lg border border-border/50">
       <div class="flex items-start gap-3">
         <span class="text-muted-foreground text-lg">📚</span>
         <div class="flex-1">

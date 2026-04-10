@@ -3,7 +3,7 @@
     <!-- Highlight layer -->
     <div
       ref="highlightRef"
-      class="absolute inset-0 p-3 font-mono text-sm whitespace-pre-wrap break-words overflow-auto pointer-events-none rounded-md border border-input bg-muted/30"
+      class="absolute inset-0 p-3 font-mono text-sm whitespace-pre-wrap break-words overflow-auto pointer-events-none rounded-md bg-muted/30"
       aria-hidden="true"
     >
       <template v-for="(segment, i) in segments" :key="i">
