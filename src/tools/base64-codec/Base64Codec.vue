@@ -29,8 +29,9 @@
       <textarea
         v-model="input"
         placeholder="输入文本或 Base64 字符串..."
-        class="w-full h-32 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+        class="w-full h-32 px-3 py-2 bg-card border border-input rounded-md text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
         aria-label="输入文本"
+        autocomplete="off"
       />
 
       <!-- Format selector (for encoding) -->

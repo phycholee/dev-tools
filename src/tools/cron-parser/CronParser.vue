@@ -241,9 +241,10 @@ function handleFormatChange(value: unknown) {
               v-model="input"
               type="text"
               :placeholder="CRON_FORMATS[selectedFormat].example"
-              class="flex-1 px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+              class="flex-1 px-3 py-2 bg-card border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
               :class="hasError ? 'border-destructive text-destructive' : 'border-input'"
               aria-label="Cron 表达式"
+              autocomplete="off"
             />
             <Select :model-value="selectedFormat" @update:model-value="handleFormatChange">
               <SelectTrigger class="w-[180px]">
@@ -306,7 +307,7 @@ function handleFormatChange(value: unknown) {
             <input
               v-model="fields[index]"
               type="text"
-              class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm h-8"
+              class="w-full px-2 py-1 bg-card border border-input rounded-md font-mono text-center text-sm h-8"
               :class="{ 'border-destructive': !field.valid }"
               :aria-label="field.label"
             />

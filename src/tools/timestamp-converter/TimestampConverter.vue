@@ -58,7 +58,8 @@
               v-model="timestampInput"
               type="text"
               placeholder="输入时间戳，例如: 1710912345000"
-              class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+              autocomplete="off"
+              class="flex-1 px-3 py-2 bg-card border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
               aria-label="时间戳输入"
               @input="convertTimestampToDate"
             />
@@ -115,7 +116,8 @@
             v-model="dateInput"
             type="text"
             placeholder="输入日期，格式: yyyy-MM-dd HH:mm:ss"
-            class="px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+            autocomplete="off"
+            class="px-3 py-2 bg-card border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             :class="dateInputError ? 'border-destructive focus:ring-destructive' : 'border-input focus:ring-ring'"
             aria-label="日期输入"
             @input="convertDateToTimestamp"
@@ -187,7 +189,8 @@
             id="batch-input"
             v-model="batchInput"
             placeholder="1710912345000&#10;1710912346000&#10;1710912347000"
-            class="h-32 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            autocomplete="off"
+            class="h-32 px-3 py-2 bg-card border border-input rounded-md text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
         <div class="flex flex-col gap-2">

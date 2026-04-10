@@ -35,9 +35,10 @@
             v-model="pattern"
             type="text"
             placeholder="输入正则表达式..."
-            class="flex-1 min-w-[200px] px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+            class="flex-1 min-w-[200px] px-3 py-2 bg-card border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             :class="!validation.valid ? 'border-destructive focus:ring-destructive' : 'border-input focus:ring-ring'"
             aria-label="正则表达式"
+            autocomplete="off"
           />
           <div class="flex items-center gap-1 text-muted-foreground">
             <span class="font-mono text-lg">/</span>
