@@ -75,7 +75,7 @@ export const tools: ToolDefinition[] = [
     name: '正则表达式测试',
     path: '/regex-tester',
     icon: Regex,
-    description: '正则表达式匹配',
+    description: '正则匹配、高亮工具',
     category: '开发辅助',
     component: () => import('./regex-tester/RegexTester.vue'),
   }

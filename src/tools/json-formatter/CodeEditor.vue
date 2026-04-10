@@ -133,15 +133,15 @@ const customTheme = EditorView.theme({
     borderLeftColor: 'var(--color-foreground)'
   },
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': {
-    backgroundColor: 'hsl(217 91% 60%)'
+    backgroundColor: 'var(--color-accent)'
   },
   '.cm-content ::selection': {
-    backgroundColor: 'hsl(217 91% 60%)',
-    color: 'white'
+    backgroundColor: 'var(--color-accent)',
+    color: 'var(--color-accent-foreground)'
   },
   '.cm-line ::selection': {
-    backgroundColor: 'hsl(217 91% 60%)',
-    color: 'white'
+    backgroundColor: 'var(--color-accent)',
+    color: 'var(--color-accent-foreground)'
   },
   '.cm-gutters': {
     backgroundColor: 'color-mix(in srgb, var(--color-muted) 20%, transparent)',
@@ -518,18 +518,18 @@ const statusVariant = computed(() => {
 /* Selection styles - match output box */
 .cm-editor .cm-selectionBackground,
 .cm-editor.cm-focused .cm-selectionBackground {
-  background-color: hsl(214 100% 40%) !important;
+  background-color: var(--color-accent) !important;
 }
 
 .cm-editor .cm-content ::selection,
 .cm-editor .cm-line ::selection {
-  background-color: hsl(214 100% 40%) !important;
-  color: white !important;
+  background-color: var(--color-accent) !important;
+  color: var(--color-accent-foreground) !important;
 }
 
 .cm-editor .cm-content *::selection {
-  background-color: hsl(214 100% 40%) !important;
-  color: white !important;
+  background-color: var(--color-accent) !important;
+  color: var(--color-accent-foreground) !important;
 }
 
 /* Line number right alignment */
@@ -572,17 +572,17 @@ const statusVariant = computed(() => {
   -webkit-text-stroke: 0.4px;
 }
 .json-toggle-expand {
-  color: #00cfe8;
-  border: 2px solid #00cfe8;
+  color: var(--color-info);
+  border: 2px solid var(--color-info);
 }
 .json-toggle-expand:hover {
-  background: hsl(180 70% 40% / 0.22);
+  background: color-mix(in srgb, var(--color-info) 22%, transparent);
 }
 .json-toggle-collapse {
-  color: #ea5455;
-  border: 2px solid #ea5455;
+  color: var(--color-destructive);
+  border: 2px solid var(--color-destructive);
 }
 .json-toggle-collapse:hover {
-  background: hsl(0 70% 55% / 0.22);
+  background: color-mix(in srgb, var(--color-destructive) 22%, transparent);
 }
 </style>

@@ -163,70 +163,11 @@
   --tool-url: oklch(65% 0.15 145);
   --tool-cron: oklch(72% 0.15 75);
   --tool-base64: oklch(68% 0.18 330);
-    --tool-regex: oklch(68% 0.18 280);
-}
-
-/* System preference support */
-@media (prefers-color-scheme: light) {
-  :root:not(.dark) {
-    /* Light theme is default, this ensures system preference is respected */
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    /* Apply dark theme variables when system prefers dark */
-    --color-brand: oklch(65% 0.2 var(--color-brand-hue));
-    --color-brand-light: oklch(72% 0.15 var(--color-brand-hue));
-    --color-brand-dark: oklch(58% 0.2 var(--color-brand-hue));
-    --color-background: oklch(15% 0.015 250);
-    --color-background-secondary: oklch(18% 0.012 250);
-    --color-background-tertiary: oklch(22% 0.01 250);
-    --color-card: oklch(20% 0.012 250);
-    --color-card-hover: oklch(23% 0.015 250);
-    --color-popover: oklch(20% 0.012 250);
-    --color-foreground: oklch(92% 0.005 250);
-    --color-foreground-secondary: oklch(75% 0.008 250);
-    --color-foreground-muted: oklch(60% 0.01 250);
-    --color-primary: var(--color-brand);
-    --color-primary-hover: var(--color-brand-light);
-    --color-primary-foreground: oklch(15% 0.02 250);
-    --color-secondary: oklch(25% 0.015 250);
-    --color-secondary-hover: oklch(28% 0.018 250);
-    --color-secondary-foreground: oklch(90% 0.005 250);
-    --color-muted: oklch(22% 0.012 250);
-    --color-muted-foreground: oklch(60% 0.01 250);
-    --color-accent: oklch(25% 0.08 var(--color-brand-hue));
-    --color-accent-foreground: oklch(85% 0.08 var(--color-brand-hue));
-    --color-success: oklch(65% 0.15 145);
-    --color-success-foreground: oklch(15% 0.02 145);
-    --color-warning: oklch(70% 0.12 75);
-    --color-warning-foreground: oklch(20% 0.04 75);
-    --color-destructive: oklch(60% 0.18 25);
-    --color-destructive-foreground: oklch(15% 0.02 25);
-    --color-info: oklch(65% 0.12 250);
-    --color-info-foreground: oklch(15% 0.02 250);
-    --color-border: oklch(28% 0.01 250);
-    --color-border-hover: oklch(35% 0.015 250);
-    --color-input: oklch(25% 0.008 250);
-    --color-input-focus: var(--color-brand);
-    --color-ring: oklch(65% 0.2 var(--color-brand-hue));
-    --color-ring-offset: var(--color-background);
-    --json-key: oklch(72% 0.12 250);
-    --json-string: oklch(70% 0.12 45);
-    --json-number: oklch(72% 0.1 145);
-    --json-boolean: oklch(70% 0.14 250);
-    --json-null: oklch(70% 0.14 250);
-    --scrollbar-thumb: oklch(30% 0.01 250);
-    --scrollbar-thumb-hover: oklch(35% 0.015 250);
-    --tool-json: oklch(65% 0.18 250);
-    --tool-timestamp: oklch(68% 0.15 195);
-    --tool-url: oklch(65% 0.15 145);
-    --tool-cron: oklch(72% 0.15 75);
-    --tool-base64: oklch(65% 0.15 280);
   --tool-regex: oklch(68% 0.18 280);
-  }
 }
+
+/* System preference is handled by ToggleTheme.vue (checks OS setting in JS).
+   FOUC prevention will be handled via inline script in index.html (see batch 4). */
 
 /* Tailwind v4 theme configuration - references CSS variables */
 @theme {
@@ -343,9 +284,9 @@
   --color-tool-json: var(--tool-json);
   --color-tool-timestamp: var(--tool-timestamp);
   --color-tool-url: var(--tool-url);
-    --color-tool-cron: var(--tool-cron);
-    --color-tool-base64: var(--tool-base64);
-    --color-tool-regex: var(--tool-regex);
+  --color-tool-cron: var(--tool-cron);
+  --color-tool-base64: var(--tool-base64);
+  --color-tool-regex: var(--tool-regex);
 
   /* Border radius */
   --radius-lg: 0.625rem;
