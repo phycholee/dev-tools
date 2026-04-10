@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onMounted, watch } from 'vue'
+import { computed, ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import { Badge } from '@/components/ui/badge'
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
@@ -199,14 +199,21 @@ function onScroll() {
   }
 }
 
+let resizeObserver: ResizeObserver | null = null
+
 onMounted(() => {
   if (outputContainerRef.value) {
     containerHeight.value = outputContainerRef.value.clientHeight
-    const ro = new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
       containerHeight.value = entries[0].contentRect.height
     })
-    ro.observe(outputContainerRef.value)
+    resizeObserver.observe(outputContainerRef.value)
   }
+})
+
+onUnmounted(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
 })
 
 // ─── HTML Helpers (standalone, reused for on-demand rendering) ────────────────

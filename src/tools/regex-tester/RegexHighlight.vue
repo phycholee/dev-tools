@@ -22,7 +22,7 @@
       :placeholder="placeholder"
       class="relative w-full h-full p-3 font-mono text-sm bg-transparent border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground text-foreground/0 caret-foreground"
       aria-label="测试文本"
-      @scroll="syncScroll"
+      @scroll="onScroll"
       @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
     />
   </div>
@@ -80,6 +80,15 @@ function syncScroll() {
     highlightRef.value.scrollTop = textareaRef.value.scrollTop
     highlightRef.value.scrollLeft = textareaRef.value.scrollLeft
   }
+}
+
+let rafId: number | null = null
+function onScroll() {
+  if (rafId !== null) return
+  rafId = requestAnimationFrame(() => {
+    syncScroll()
+    rafId = null
+  })
 }
 
 onMounted(() => {
