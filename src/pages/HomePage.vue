@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Hero -->
-    <section class="relative flex items-center justify-center overflow-hidden" style="min-height: calc(33vh - 3.5rem)">
+    <section class="relative flex items-center justify-center overflow-hidden" :style="{ minHeight: 'calc(33vh - var(--header-height))' }">
       <div class="absolute inset-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] [background-size:24px_24px] opacity-40" />
       <div class="relative max-w-6xl mx-auto px-8 py-16 text-center">
         <h1 class="text-[2.441rem] md:text-[3.157rem] font-extrabold tracking-tight text-foreground">

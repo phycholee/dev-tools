@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex flex-col w-full h-[calc(100vh-80px)]"
+    class="flex flex-col w-full"
+    style="height: calc(100vh - var(--header-height) - 1.5rem)"
   >
     <!-- Header -->
     <div class="w-full px-4 pt-4 mx-auto transition-all duration-200" :class="isFullscreen ? '' : 'max-w-6xl'">
@@ -80,22 +81,23 @@
     <!-- Editor panels -->
     <div
       ref="panelsRef"
-      class="flex-1 flex min-h-0 pb-2 pt-2 mx-auto transition-all duration-200"
+      class="flex-1 flex flex-col md:flex-row min-h-0 pb-2 pt-2 mx-auto transition-all duration-200"
       :class="isFullscreen ? 'w-full px-4' : 'max-w-6xl w-full px-4'"
     >
       <!-- Input -->
-      <div :style="{ width: inputWidth + '%' }" class="min-w-[200px] min-h-0">
+      <div :style="{ width: isMobile ? undefined : inputWidth + '%' }" class="min-w-0 md:min-w-[200px] min-h-[200px] md:min-h-0">
         <CodeEditor
           v-model="input"
           mode="input"
           label="输入"
           placeholder='输入 JSON 内容，例如: {"name": "DevTools"}'
-          rounded="left"
+          :rounded="isMobile ? 'all' : 'left'"
         />
       </div>
 
-      <!-- Resizable divider -->
+      <!-- Resizable divider - hidden on mobile -->
       <div
+        v-if="!isMobile"
         role="separator"
         aria-orientation="vertical"
         aria-valuenow="50"
@@ -107,14 +109,14 @@
       />
 
       <!-- Output -->
-      <div :style="{ width: (100 - inputWidth) + '%' }" class="min-w-[200px] min-h-0">
+      <div :style="{ width: isMobile ? undefined : (100 - inputWidth) + '%' }" class="min-w-0 md:min-w-[200px] min-h-[200px] md:min-h-0">
         <CodeEditor
           v-model="output"
           mode="output"
           label="输出"
           :is-error="hasError"
           :indent="indent"
-          rounded="right"
+          :rounded="isMobile ? 'all' : 'right'"
         />
       </div>
     </div>
@@ -122,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, inject, onUnmounted } from 'vue'
+import { ref, watch, inject, onUnmounted, onMounted } from 'vue'
 import type { Ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Braces } from 'lucide-vue-next'
@@ -135,6 +137,24 @@ const hasError = ref(false)
 const indent = ref(2)
 const toast = inject<(msg: string) => void>('toast')
 const isFullscreen = inject<Ref<boolean>>('isFullscreen')!
+
+// Mobile detection for responsive layout
+const isMobile = ref(false)
+let mql: MediaQueryList | null = null
+
+onMounted(() => {
+  mql = window.matchMedia('(max-width: 767px)')
+  isMobile.value = mql.matches
+  const handler = (e: MediaQueryListEvent) => { isMobile.value = e.matches }
+  mql.addEventListener('change', handler)
+})
+
+onUnmounted(() => {
+  if (mql) {
+    const handler = (e: MediaQueryListEvent) => { isMobile.value = e.matches }
+    mql.removeEventListener('change', handler)
+  }
+})
 
 // Resizable panels
 const panelsRef = ref<HTMLElement>()

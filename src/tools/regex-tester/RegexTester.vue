@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
+  <div class="flex flex-col p-4 gap-6 w-full max-w-6xl mx-auto" style="min-height: calc(100vh - var(--header-height) - 2rem)">
     <!-- Header -->
     <div class="flex items-center gap-3">
       <Regex class="w-8 h-8 text-tool-regex" />

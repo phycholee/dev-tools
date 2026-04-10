@@ -1,6 +1,6 @@
 <!-- src/tools/base64-codec/Base64Codec.vue -->
 <template>
-  <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
+  <div class="flex flex-col p-4 gap-6 w-full max-w-6xl mx-auto" style="min-height: calc(100vh - var(--header-height) - 2rem)">
     <!-- Header -->
     <div class="flex items-center gap-3">
       <Binary class="w-8 h-8 text-tool-base64" />
