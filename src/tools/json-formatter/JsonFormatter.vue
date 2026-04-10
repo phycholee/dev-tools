@@ -130,12 +130,13 @@ import { Button } from '@/components/ui/button'
 import { Braces } from 'lucide-vue-next'
 import CodeEditor from './CodeEditor.vue'
 import { formatJson, compressJson, escapeJson, unescapeJson } from './json'
+import { useClipboard } from '@/composables/useClipboard'
 
 const input = ref('')
 const output = ref('')
 const hasError = ref(false)
 const indent = ref(2)
-const toast = inject<(msg: string) => void>('toast')
+const { copyToClipboard } = useClipboard()
 const isFullscreen = inject<Ref<boolean>>('isFullscreen')!
 
 // Mobile detection for responsive layout
@@ -231,19 +232,7 @@ function handleUnescape() {
 
 async function handleCopy() {
   if (!output.value || hasError.value) return
-  try {
-    await navigator.clipboard.writeText(output.value)
-    toast?.('已复制到剪贴板')
-  } catch {
-    // Fallback
-    const textarea = document.createElement('textarea')
-    textarea.value = output.value
-    document.body.appendChild(textarea)
-    textarea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textarea)
-    toast?.('已复制到剪贴板')
-  }
+  await copyToClipboard(output.value)
 }
 
 function handleClear() {

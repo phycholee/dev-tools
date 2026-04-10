@@ -133,11 +133,19 @@
         </Button>
       </div>
     </Card>
+
+    <!-- Empty state -->
+    <Card v-if="!mode" class="p-4">
+      <div class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <Link class="w-10 h-10 mb-3 opacity-40" />
+        <p class="text-sm">输入文本后，点击"编码"或"解码"查看结果</p>
+      </div>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Link } from 'lucide-vue-next'
@@ -147,6 +155,7 @@ import {
   decodeUrlSafe,
   type UrlCodecResult,
 } from './url'
+import { useClipboard } from '@/composables/useClipboard'
 
 type Mode = 'encode' | 'decode'
 
@@ -156,7 +165,7 @@ const encodeComponentResult = ref<UrlCodecResult | null>(null)
 const encodeUriResult = ref<UrlCodecResult | null>(null)
 const decodeResult = ref<UrlCodecResult | null>(null)
 
-const toast = inject<(msg: string) => void>('toast')
+const { copyToClipboard } = useClipboard()
 
 function handleEncode(): void {
   mode.value = 'encode'
@@ -178,20 +187,5 @@ function handleClear(): void {
   encodeComponentResult.value = null
   encodeUriResult.value = null
   decodeResult.value = null
-}
-
-async function copyToClipboard(text: string): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast?.('已复制到剪贴板')
-  } catch {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    document.body.appendChild(textarea)
-    textarea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textarea)
-    toast?.('已复制到剪贴板')
-  }
 }
 </script>

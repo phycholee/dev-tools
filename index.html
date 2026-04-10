@@ -8,11 +8,11 @@
     <script>
       // Theme initialization - must run before page renders to prevent flash
       ;(function() {
-        const theme = localStorage.getItem('theme')
-        if (theme === 'light') {
-          document.documentElement.classList.remove('dark')
-        } else {
-          // Default to dark theme (existing behavior)
+        const saved = localStorage.getItem('theme')
+        if (saved === 'light') {
+          document.documentElement.classList.add('light')
+        } else if (saved === 'dark' || !saved) {
+          // Default to dark; also respect system preference if no saved choice
           document.documentElement.classList.add('dark')
         }
       })()

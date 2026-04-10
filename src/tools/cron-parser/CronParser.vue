@@ -21,6 +21,9 @@ import {
   type CronFormat
 } from './cron'
 import { presetsByFormat } from './presets'
+import { useClipboard } from '@/composables/useClipboard'
+
+const { copyToClipboard } = useClipboard()
 
 // Cron 格式选择
 const selectedFormat = ref<CronFormat>('linux-6')
@@ -145,9 +148,9 @@ function handleClear() {
   hasError.value = false
 }
 
-function handleCopy() {
+async function handleCopy() {
   if (input.value) {
-    navigator.clipboard.writeText(input.value)
+    await copyToClipboard(input.value)
   }
 }
 

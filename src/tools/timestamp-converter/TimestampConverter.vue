@@ -27,7 +27,7 @@
         <h2 class="text-lg font-semibold text-foreground">当前时间</h2>
         <Badge variant="outline" class="text-xs">实时</Badge>
       </div>
-      <div class="flex flex-col gap-2">
+      <div v-if="isTimeReady" class="flex flex-col gap-2">
         <div class="flex items-center gap-4 font-mono text-sm">
           <span class="text-muted-foreground w-10">时间</span>
           <span class="select-all">{{ currentTimeFormatted }}</span>
@@ -42,6 +42,9 @@
             复制
           </Button>
         </div>
+      </div>
+      <div v-else class="flex items-center justify-center py-4 text-muted-foreground text-sm">
+        加载中...
       </div>
     </Card>
 
@@ -240,7 +243,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, inject } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -260,11 +263,13 @@ import {
   TIMEZONES,
   type TimestampResult
 } from './timestamp'
+import { useClipboard } from '@/composables/useClipboard'
 
-const toast = inject<(msg: string) => void>('toast')
+const { copyToClipboard } = useClipboard()
 const timezones = TIMEZONES
 
 // Current timestamp (real-time)
+const isTimeReady = ref(false)
 const currentTimestamp = ref({ seconds: 0, milliseconds: 0 })
 const currentTimeFormatted = ref('')
 
@@ -299,6 +304,7 @@ const batchUnit = ref<'auto' | 'seconds' | 'milliseconds'>('auto')
 // Initialize current timestamp and start updating
 onMounted(() => {
   updateCurrentTime()
+  isTimeReady.value = true
   updateInterval = setInterval(updateCurrentTime, 1000)
 })
 
@@ -307,22 +313,6 @@ onUnmounted(() => {
     clearInterval(updateInterval)
   }
 })
-
-// Copy to clipboard
-async function copyToClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast?.('已复制到剪贴板')
-  } catch {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    document.body.appendChild(textarea)
-    textarea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textarea)
-    toast?.('已复制到剪贴板')
-  }
-}
 
 // Convert timestamp to date
 function convertTimestampToDate() {

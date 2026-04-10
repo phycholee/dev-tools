@@ -99,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, inject } from 'vue'
+import { ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Binary } from 'lucide-vue-next'
@@ -109,6 +109,7 @@ import {
   type Base64CodecResult,
   type Base64Format,
 } from './base64'
+import { useClipboard } from '@/composables/useClipboard'
 
 type Mode = 'encode' | 'decode'
 
@@ -123,7 +124,7 @@ const formats = [
   { value: 'base64url' as Base64Format, label: 'Base64url' },
 ]
 
-const toast = inject<(msg: string) => void>('toast')
+const { copyToClipboard } = useClipboard()
 
 function handleEncode() {
   mode.value = 'encode'
@@ -140,21 +141,6 @@ function handleClear() {
   mode.value = null
   result.value = null
   format.value = 'standard'
-}
-
-async function copyToClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast?.('已复制到剪贴板')
-  } catch {
-    const textarea = document.createElement('textarea')
-    textarea.value = text
-    document.body.appendChild(textarea)
-    textarea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textarea)
-    toast?.('已复制到剪贴板')
-  }
 }
 
 watch(format, () => {
