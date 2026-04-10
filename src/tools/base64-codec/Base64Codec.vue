@@ -72,6 +72,7 @@
       <div
         v-if="!result.success"
         class="p-3 rounded-md bg-destructive/10 text-destructive text-sm flex items-center gap-2"
+        role="alert"
       >
         <span>⚠</span>
         <span>{{ result.error }}</span>

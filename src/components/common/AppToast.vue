@@ -4,6 +4,8 @@
       <div
         v-if="visible"
         class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-2 px-5 py-3 rounded-lg border border-border bg-card text-foreground text-sm shadow-lg"
+        role="status"
+        aria-live="polite"
       >
         <span class="text-green-400">✓</span>
         <span>{{ message }}</span>

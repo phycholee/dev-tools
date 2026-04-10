@@ -243,6 +243,7 @@ function handleFormatChange(value: unknown) {
               :placeholder="CRON_FORMATS[selectedFormat].example"
               class="flex-1 px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
               :class="hasError ? 'border-destructive text-destructive' : 'border-input'"
+              aria-label="Cron 表达式"
             />
             <Select :model-value="selectedFormat" @update:model-value="handleFormatChange">
               <SelectTrigger class="w-[180px]">
@@ -301,12 +302,13 @@ function handleFormatChange(value: unknown) {
             :key="index"
             class="text-center w-full"
           >
-            <div class="text-sm font-medium mb-1">{{ field.label }}</div>
+            <div class="text-sm font-medium mb-1" :id="`field-label-${index}`">{{ field.label }}</div>
             <input
               v-model="fields[index]"
               type="text"
               class="w-full px-2 py-1 bg-background border border-input rounded-md font-mono text-center text-sm h-8"
               :class="{ 'border-destructive': !field.valid }"
+              :aria-label="field.label"
             />
             <p class="text-xs text-muted-foreground mt-1 truncate" :title="field.description">{{ field.description }}</p>
           </div>
@@ -335,7 +337,7 @@ function handleFormatChange(value: unknown) {
             <span>📝</span>
             <span>{{ parseResult.description }}</span>
           </div>
-          <div v-if="parseResult?.error" class="flex items-center gap-2 text-sm text-destructive">
+          <div v-if="parseResult?.error" class="flex items-center gap-2 text-sm text-destructive" role="alert">
             <span>⚠️</span>
             <span>{{ parseResult.error }}</span>
           </div>

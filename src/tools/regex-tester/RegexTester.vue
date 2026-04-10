@@ -2,7 +2,7 @@
   <div class="flex flex-col min-h-[calc(100vh-120px)] p-4 gap-6 w-full max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3">
-      <TextSearch class="w-8 h-8 text-tool-regex" />
+      <Regex class="w-8 h-8 text-tool-regex" />
       <div>
         <h1 class="text-xl font-bold text-foreground">正则表达式测试</h1>
         <p class="text-sm text-muted-foreground">正则匹配、高亮工具</p>
@@ -37,6 +37,7 @@
             placeholder="输入正则表达式..."
             class="flex-1 min-w-[200px] px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             :class="!validation.valid ? 'border-destructive focus:ring-destructive' : 'border-input focus:ring-ring'"
+            aria-label="正则表达式"
           />
           <div class="flex items-center gap-1 text-muted-foreground">
             <span class="font-mono text-lg">/</span>
@@ -52,6 +53,8 @@
               size="sm"
               class="w-8 h-8 font-mono"
               :title="flag.description"
+              :aria-pressed="flags.includes(flag.value)"
+              :aria-label="flag.description"
             >
               {{ flag.label }}
             </Button>
@@ -74,6 +77,7 @@
         <div
           v-if="!validation.valid && pattern"
           class="flex items-center gap-2 text-destructive text-sm"
+          role="alert"
         >
           <span>⚠</span>
           <span>{{ validation.error }}</span>
@@ -121,7 +125,7 @@
 import { ref, computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { TextSearch } from 'lucide-vue-next'
+import { Regex } from 'lucide-vue-next'
 import {
   Select,
   SelectContent,

@@ -54,10 +54,12 @@
         <div class="flex flex-col gap-3">
           <div class="flex gap-2">
             <input
+              id="timestamp-input"
               v-model="timestampInput"
               type="text"
               placeholder="输入时间戳，例如: 1710912345000"
               class="flex-1 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label="时间戳输入"
               @input="convertTimestampToDate"
             />
             <Select v-model="timestampUnit" @update:model-value="convertTimestampToDate">
@@ -94,7 +96,7 @@
                 复制
               </Button>
             </div>
-            <div v-else-if="timestampToDateResult?.error" class="w-full text-destructive text-sm flex items-center gap-2">
+            <div v-else-if="timestampToDateResult?.error" class="w-full text-destructive text-sm flex items-center gap-2" role="alert">
               <span>⚠</span>
               <span>{{ timestampToDateResult.error }}</span>
             </div>
@@ -109,11 +111,13 @@
         
         <div class="flex flex-col gap-3">
           <input
+            id="date-input"
             v-model="dateInput"
             type="text"
             placeholder="输入日期，格式: yyyy-MM-dd HH:mm:ss"
             class="px-3 py-2 bg-background border rounded-md text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring"
             :class="dateInputError ? 'border-destructive focus:ring-destructive' : 'border-input focus:ring-ring'"
+            aria-label="日期输入"
             @input="convertDateToTimestamp"
           />
           
@@ -177,9 +181,10 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between h-8">
-            <label class="text-sm text-muted-foreground">输入 (每行一个时间戳)</label>
+            <label for="batch-input" class="text-sm text-muted-foreground">输入 (每行一个时间戳)</label>
           </div>
           <textarea
+            id="batch-input"
             v-model="batchInput"
             placeholder="1710912345000&#10;1710912346000&#10;1710912347000"
             class="h-32 px-3 py-2 bg-background border border-input rounded-md text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
@@ -187,7 +192,7 @@
         </div>
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between h-8">
-            <label class="text-sm text-muted-foreground">输出</label>
+            <label for="batch-output" class="text-sm text-muted-foreground">输出</label>
             <Button
               variant="ghost"
               size="sm"
@@ -198,6 +203,7 @@
             </Button>
           </div>
           <textarea
+            id="batch-output"
             v-model="batchOutput"
             readonly
             placeholder="转换结果将显示在这里..."
@@ -219,6 +225,7 @@
       <div
         class="flex items-center gap-2 px-3 py-2 rounded-md text-sm mt-4 h-10"
         :class="batchError ? 'bg-destructive/10 text-destructive' : 'bg-transparent'"
+        role="alert"
       >
         <template v-if="batchError">
           <span>⚠</span>

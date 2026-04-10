@@ -1,6 +1,6 @@
 <template>
-  <aside class="w-60 h-full bg-secondary border-r border-border/50 overflow-y-auto py-6">
-    <nav class="flex flex-col gap-6">
+  <aside class="w-60 h-full bg-secondary border-r border-border/50 overflow-y-auto py-6" aria-label="工具导航">
+    <nav class="flex flex-col gap-6" aria-label="工具列表">
       <div
         v-for="(category, index) in toolCategories"
         :key="category.name"
@@ -20,6 +20,7 @@
             :to="tool.path"
             class="relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground"
             :class="{ 'bg-primary/10 text-primary': isActive(tool.path) }"
+            :aria-current="isActive(tool.path) ? 'page' : undefined"
           >
             <!-- Active indicator -->
             <div

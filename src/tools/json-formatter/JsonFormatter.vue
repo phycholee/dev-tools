@@ -96,8 +96,14 @@
 
       <!-- Resizable divider -->
       <div
-        class="w-1 flex-shrink-0 cursor-col-resize hover:bg-accent/50 transition-colors"
+        role="separator"
+        aria-orientation="vertical"
+        aria-valuenow="50"
+        aria-label="调整面板宽度"
+        tabindex="0"
+        class="w-1 flex-shrink-0 cursor-col-resize hover:bg-accent/50 transition-colors focus:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring"
         @mousedown="startResize"
+        @keydown="handleDividerKeydown"
       />
 
       <!-- Output -->
@@ -160,6 +166,17 @@ function startResize() {
 
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', onMouseUp)
+}
+
+function handleDividerKeydown(e: KeyboardEvent) {
+  const step = 2
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+    inputWidth.value = Math.max(20, inputWidth.value - step)
+    e.preventDefault()
+  } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+    inputWidth.value = Math.min(80, inputWidth.value + step)
+    e.preventDefault()
+  }
 }
 
 onUnmounted(() => {

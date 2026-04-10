@@ -15,12 +15,13 @@
       </template>
     </div>
 
-    <!-- Input layer -->
+    <!-- Input layer - text colored to match highlight layer so it's visible but doesn't create double-text -->
     <textarea
       ref="textareaRef"
       :value="modelValue"
       :placeholder="placeholder"
-      class="relative w-full h-full p-3 font-mono text-sm bg-transparent border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground text-transparent caret-foreground"
+      class="relative w-full h-full p-3 font-mono text-sm bg-transparent border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground text-foreground/0 caret-foreground"
+      aria-label="测试文本"
       @scroll="syncScroll"
       @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)"
     />
