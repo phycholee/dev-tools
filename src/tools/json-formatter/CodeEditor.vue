@@ -30,50 +30,41 @@
       </div>
 
       <!-- Output mode -->
-      <div v-else class="h-full overflow-auto" ref="outputContainerRef" @scroll="onScroll">
+      <div v-else class="h-full overflow-auto" ref="outputContainerRef">
         <!-- Error state -->
         <div v-if="isError" class="p-4 pl-16 text-destructive font-mono text-sm leading-relaxed">
           ⚠ {{ modelValue }}
         </div>
         <!-- Normal output -->
-        <div v-else ref="outputRef" tabindex="0" @keydown.ctrl.a.prevent="selectAllOutput">
-          <!-- Virtual scroll: total height placeholder + visible window -->
-          <div :style="{ height: totalHeight + 'px', position: 'relative' }">
+        <div v-else ref="outputRef" tabindex="0" @keydown.ctrl.a.prevent="selectAllOutput" @click="handleOutputClick">
+          <!-- Tree view (valid JSON) -->
+          <template v-if="treeRoot">
             <div
-              :style="{ transform: `translateY(${visibleStartOffset}px)` }"
-              class="absolute inset-x-0"
-              @click="handleOutputClick"
+              v-for="line in allLines"
+              :key="line.key"
+              class="flex select-text"
             >
-              <!-- Tree view (valid JSON) -->
-              <template v-if="treeRoot">
-                <div
-                  v-for="line in visibleLines"
-                  :key="line.key"
-                  class="flex select-text"
-                >
-                  <div class="line-number" :style="{ width: gutterWidth }">
-                    {{ line.num }}
-                  </div>
-                  <pre
-                    class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"
-                  ><code v-html="line.html"></code></pre>
-                </div>
-              </template>
-              <!-- Fallback: plain highlighted lines (non-JSON output) -->
-              <template v-else>
-                <div
-                  v-for="line in visibleLines"
-                  :key="line.key"
-                  class="flex select-text"
-                >
-                  <div class="line-number" :style="{ width: gutterWidth }">
-                    {{ line.num }}
-                  </div>
-                  <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line.html"></code></pre>
-                </div>
-              </template>
+              <div class="line-number" :style="{ width: gutterWidth }">
+                {{ line.num }}
+              </div>
+              <pre
+                class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"
+              ><code v-html="line.html"></code></pre>
             </div>
-          </div>
+          </template>
+          <!-- Fallback: plain highlighted lines (non-JSON output) -->
+          <template v-else>
+            <div
+              v-for="line in allLines"
+              :key="line.key"
+              class="flex select-text"
+            >
+              <div class="line-number" :style="{ width: gutterWidth }">
+                {{ line.num }}
+              </div>
+              <pre class="flex-1 pl-2 m-0 bg-transparent text-foreground font-mono text-sm leading-relaxed whitespace-pre-wrap break-all"><code v-html="line.html"></code></pre>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -81,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { computed, ref, reactive } from 'vue'
 import { Badge } from '@/components/ui/badge'
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
@@ -185,36 +176,6 @@ const extensions = computed(() => [
 
 const outputRef = ref<HTMLDivElement>()
 const outputContainerRef = ref<HTMLDivElement>()
-
-// ─── Virtual Scroll ──────────────────────────────────────────────────────────
-const LINE_HEIGHT = 26 // 0.875rem font × 1.625 line-height ≈ 26px
-const BUFFER = 10 // extra lines above/below viewport
-
-const scrollTop = ref(0)
-const containerHeight = ref(0)
-
-function onScroll() {
-  if (outputContainerRef.value) {
-    scrollTop.value = outputContainerRef.value.scrollTop
-  }
-}
-
-let resizeObserver: ResizeObserver | null = null
-
-onMounted(() => {
-  if (outputContainerRef.value) {
-    containerHeight.value = outputContainerRef.value.clientHeight
-    resizeObserver = new ResizeObserver((entries) => {
-      containerHeight.value = entries[0].contentRect.height
-    })
-    resizeObserver.observe(outputContainerRef.value)
-  }
-})
-
-onUnmounted(() => {
-  resizeObserver?.disconnect()
-  resizeObserver = null
-})
 
 // ─── HTML Helpers (standalone, reused for on-demand rendering) ────────────────
 
@@ -400,44 +361,18 @@ const totalLineCount = computed(() =>
   isTreeMode.value ? treeFlatLines.value.length : fallbackLines.value.length
 )
 
-// Scroll back to top when content shrinks significantly
-watch(totalLineCount, (newCount, oldCount) => {
-  if (newCount < oldCount && outputContainerRef.value) {
-    const maxScroll = newCount * LINE_HEIGHT - containerHeight.value
-    if (scrollTop.value > maxScroll) {
-      outputContainerRef.value.scrollTop = Math.max(0, maxScroll)
-    }
-  }
-})
-
-const totalHeight = computed(() => totalLineCount.value * LINE_HEIGHT)
-
-const visibleStartIdx = computed(() => {
-  const total = totalLineCount.value
-  const idx = Math.max(0, Math.floor(scrollTop.value / LINE_HEIGHT) - BUFFER)
-  return Math.min(idx, total)
-})
-
-const visibleStartOffset = computed(() => visibleStartIdx.value * LINE_HEIGHT)
-
-const visibleLines = computed<VisibleLine[]>(() => {
-  const total = totalLineCount.value
-  if (total === 0) return []
-
-  const startIdx = visibleStartIdx.value
-  const endIdx = Math.min(total, Math.ceil((scrollTop.value + containerHeight.value) / LINE_HEIGHT) + BUFFER)
-
+const allLines = computed<VisibleLine[]>(() => {
   if (isTreeMode.value) {
-    return treeFlatLines.value.slice(startIdx, endIdx).map(line => ({
+    return treeFlatLines.value.map(line => ({
       num: line.num,
       key: line.key,
       html: treeLineToHtml(line)
     }))
   }
 
-  return fallbackLines.value.slice(startIdx, endIdx).map((html, i) => ({
-    num: startIdx + i + 1,
-    key: String(startIdx + i),
+  return fallbackLines.value.map((html, i) => ({
+    num: i + 1,
+    key: String(i),
     html
   }))
 })
