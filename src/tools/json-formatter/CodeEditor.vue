@@ -124,15 +124,15 @@ const customTheme = EditorView.theme({
     borderLeftColor: 'var(--color-foreground)'
   },
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': {
-    backgroundColor: 'var(--color-accent)'
+    backgroundColor: 'var(--color-selection)'
   },
   '.cm-content ::selection': {
-    backgroundColor: 'var(--color-accent)',
-    color: 'var(--color-accent-foreground)'
+    backgroundColor: 'var(--color-selection)',
+    color: 'var(--color-selection-foreground)'
   },
   '.cm-line ::selection': {
-    backgroundColor: 'var(--color-accent)',
-    color: 'var(--color-accent-foreground)'
+    backgroundColor: 'var(--color-selection)',
+    color: 'var(--color-selection-foreground)'
   },
   '.cm-gutters': {
     backgroundColor: 'color-mix(in srgb, var(--color-muted) 20%, transparent)',
@@ -460,18 +460,18 @@ const statusVariant = computed(() => {
 /* Selection styles - match output box */
 .cm-editor .cm-selectionBackground,
 .cm-editor.cm-focused .cm-selectionBackground {
-  background-color: var(--color-accent) !important;
+  background-color: var(--color-selection) !important;
 }
 
 .cm-editor .cm-content ::selection,
 .cm-editor .cm-line ::selection {
-  background-color: var(--color-accent) !important;
-  color: var(--color-accent-foreground) !important;
+  background-color: var(--color-selection) !important;
+  color: var(--color-selection-foreground) !important;
 }
 
 .cm-editor .cm-content *::selection {
-  background-color: var(--color-accent) !important;
-  color: var(--color-accent-foreground) !important;
+  background-color: var(--color-selection) !important;
+  color: var(--color-selection-foreground) !important;
 }
 
 /* Line number right alignment */

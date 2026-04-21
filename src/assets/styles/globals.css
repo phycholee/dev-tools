@@ -78,6 +78,10 @@
   --json-boolean: oklch(50% 0.18 250);
   --json-null: oklch(50% 0.18 250);
 
+  /* Text selection - blue highlight for visibility */
+  --color-selection: oklch(58% 0.19 250);
+  --color-selection-foreground: oklch(99% 0 0);
+
   /* Scrollbar - light theme */
   --scrollbar-thumb: oklch(80% 0.01 250);
   --scrollbar-thumb-hover: oklch(70% 0.015 250);
@@ -152,6 +156,10 @@
   --json-number: oklch(72% 0.1 145);
   --json-boolean: oklch(70% 0.14 250);
   --json-null: oklch(70% 0.14 250);
+
+  /* Text selection - blue highlight for visibility */
+  --color-selection: oklch(55% 0.17 250);
+  --color-selection-foreground: oklch(99% 0 0);
 
   /* Scrollbar - dark theme */
   --scrollbar-thumb: oklch(30% 0.01 250);
@@ -549,8 +557,8 @@
 
   /* Selection color */
   ::selection {
-    background-color: var(--color-accent);
-    color: var(--color-accent-foreground);
+    background-color: var(--color-selection);
+    color: var(--color-selection-foreground);
   }
 }
 
