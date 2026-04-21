@@ -1,117 +1,123 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
+## 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them - don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+## 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+## 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it - don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that YOUR changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+## 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+---
+
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+---
+
+# Project-Specific
 
 ## Commands
 
 ```bash
-# Development
-npm install
-npm run dev          # Start Vite dev server at http://localhost:5173
-npm run build        # Type check (vue-tsc) then build
-npm run preview      # Preview production build
-
-# Testing (tests/ is a separate workspace with its own node_modules)
-npm run test              # Unit tests only (Vitest)
-npm run test:e2e          # E2E + accessibility (Playwright, auto-starts dev server)
-npm run test:visual       # Visual regression screenshots
-npm run test:all          # Unit + E2E
-npm run test:report       # Generate HTML report
-
-# Single test (run from tests/ directory)
-cd tests && npx vitest run <feature>-test/unit/<file>.test.ts    # single unit test
-cd tests && npx playwright test <feature>-test/e2e/<file>.spec.ts # single e2e test
+npm run dev          # Vite dev server
+npm run build        # vue-tsc + build
+npm run test         # Unit tests (Vitest)
+npm run test:e2e     # E2E + a11y (Playwright)
+npm run test:all     # Unit + E2E
 ```
 
-No ESLint/Prettier — TypeScript strict mode enforces code quality.
+No ESLint/Prettier — TypeScript strict mode enforces quality.
 
 ## Architecture
 
-**Tool Registry Pattern:** The central pattern for everything. All tools register in [src/tools/registry.ts](src/tools/registry.ts). The router auto-generates routes from this registry — no manual route additions needed.
+**Tool Registry Pattern:** All tools register in [registry.ts](src/tools/registry.ts). Routes auto-generated — no manual route additions.
 
-Each tool lives in `src/tools/<tool-name>/` with:
-- `<ToolName>.vue` — page component
-- `<tool-name>.ts` — pure utility functions (no side effects)
-- Additional `.vue` files for sub-components (e.g., `CodeEditor.vue`, `RegexHighlight.vue`)
+Each tool: `src/tools/<name>/` with `<Name>.vue` + `<name>.ts` (pure utils). Sub-components as additional `.vue` files.
 
-**Path alias:** `@/` → `src/` (configured in both `tsconfig.json` and `vite.config.ts`).
-
-**Global Toast:** `App.vue` provides a `toast` function via `provide/inject`. Tool components call it via `inject<(msg: string) => void>('toast')`.
-
-**Result Pattern** for fallible operations:
-```typescript
-export interface OperationResult {
-  success: boolean
-  output: string
-  error?: string
-}
-```
-
-**CSS Theme:** Tailwind v4 via `@tailwindcss/vite`. Theme defined in [src/assets/styles/globals.css](src/assets/styles/globals.css) using **OKLCH color system** (not HSL) with CSS custom properties. Dark mode via `darkMode: 'class'`. Use shadcn-vue color tokens (`bg-primary`, `text-foreground`, `bg-destructive`) and `cn()` from `@/lib/utils` for conditional classes. Per-tool color tokens exist as `--tool-*` CSS variables (e.g., `--tool-json`, `--tool-timestamp`).
-
-**UI Components:** `src/components/ui/` follows shadcn-vue convention — each component has `Component.vue` + `index.ts` exporting the component and `cva()` variants. Built on `reka-ui` primitives.
-
-**Layout:** `AppLayout.vue` wraps content with `AppHeader.vue`. `AppSidebar.vue` exists but is not wired into the current layout.
-
-**Fonts:** Plus Jakarta Sans (UI) + JetBrains Mono (code), loaded in globals.css.
+- **Path alias:** `@/` → `src/`
+- **Toast:** `inject<(msg: string) => void>('toast')` from `App.vue`
+- **Result pattern:** `{ success: boolean, output: string, error?: string }`
+- **CSS:** Tailwind v4, OKLCH colors in [globals.css](src/assets/styles/globals.css), dark mode via class. Use shadcn-vue tokens (`bg-primary`, `text-foreground`). Per-tool `--tool-*` CSS variables.
+- **UI:** shadcn-vue convention (`Component.vue` + `index.ts` with `cva()`), built on `reka-ui`
+- **Fonts:** Plus Jakarta Sans (UI) + JetBrains Mono (code)
 
 ## Code Style
 
-**TypeScript:** `interface` over `type` (unless unions). All function params/returns must be typed. No `any`. JSDoc on all utility functions.
+- **TS:** `interface` over `type`, no `any`, JSDoc on utils
+- **Vue:** `<script setup lang="ts">`, `defineProps<{...}>()`, never Options API
+- **Naming:** PascalCase components, camelCase utils, UPPER_SNAKE constants
 
-**Vue:** `<script setup lang="ts">` always. Props via `defineProps<{ ... }>()`. Never Options API.
+## Adding a Tool
 
-**Naming:** PascalCase components, camelCase util files/functions, `UPPER_SNAKE_CASE` constants, PascalCase interfaces.
-
-## Adding a New Tool
-
-1. Create `src/tools/<tool-name>/` with `<ToolName>.vue` and `<tool-name>.ts`
-2. Register in [src/tools/registry.ts](src/tools/registry.ts):
-   ```typescript
-   {
-     id: 'tool-id',
-     name: '工具名称',
-     path: '/tool-path',
-     icon: LucideIconComponent,  // Import from 'lucide-vue-next', not emoji
-     description: '工具描述',
-     category: '分类名',
-     component: () => import('./tool-name/ToolName.vue'),
-     color: '#6366f1'
-   }
-   ```
-3. Add a `--tool-<id>` CSS variable in [globals.css](src/assets/styles/globals.css) for the tool card accent color
-4. Route is auto-generated — done.
+1. Create `src/tools/<name>/` with `<Name>.vue` and `<name>.ts`
+2. Register in [registry.ts](src/tools/registry.ts): `{ id, name, path, icon (lucide-vue-next), description, category, component: () => import(...), color }`
+3. Add `--tool-<id>` CSS variable in [globals.css](src/assets/styles/globals.css)
 
 ## Git Commits
 
-```
-<type>(<scope>): <subject>
-# Types: feat, fix, docs, style, refactor, test, chore
-# Scope: tool name or module (json, timestamp, layout, etc.)
-```
+`<type>(<scope>): <subject>` — Types: feat, fix, docs, style, refactor, test, chore
 
-## Testing Requirements
+## Testing
 
-**No task is complete without tests passing.** Mandatory workflow:
+Tests must pass before completing any task. TDD workflow: unit → e2e → build.
 
-1. Write unit tests first (TDD red → green)
-2. Run `npm run test` — all unit tests must pass
-3. Run `npm run test:e2e` — all E2E tests must pass
-4. Run `npm run build` — must compile without errors
-5. Never skip tests or delete failing tests — fix them
-
-**Test structure** (separate workspace in `tests/`, with its own `package.json`):
 ```
 tests/<feature>-test/
-├── unit/         # Vitest — tests src/tools/**/*.ts directly
-├── e2e/          # Playwright — browser interaction + axe accessibility
-└── visual/       # Screenshot regression (baseline/ subdirectory)
+├── unit/    # Vitest (tests src/tools/**/*.ts)
+├── e2e/     # Playwright + axe accessibility
+└── visual/  # Screenshot regression
 ```
 
-**Before changing DOM elements:** Check existing E2E selectors in `tests/` to avoid breaking them.
-
-## Key References
-
-- [AGENTS.md](AGENTS.md) — full project guidelines (source of truth for conventions)
-- [RULES.md](RULES.md) — changelog, spec versioning, workflow checklist, memory file protocol
-- [docs/memory/PROJECT_MEMORY.md](docs/memory/PROJECT_MEMORY.md) — project history and backlog
+**Before changing DOM:** Check existing E2E selectors to avoid breaking them.
