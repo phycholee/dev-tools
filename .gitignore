@@ -13,6 +13,8 @@ dist-ssr
 *.sw?
 screenshot-*.png
 
+.claude/
+
 # Test reports
 tests/report/
 test-results/
