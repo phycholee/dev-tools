@@ -155,7 +155,7 @@ const customTheme = EditorView.theme({
     backgroundColor: 'color-mix(in srgb, var(--color-muted) 30%, transparent)'
   },
   '.cm-activeLine': {
-    backgroundColor: 'color-mix(in srgb, var(--color-accent) 50%, transparent)'
+    backgroundColor: 'color-mix(in srgb, var(--color-muted) 80%, transparent)'
   },
   '.cm-foldGutter': {
     display: 'none'
@@ -487,6 +487,12 @@ const statusVariant = computed(() => {
   text-align: right !important;
   padding-left: 8px !important;
   padding-right: 8px !important;
+}
+
+/* Hide fold gutter - it overlaps content area and causes visual artifacts */
+.cm-editor .cm-foldGutter {
+  display: none !important;
+  width: 0 !important;
 }
 
 /* Improve placeholder contrast */
