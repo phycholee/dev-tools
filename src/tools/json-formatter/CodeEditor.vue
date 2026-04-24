@@ -1,21 +1,8 @@
 <template>
-  <div 
+  <div
     class="relative flex flex-col h-full border border-border bg-card overflow-hidden"
     :class="roundedClass"
   >
-    <!-- Header bar -->
-    <div class="flex items-center justify-between px-4 h-9 border-b border-border/50 bg-muted/30">
-      <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-        {{ label }}
-      </span>
-      <div class="flex items-center gap-2">
-        <Badge v-if="status" :variant="statusVariant" class="text-xs">
-          {{ status }}
-        </Badge>
-        <slot name="actions" />
-      </div>
-    </div>
-
     <!-- Content area -->
     <div class="flex-1 relative overflow-hidden">
       <!-- Input mode: CodeMirror -->
@@ -116,7 +103,6 @@
 
 <script setup lang="ts">
 import { computed, ref, reactive } from 'vue'
-import { Badge } from '@/components/ui/badge'
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
 import { highlightJson, parseJsonTree, type JsonNode } from './json'
@@ -124,10 +110,7 @@ import { highlightJson, parseJsonTree, type JsonNode } from './json'
 const props = withDefaults(defineProps<{
   modelValue: string
   mode?: 'input' | 'output'
-  label?: string
   placeholder?: string
-  status?: string
-  statusType?: 'success' | 'error' | 'info'
   rounded?: 'all' | 'left' | 'right' | 'none'
   isError?: boolean
   indent?: number
@@ -136,9 +119,7 @@ const props = withDefaults(defineProps<{
   errorColumn?: number
 }>(), {
   mode: 'input',
-  label: 'Input',
   placeholder: 'Paste JSON here...',
-  statusType: 'info',
   rounded: 'all',
   isError: false,
   indent: 2
@@ -216,7 +197,7 @@ const extensions = computed(() => [
     autocapitalize: 'off',
     autocomplete: 'off',
     autocorrect: 'off',
-    'aria-label': props.label || 'Code editor'
+    'aria-label': 'Code editor'
   })
 ])
 
@@ -531,12 +512,6 @@ const gutterWidth = computed(() => {
   if (maxLine === 0) return '48px'
   const digits = maxLine.toString().length
   return `calc(${digits}ch + 2rem)`
-})
-
-const statusVariant = computed(() => {
-  if (props.statusType === 'success') return 'default'
-  if (props.statusType === 'error') return 'destructive'
-  return 'secondary'
 })
 </script>
 

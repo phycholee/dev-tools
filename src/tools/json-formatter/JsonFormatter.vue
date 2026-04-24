@@ -89,7 +89,6 @@
         <CodeEditor
           v-model="input"
           mode="input"
-          label="输入"
           placeholder='输入 JSON 内容，例如: {"name": "DevTools"}'
           :rounded="isMobile ? 'all' : 'left'"
         />
@@ -113,7 +112,6 @@
         <CodeEditor
           v-model="output"
           mode="output"
-          label="输出"
           :is-error="hasError"
           :error-input="hasError ? input : undefined"
           :error-line="errorLine"
