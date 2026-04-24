@@ -115,6 +115,9 @@
           mode="output"
           label="输出"
           :is-error="hasError"
+          :error-input="hasError ? input : undefined"
+          :error-line="errorLine"
+          :error-column="errorColumn"
           :indent="indent"
           :rounded="isMobile ? 'all' : 'right'"
         />
@@ -135,6 +138,8 @@ import { useClipboard } from '@/composables/useClipboard'
 const input = ref('')
 const output = ref('')
 const hasError = ref(false)
+const errorLine = ref<number | undefined>()
+const errorColumn = ref<number | undefined>()
 const indent = ref(2)
 const { copyToClipboard } = useClipboard()
 const isFullscreen = inject<Ref<boolean>>('isFullscreen')!
@@ -210,24 +215,32 @@ function handleFormat() {
   const result = formatJson(input.value, indent.value)
   output.value = result.output
   hasError.value = !result.success
+  errorLine.value = result.errorLine
+  errorColumn.value = result.errorColumn
 }
 
 function handleCompress() {
   const result = compressJson(input.value)
   output.value = result.output
   hasError.value = !result.success
+  errorLine.value = result.errorLine
+  errorColumn.value = result.errorColumn
 }
 
 function handleEscape() {
   const result = escapeJson(input.value)
   output.value = result.output
   hasError.value = !result.success
+  errorLine.value = result.errorLine
+  errorColumn.value = result.errorColumn
 }
 
 function handleUnescape() {
   const result = unescapeJson(input.value)
   output.value = result.output
   hasError.value = !result.success
+  errorLine.value = result.errorLine
+  errorColumn.value = result.errorColumn
 }
 
 async function handleCopy() {
@@ -239,6 +252,8 @@ function handleClear() {
   input.value = ''
   output.value = ''
   hasError.value = false
+  errorLine.value = undefined
+  errorColumn.value = undefined
 }
 
 // Re-format output when indent changes
@@ -261,6 +276,8 @@ watch(input, (val) => {
     const result = formatJson(val, indent.value)
     output.value = result.output
     hasError.value = !result.success
+    errorLine.value = result.errorLine
+    errorColumn.value = result.errorColumn
   }, 500)
 })
 </script>

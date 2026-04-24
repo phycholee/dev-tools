@@ -31,8 +31,51 @@
 
       <!-- Output mode -->
       <div v-else class="h-full overflow-auto" ref="outputContainerRef">
-        <!-- Error state -->
-        <div v-if="isError" class="p-4 pl-16 text-destructive font-mono text-sm leading-relaxed">
+        <!-- Error state with context snippet -->
+        <template v-if="isError && errorSnippet">
+          <!-- Error message banner -->
+          <div class="p-3 mx-3 mt-3 bg-destructive/10 border-l-2 border-destructive rounded-r text-sm">
+            <div class="flex items-center gap-2 text-destructive font-medium">
+              <span>⚠</span>
+              <span>{{ modelValue }}</span>
+            </div>
+            <div v-if="errorLine" class="text-xs text-destructive/70 mt-1">
+              第 {{ errorLine }} 行，第 {{ errorColumn || 1 }} 列
+            </div>
+          </div>
+          <!-- Error context snippet -->
+          <div class="mt-2">
+            <div v-if="errorSnippet.showEllipsisBefore" class="flex">
+              <div class="line-number" :style="{ width: gutterWidth }"></div>
+              <div class="flex-1 pl-2 text-muted-foreground font-mono text-sm">...</div>
+            </div>
+            <template v-for="line in errorSnippet.lines" :key="line.num">
+              <div
+                class="flex select-text"
+                :class="{ 'json-error-line': line.isError }"
+              >
+                <div class="line-number" :style="{ width: gutterWidth }">
+                  {{ line.num }}
+                </div>
+                <pre
+                  class="flex-1 pl-2 m-0 bg-transparent font-mono text-sm leading-relaxed whitespace-pre"
+                  :class="line.isError ? 'text-destructive' : 'text-muted-foreground'"
+                ><code>{{ line.prefix }}{{ line.content }}{{ line.suffix }}</code></pre>
+              </div>
+              <!-- Column pointer below error line -->
+              <div v-if="line.isError && line.pointerOffset >= 0" class="flex">
+                <div class="line-number" :style="{ width: gutterWidth }"></div>
+                <pre class="flex-1 pl-2 m-0 font-mono text-sm leading-relaxed whitespace-pre"><code class="text-destructive font-bold">{{ ' '.repeat(line.pointerOffset) }}^</code></pre>
+              </div>
+            </template>
+            <div v-if="errorSnippet.showEllipsisAfter" class="flex">
+              <div class="line-number" :style="{ width: gutterWidth }"></div>
+              <div class="flex-1 pl-2 text-muted-foreground font-mono text-sm">...</div>
+            </div>
+          </div>
+        </template>
+        <!-- Fallback: simple error message (no input context) -->
+        <div v-else-if="isError" class="p-4 pl-16 text-destructive font-mono text-sm leading-relaxed">
           ⚠ {{ modelValue }}
         </div>
         <!-- Normal output -->
@@ -88,6 +131,9 @@ const props = withDefaults(defineProps<{
   rounded?: 'all' | 'left' | 'right' | 'none'
   isError?: boolean
   indent?: number
+  errorInput?: string
+  errorLine?: number
+  errorColumn?: number
 }>(), {
   mode: 'input',
   label: 'Input',
@@ -349,6 +395,69 @@ const fallbackLines = computed<string[]>(() => {
   return highlightJson(props.modelValue).split('\n')
 })
 
+// ─── Error context snippet ────────────────────────────────────────────────────
+
+const SNIPPET_LINE_CTX = 2
+const SNIPPET_COL_RADIUS = 30
+
+interface ErrorSnippetLine {
+  num: number
+  content: string
+  isError: boolean
+  prefix: string
+  suffix: string
+  pointerOffset: number
+}
+
+const errorSnippet = computed(() => {
+  if (!props.errorInput || !props.errorLine) return null
+
+  const allLines = props.errorInput.split('\n')
+  const errIdx = props.errorLine - 1
+  const errCol = props.errorColumn || 1
+
+  const startIdx = Math.max(0, errIdx - SNIPPET_LINE_CTX)
+  const endIdx = Math.min(allLines.length - 1, errIdx + SNIPPET_LINE_CTX)
+
+  const lines: ErrorSnippetLine[] = []
+
+  for (let i = startIdx; i <= endIdx; i++) {
+    const isError = i === errIdx
+    const raw = allLines[i]
+
+    if (isError && raw.length > SNIPPET_COL_RADIUS * 2) {
+      const sliceStart = Math.max(0, errCol - SNIPPET_COL_RADIUS)
+      const sliceEnd = Math.min(raw.length, errCol + SNIPPET_COL_RADIUS)
+      const hasPrefix = sliceStart > 0
+      const hasSuffix = sliceEnd < raw.length
+      lines.push({
+        num: i + 1,
+        content: raw.slice(sliceStart, sliceEnd),
+        isError: true,
+        prefix: hasPrefix ? '...' : '',
+        suffix: hasSuffix ? '...' : '',
+        pointerOffset: (hasPrefix ? 3 : 0) + (errCol - 1 - sliceStart)
+      })
+    } else {
+      const truncated = raw.length > 100
+      lines.push({
+        num: i + 1,
+        content: truncated ? raw.slice(0, 97) : raw,
+        isError,
+        prefix: '',
+        suffix: truncated ? '...' : '',
+        pointerOffset: isError ? errCol - 1 : 0
+      })
+    }
+  }
+
+  return {
+    lines,
+    showEllipsisBefore: startIdx > 0,
+    showEllipsisAfter: endIdx < allLines.length - 1
+  }
+})
+
 // ─── Visible Lines (HTML generated on-demand for ~30 lines only) ─────────────
 
 interface VisibleLine {
@@ -413,7 +522,12 @@ function selectAllOutput() {
 // ─── Gutter Width ────────────────────────────────────────────────────────────
 
 const gutterWidth = computed(() => {
-  const maxLine = totalLineCount.value
+  let maxLine: number
+  if (props.isError && props.errorInput) {
+    maxLine = props.errorInput.split('\n').length
+  } else {
+    maxLine = totalLineCount.value
+  }
   if (maxLine === 0) return '48px'
   const digits = maxLine.toString().length
   return `calc(${digits}ch + 2rem)`
@@ -532,5 +646,15 @@ const statusVariant = computed(() => {
 }
 .json-toggle-collapse:hover {
   background: color-mix(in srgb, var(--color-destructive) 22%, transparent);
+}
+
+/* Error line highlight */
+.json-error-line {
+  background-color: color-mix(in srgb, var(--color-destructive) 8%, transparent);
+}
+
+.json-error-line .line-number {
+  color: var(--color-destructive);
+  background-color: color-mix(in srgb, var(--color-destructive) 15%, var(--color-muted) 20%);
 }
 </style>

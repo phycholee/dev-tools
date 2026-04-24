@@ -7,6 +7,42 @@ export interface JsonFormatResult {
   success: boolean
   output: string
   error?: string
+  errorLine?: number
+  errorColumn?: number
+}
+
+/**
+ * Extract line/column from JSON.parse error message.
+ * Handles V8 (Chrome/Edge): "at position X"
+ * and Firefox: "at line X column Y"
+ */
+function parseJsonErrorPosition(errorMessage: string, input: string): { line?: number; column?: number } {
+  // Firefox: "at line X column Y of the JSON data"
+  const lineColMatch = errorMessage.match(/at line (\d+) column (\d+)/)
+  if (lineColMatch) {
+    return { line: parseInt(lineColMatch[1], 10), column: parseInt(lineColMatch[2], 10) }
+  }
+
+  // V8 (Chrome/Edge): "at position X"
+  const posMatch = errorMessage.match(/at position (\d+)/)
+  if (posMatch) {
+    const pos = parseInt(posMatch[1], 10)
+    if (pos >= 0 && pos <= input.length) {
+      let line = 1
+      let column = 1
+      for (let i = 0; i < pos; i++) {
+        if (input[i] === '\n') {
+          line++
+          column = 1
+        } else {
+          column++
+        }
+      }
+      return { line, column }
+    }
+  }
+
+  return {}
 }
 
 /**
@@ -21,10 +57,13 @@ export function formatJson(input: string, indent: number = 2): JsonFormatResult 
     }
   } catch (e) {
     const err = e as Error
+    const pos = parseJsonErrorPosition(err.message, input)
     return {
       success: false,
       output: err.message,
-      error: err.message
+      error: err.message,
+      errorLine: pos.line,
+      errorColumn: pos.column
     }
   }
 }
@@ -41,10 +80,13 @@ export function compressJson(input: string): JsonFormatResult {
     }
   } catch (e) {
     const err = e as Error
+    const pos = parseJsonErrorPosition(err.message, input)
     return {
       success: false,
       output: err.message,
-      error: err.message
+      error: err.message,
+      errorLine: pos.line,
+      errorColumn: pos.column
     }
   }
 }
@@ -68,10 +110,13 @@ export function escapeJson(input: string): JsonFormatResult {
     }
   } catch (e) {
     const err = e as Error
+    const pos = parseJsonErrorPosition(err.message, input)
     return {
       success: false,
       output: err.message,
-      error: err.message
+      error: err.message,
+      errorLine: pos.line,
+      errorColumn: pos.column
     }
   }
 }
