@@ -80,45 +80,47 @@
 
     <!-- Editor panels -->
     <div
-      ref="panelsRef"
       class="flex-1 flex flex-col md:flex-row min-h-0 pb-2 pt-2 mx-auto transition-all duration-200"
       :class="isFullscreen ? 'w-full px-4' : 'max-w-6xl w-full px-4'"
     >
-      <!-- Input -->
-      <div :style="{ width: isMobile ? undefined : inputWidth + '%' }" class="min-w-0 md:min-w-[200px] min-h-[200px] md:min-h-0">
-        <CodeEditor
-          v-model="input"
-          mode="input"
-          placeholder='输入 JSON 内容，例如: {"name": "DevTools"}'
-          :rounded="isMobile ? 'all' : 'left'"
-        />
-      </div>
+      <!-- Unified editor container -->
+      <div ref="panelsRef" class="flex flex-col md:flex-row min-w-0 min-h-0 flex-1 border border-border rounded-lg overflow-hidden">
+        <!-- Input -->
+        <div :style="{ width: isMobile ? undefined : inputWidth + '%' }" class="min-w-0 md:min-w-[200px] min-h-[200px] md:min-h-0">
+          <CodeEditor
+            v-model="input"
+            mode="input"
+            placeholder='输入 JSON 内容，例如: {"name": "DevTools"}'
+            rounded="none"
+          />
+        </div>
 
-      <!-- Resizable divider - hidden on mobile -->
-      <div
-        v-if="!isMobile"
-        role="separator"
-        aria-orientation="vertical"
-        aria-valuenow="50"
-        aria-label="调整面板宽度"
-        tabindex="0"
-        class="w-1 flex-shrink-0 cursor-col-resize hover:bg-accent/50 transition-colors focus:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring"
-        @mousedown="startResize"
-        @keydown="handleDividerKeydown"
-      />
-
-      <!-- Output -->
-      <div :style="{ width: isMobile ? undefined : (100 - inputWidth) + '%' }" class="min-w-0 md:min-w-[200px] min-h-[200px] md:min-h-0">
-        <CodeEditor
-          v-model="output"
-          mode="output"
-          :is-error="hasError"
-          :error-input="hasError ? input : undefined"
-          :error-line="errorLine"
-          :error-column="errorColumn"
-          :indent="indent"
-          :rounded="isMobile ? 'all' : 'right'"
+        <!-- Divider line -->
+        <div
+          v-if="!isMobile"
+          role="separator"
+          aria-orientation="vertical"
+          aria-valuenow="50"
+          aria-label="调整面板宽度"
+          tabindex="0"
+          class="w-1 flex-shrink-0 bg-border cursor-col-resize hover:bg-accent/50 transition-colors focus:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring"
+          @mousedown="startResize"
+          @keydown="handleDividerKeydown"
         />
+
+        <!-- Output -->
+        <div :style="{ width: isMobile ? undefined : (100 - inputWidth) + '%' }" class="min-w-0 md:min-w-[200px] min-h-[200px] md:min-h-0">
+          <CodeEditor
+            v-model="output"
+            mode="output"
+            :is-error="hasError"
+            :error-input="hasError ? input : undefined"
+            :error-line="errorLine"
+            :error-column="errorColumn"
+            :indent="indent"
+            rounded="none"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -141,6 +143,11 @@ const errorColumn = ref<number | undefined>()
 const indent = ref(2)
 const { copyToClipboard } = useClipboard()
 const isFullscreen = inject<Ref<boolean>>('isFullscreen')!
+
+// Default to fullscreen for JSON tool
+onMounted(() => {
+  isFullscreen.value = true
+})
 
 // Mobile detection for responsive layout
 const isMobile = ref(false)

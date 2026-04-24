@@ -1,10 +1,10 @@
 <template>
   <div
-    class="relative flex flex-col h-full border border-border bg-card overflow-hidden"
+    class="relative flex flex-col h-full bg-card overflow-hidden"
     :class="roundedClass"
   >
     <!-- Content area -->
-    <div class="flex-1 relative overflow-hidden">
+    <div class="flex-1 relative overflow-hidden pt-4">
       <!-- Input mode: CodeMirror -->
       <div v-if="mode === 'input'" class="h-full">
         <Codemirror
@@ -104,7 +104,8 @@
 <script setup lang="ts">
 import { computed, ref, reactive } from 'vue'
 import { Codemirror } from 'vue-codemirror'
-import { EditorView } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
+import { Prec } from '@codemirror/state'
 import { highlightJson, parseJsonTree, type JsonNode } from './json'
 
 const props = withDefaults(defineProps<{
@@ -193,6 +194,9 @@ const customTheme = EditorView.theme({
 const extensions = computed(() => [
   customTheme,
   EditorView.lineWrapping,
+  Prec.highest(keymap.of([
+    { key: 'Mod-f', run: () => true }
+  ])),
   EditorView.contentAttributes.of({
     autocapitalize: 'off',
     autocomplete: 'off',
@@ -202,7 +206,6 @@ const extensions = computed(() => [
 ])
 
 const outputRef = ref<HTMLDivElement>()
-const outputContainerRef = ref<HTMLDivElement>()
 
 // ─── HTML Helpers (standalone, reused for on-demand rendering) ────────────────
 
