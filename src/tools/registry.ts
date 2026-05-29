@@ -43,16 +43,6 @@ export const tools: ToolDefinition[] = [
     // 颜色通过 CSS 变量 --tool-timestamp 管理
   },
   {
-    id: 'url-codec',
-    name: 'URL编解码',
-    path: '/url-codec',
-    icon: Link,
-    description: 'URL编码与解码',
-    category: '编解码',
-    component: () => import('./url-codec/UrlCodec.vue'),
-    // 颜色通过 CSS 变量 --tool-url 管理
-  },
-  {
     id: 'cron-parser',
     name: 'Cron表达式解析',
     path: '/cron-parser',
@@ -61,6 +51,16 @@ export const tools: ToolDefinition[] = [
     category: '开发辅助',
     component: () => import('./cron-parser/CronParser.vue'),
     // 颜色通过 CSS 变量 --tool-cron 管理
+  },
+  {
+    id: 'url-codec',
+    name: 'URL编解码',
+    path: '/url-codec',
+    icon: Link,
+    description: 'URL编码与解码',
+    category: '编解码',
+    component: () => import('./url-codec/UrlCodec.vue'),
+    // 颜色通过 CSS 变量 --tool-url 管理
   },
   {
     id: 'base64-codec',
@@ -72,6 +72,15 @@ export const tools: ToolDefinition[] = [
     component: () => import('./base64-codec/Base64Codec.vue'),
   },
   {
+    id: 'unicode-codec',
+    name: 'Unicode编码转换',
+    path: '/unicode-codec',
+    icon: CaseSensitive,
+    description: '字符与Unicode转义互转',
+    category: '编解码',
+    component: () => import('./unicode-codec/UnicodeCodec.vue'),
+  },
+  {
     id: 'regex-tester',
     name: '正则表达式测试',
     path: '/regex-tester',
@@ -80,15 +89,6 @@ export const tools: ToolDefinition[] = [
     category: '开发辅助',
     component: () => import('./regex-tester/RegexTester.vue'),
   },
-  {
-    id: 'unicode-codec',
-    name: 'Unicode编码转换',
-    path: '/unicode-codec',
-    icon: CaseSensitive,
-    description: '字符与Unicode转义互转',
-    category: '编解码',
-    component: () => import('./unicode-codec/UnicodeCodec.vue'),
-  }
 ]
 
 /**
