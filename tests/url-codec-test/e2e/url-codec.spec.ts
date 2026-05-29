@@ -33,13 +33,29 @@ test.describe('URL Codec E2E', () => {
     await expect(page.getByRole('button', { name: '解码' })).toBeEnabled()
   })
 
-  test('should show two Cards after clicking encode', async ({ page }) => {
-    await page.locator('textarea[aria-label="输入文本"]').fill('中文 test')
+  test('should show format selector and one Card after clicking encode', async ({ page }) => {
+    await page.locator('textarea[aria-label="输入文本"]').fill('中文')
     await page.getByRole('button', { name: '编码' }).click()
 
-    await expect(page.getByText('encodeURIComponent')).toBeVisible()
-    await expect(page.getByText('encodeURI', { exact: true })).toBeVisible()
-    await expect(page.locator('text=%E4%B8%AD%E6%96%87').first()).toBeVisible()
+    await expect(page.getByText('模式：')).toBeVisible()
+    // Both format buttons should be rendered
+    const formatButtons = page.locator('button:has-text("encodeURI")')
+    await expect(formatButtons).toHaveCount(2)
+    await expect(page.getByText('编码结果')).toBeVisible()
+    await expect(page.locator('pre')).toContainText('%E4%B8%AD%E6%96%87')
+  })
+
+  test('should switch encode mode and update result', async ({ page }) => {
+    await page.locator('textarea[aria-label="输入文本"]').fill('https://example.com/中文')
+    await page.getByRole('button', { name: '编码' }).click()
+
+    // Default: encodeURIComponent encodes slashes
+    await expect(page.locator('pre')).toContainText('%2F')
+    await page.getByRole('button', { name: 'encodeURI', exact: true }).click()
+
+    // encodeURI preserves slashes
+    await expect(page.locator('pre')).not.toContainText('%2F')
+    await expect(page.locator('pre')).toContainText('https://example.com/')
   })
 
   test('should show one decode Card after clicking decode', async ({ page }) => {
@@ -47,30 +63,29 @@ test.describe('URL Codec E2E', () => {
     await page.getByRole('button', { name: '解码' }).click()
 
     await expect(page.getByText('解码结果')).toBeVisible()
-    await expect(page.locator('text=中文')).toBeVisible()
-    await expect(page.getByText('encodeURIComponent')).not.toBeVisible()
+    await expect(page.locator('pre')).toContainText('中文')
+    await expect(page.getByText('编码结果')).not.toBeVisible()
   })
 
   test('should copy encode result and show toast', async ({ page, context }) => {
-    // Grant clipboard permission for headless Chromium
     await context.grantPermissions(['clipboard-write', 'clipboard-read'])
 
     await page.locator('textarea[aria-label="输入文本"]').fill('test')
     await page.getByRole('button', { name: '编码' }).click()
 
-    await page.getByRole('button', { name: '复制' }).first().click()
+    await page.getByRole('button', { name: '复制' }).click()
     await expect(page.locator('text=已复制到剪贴板')).toBeVisible({ timeout: 3000 })
   })
 
   test('should clear input and result Cards on clear', async ({ page }) => {
     await page.locator('textarea[aria-label="输入文本"]').fill('hello')
     await page.getByRole('button', { name: '编码' }).click()
-    await expect(page.getByText('encodeURIComponent')).toBeVisible()
+    await expect(page.getByText('编码结果')).toBeVisible()
 
     await page.getByRole('button', { name: '清除' }).click()
 
     await expect(page.locator('textarea[aria-label="输入文本"]')).toHaveValue('')
-    await expect(page.getByText('encodeURIComponent')).not.toBeVisible()
+    await expect(page.getByText('编码结果')).not.toBeVisible()
     await expect(page.getByText('解码结果')).not.toBeVisible()
   })
 
@@ -79,7 +94,6 @@ test.describe('URL Codec E2E', () => {
     await page.getByRole('button', { name: '解码' }).click()
 
     await expect(page.locator('.text-destructive')).toBeVisible()
-    // Error branch renders no copy button (component only renders copy in success branch)
     await expect(page.getByRole('button', { name: '复制' })).not.toBeVisible()
   })
 })

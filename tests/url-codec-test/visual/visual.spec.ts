@@ -20,7 +20,7 @@ test.describe('URL Codec Visual', () => {
     expect(result.match).toBe(true)
   })
 
-  test('encode mode with two Cards', async ({ page }) => {
+  test('encode mode with format selector', async ({ page }) => {
     await page.goto('/url-codec')
     await page.waitForLoadState('networkidle')
     await page.locator('textarea[aria-label="输入文本"]').fill('hello 中文 a=1&b=2')
