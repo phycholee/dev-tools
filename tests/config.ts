@@ -42,5 +42,6 @@ export const testConfig = {
     'url-codec-test',
     'cron-parser-test',
     'base64-codec-test',
+    'unicode-codec-test',
   ],
 }
