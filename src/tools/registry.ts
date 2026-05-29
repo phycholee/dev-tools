@@ -6,6 +6,7 @@ import {
   CalendarClock,
   Binary,
   Regex,
+  CaseSensitive,
 } from 'lucide-vue-next'
 
 /**
@@ -78,6 +79,15 @@ export const tools: ToolDefinition[] = [
     description: '正则匹配、高亮工具',
     category: '开发辅助',
     component: () => import('./regex-tester/RegexTester.vue'),
+  },
+  {
+    id: 'unicode-codec',
+    name: 'Unicode编码转换',
+    path: '/unicode-codec',
+    icon: CaseSensitive,
+    description: '字符与Unicode转义互转',
+    category: '编解码',
+    component: () => import('./unicode-codec/UnicodeCodec.vue'),
   }
 ]
 

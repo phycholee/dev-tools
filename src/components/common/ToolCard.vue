@@ -69,6 +69,7 @@ const toolAccentClass = computed(() => {
     'cron-parser': 'bg-tool-cron',
     'base64-codec': 'bg-tool-base64',
     'regex-tester': 'bg-tool-regex',
+    'unicode-codec': 'bg-tool-unicode',
   }
   return colorMap[props.tool.id] || 'bg-brand'
 })
@@ -81,6 +82,7 @@ const toolGlowClass = computed(() => {
     'cron-parser': 'bg-gradient-to-r from-transparent via-tool-cron to-transparent',
     'base64-codec': 'bg-gradient-to-r from-transparent via-tool-base64 to-transparent',
     'regex-tester': 'bg-gradient-to-r from-transparent via-tool-regex to-transparent',
+    'unicode-codec': 'bg-gradient-to-r from-transparent via-tool-unicode to-transparent',
   }
   return colorMap[props.tool.id] || 'bg-gradient-to-r from-transparent via-brand to-transparent'
 })
@@ -93,6 +95,7 @@ const toolIconContainerClass = computed(() => {
     'cron-parser': 'bg-tool-cron/10 border-tool-cron/20',
     'base64-codec': 'bg-tool-base64/10 border-tool-base64/20',
     'regex-tester': 'bg-tool-regex/10 border-tool-regex/20',
+    'unicode-codec': 'bg-tool-unicode/10 border-tool-unicode/20',
   }
   return colorMap[props.tool.id] || 'bg-brand/10 border-brand/20'
 })
@@ -105,6 +108,7 @@ const toolIconClass = computed(() => {
     'cron-parser': 'text-tool-cron',
     'base64-codec': 'text-tool-base64',
     'regex-tester': 'text-tool-regex',
+    'unicode-codec': 'text-tool-unicode',
   }
   return colorMap[props.tool.id] || 'text-brand'
 })

@@ -93,6 +93,7 @@
   --tool-cron: oklch(65% 0.15 75);
   --tool-base64: oklch(60% 0.18 330);
   --tool-regex: oklch(60% 0.18 280);
+  --tool-unicode: oklch(58% 0.16 300);
 }
 
 /* Dark theme - Modern, layered, comfortable */
@@ -172,6 +173,7 @@
   --tool-cron: oklch(72% 0.15 75);
   --tool-base64: oklch(68% 0.18 330);
   --tool-regex: oklch(68% 0.18 280);
+  --tool-unicode: oklch(70% 0.16 300);
 }
 
 /* System preference is handled by ToggleTheme.vue (checks OS setting in JS).
@@ -295,6 +297,7 @@
   --color-tool-cron: var(--tool-cron);
   --color-tool-base64: var(--tool-base64);
   --color-tool-regex: var(--tool-regex);
+  --color-tool-unicode: var(--tool-unicode);
 
   /* Border radius */
   --radius-lg: 0.625rem;
