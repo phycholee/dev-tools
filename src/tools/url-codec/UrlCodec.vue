@@ -1,7 +1,6 @@
 <!-- src/tools/url-codec/UrlCodec.vue -->
 <template>
   <div class="flex flex-col p-4 gap-6 w-full max-w-6xl mx-auto" style="min-height: calc(100vh - var(--header-height) - 2rem)">
-    <!-- Header -->
     <div class="flex items-center gap-3">
       <Link class="w-8 h-8 text-tool-url" />
       <div>
@@ -10,7 +9,6 @@
       </div>
     </div>
 
-    <!-- Help tip -->
     <div class="p-3 bg-muted/50 rounded-lg border border-border/50">
       <div class="text-sm text-muted-foreground">
         <strong class="text-foreground">使用提示：</strong>
@@ -20,7 +18,6 @@
       </div>
     </div>
 
-    <!-- Input -->
     <Card class="p-4">
       <textarea
         v-model="input"
@@ -30,9 +27,8 @@
         autocomplete="off"
       />
 
-      <!-- Format selector (for encoding) -->
-      <div v-if="mode === 'encode'" class="flex items-center gap-2 mt-4">
-        <span class="text-sm text-muted-foreground">模式：</span>
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        <span class="text-sm text-muted-foreground">编码模式：</span>
         <Button
           v-for="opt in encodeOptions"
           :key="opt.value"
@@ -44,7 +40,6 @@
         </Button>
       </div>
 
-      <!-- Action buttons -->
       <div class="flex items-center gap-3 mt-4">
         <Button @click="handleEncode" variant="default" :disabled="!input.trim()">
           编码
@@ -59,37 +54,43 @@
       </div>
     </Card>
 
-    <!-- Output -->
-    <Card v-if="result" class="p-4">
-      <h2 class="text-sm font-semibold text-foreground mb-3">
-        {{ mode === 'encode' ? '编码结果' : '解码结果' }}
-      </h2>
-
-      <!-- Error state -->
-      <div
-        v-if="!result.success"
-        class="p-3 rounded-md bg-destructive/10 text-destructive text-sm flex items-center gap-2"
-        role="alert"
-      >
-        <span>⚠</span>
-        <span>{{ result.error }}</span>
+    <Card class="p-4">
+      <!-- Empty state -->
+      <div v-if="!mode" class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <Link class="w-10 h-10 mb-3 opacity-40" />
+        <p class="text-sm">输入文本后，点击"编码"或"解码"查看结果</p>
       </div>
 
-      <!-- Success state -->
-      <div
-        v-else
-        class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto"
-      >
-        <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ result.output }}</pre>
-        <Button
-          variant="ghost"
-          size="sm"
-          class="shrink-0 hover:bg-background"
-          @click="copyToClipboard(result.output)"
+      <!-- Result -->
+      <template v-else>
+        <h2 class="text-sm font-semibold text-foreground mb-3">
+          {{ mode === 'encode' ? '编码结果' : '解码结果' }}
+        </h2>
+
+        <div
+          v-if="!result!.success"
+          class="p-3 rounded-md bg-destructive/10 text-destructive text-sm flex items-center gap-2"
+          role="alert"
         >
-          复制
-        </Button>
-      </div>
+          <span>⚠</span>
+          <span>{{ result!.error }}</span>
+        </div>
+
+        <div
+          v-else
+          class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto"
+        >
+          <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ result!.output }}</pre>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="shrink-0 hover:bg-background"
+            @click="copyToClipboard(result!.output)"
+          >
+            复制
+          </Button>
+        </div>
+      </template>
     </Card>
   </div>
 </template>

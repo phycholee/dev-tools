@@ -27,6 +27,13 @@ test.describe('Unicode Codec E2E', () => {
     await expect(page.getByRole('button', { name: '解码' })).toBeDisabled()
   })
 
+  test('should show strategy buttons and empty state by default', async ({ page }) => {
+    await expect(page.getByText('编码策略：')).toBeVisible()
+    await expect(page.getByRole('button', { name: '仅非 ASCII' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '全部字符' })).toBeVisible()
+    await expect(page.getByText('输入文本后，点击"编码"或"解码"查看结果')).toBeVisible()
+  })
+
   test('should encode with non-ASCII mode by default', async ({ page }) => {
     await page.locator('textarea[aria-label="输入文本"]').fill('abc你好')
     await page.getByRole('button', { name: '编码' }).click()
@@ -70,7 +77,7 @@ test.describe('Unicode Codec E2E', () => {
     await page.getByRole('button', { name: '全部字符' }).click()
     await page.getByRole('button', { name: '清除' }).click()
     await expect(page.locator('textarea[aria-label="输入文本"]')).toHaveValue('')
-    await expect(page.getByText('编码结果')).not.toBeVisible()
+    await expect(page.getByText('输入文本后，点击"编码"或"解码"查看结果')).toBeVisible()
 
     await page.locator('textarea[aria-label="输入文本"]').fill('abc你好')
     await page.getByRole('button', { name: '编码' }).click()

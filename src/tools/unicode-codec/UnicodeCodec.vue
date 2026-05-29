@@ -53,22 +53,30 @@
       </div>
     </Card>
 
-    <Card v-if="result" class="p-4">
-      <h2 class="text-sm font-semibold text-foreground mb-3">
-        {{ mode === 'encode' ? '编码结果' : '解码结果' }}
-      </h2>
-
-      <div class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto">
-        <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ result.output }}</pre>
-        <Button
-          variant="ghost"
-          size="sm"
-          class="shrink-0 hover:bg-background"
-          @click="copyToClipboard(result.output)"
-        >
-          复制
-        </Button>
+    <Card class="p-4">
+      <!-- Empty state -->
+      <div v-if="!mode" class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <CaseSensitive class="w-10 h-10 mb-3 opacity-40" />
+        <p class="text-sm">输入文本后，点击"编码"或"解码"查看结果</p>
       </div>
+
+      <!-- Result -->
+      <template v-else>
+        <h2 class="text-sm font-semibold text-foreground mb-3">
+          {{ mode === 'encode' ? '编码结果' : '解码结果' }}
+        </h2>
+        <div class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto">
+          <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ result!.output }}</pre>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="shrink-0 hover:bg-background"
+            @click="copyToClipboard(result!.output)"
+          >
+            复制
+          </Button>
+        </div>
+      </template>
     </Card>
   </div>
 </template>
