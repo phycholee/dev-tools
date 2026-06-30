@@ -66,7 +66,7 @@
           {{ mode === 'encode' ? '编码结果' : '解码结果' }}
         </h2>
         <div class="p-3 rounded-md bg-muted h-32 flex items-start justify-between gap-2 overflow-auto">
-          <pre class="font-mono text-sm break-all select-all whitespace-pre-wrap flex-1">{{ result!.output }}</pre>
+          <pre class="font-mono text-sm break-all select-text whitespace-pre-wrap flex-1">{{ result!.output }}</pre>
           <Button
             variant="ghost"
             size="sm"
